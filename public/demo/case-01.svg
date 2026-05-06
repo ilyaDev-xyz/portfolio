@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" role="img" aria-labelledby="title desc">
+  <title id="title">Demo CRM placeholder</title>
+  <desc id="desc">Abstract CRM review desk placeholder for public demo content.</desc>
+  <rect width="1280" height="720" fill="#101511"/>
+  <rect x="92" y="76" width="1096" height="568" rx="18" fill="#e9e0ce"/>
+  <rect x="132" y="116" width="292" height="488" rx="12" fill="#172018"/>
+  <rect x="456" y="116" width="692" height="86" rx="12" fill="#d25f3f"/>
+  <rect x="456" y="232" width="692" height="92" rx="12" fill="#fff8ec"/>
+  <rect x="456" y="348" width="692" height="92" rx="12" fill="#fff8ec"/>
+  <rect x="456" y="464" width="692" height="140" rx="12" fill="#fff8ec"/>
+  <circle cx="178" cy="166" r="20" fill="#d25f3f"/>
+  <rect x="218" y="154" width="156" height="16" rx="8" fill="#e9e0ce"/>
+  <rect x="168" y="244" width="206" height="12" rx="6" fill="#7f937e"/>
+  <rect x="168" y="294" width="168" height="12" rx="6" fill="#7f937e"/>
+  <rect x="168" y="344" width="226" height="12" rx="6" fill="#7f937e"/>
+  <text x="496" y="171" fill="#101511" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="28" font-weight="700">CASE 01 / DEMO CRM</text>
+  <text x="496" y="285" fill="#101511" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="22">AI draft -> human review -> audited write</text>
+  <text x="496" y="404" fill="#101511" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="22">No real customer data. Placeholder media.</text>
+</svg>

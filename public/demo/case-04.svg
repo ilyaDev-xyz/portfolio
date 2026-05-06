@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" role="img" aria-labelledby="title desc">
+  <title id="title">Demo arena placeholder</title>
+  <desc id="desc">Abstract multiplayer arena placeholder for public demo content.</desc>
+  <rect width="1280" height="720" fill="#111613"/>
+  <rect x="84" y="78" width="1112" height="564" rx="18" fill="#efe8d8"/>
+  <rect x="156" y="146" width="968" height="380" rx="18" fill="#234331"/>
+  <circle cx="640" cy="336" r="134" fill="#d96a3d"/>
+  <circle cx="640" cy="336" r="72" fill="#efe8d8"/>
+  <g fill="#111613">
+    <circle cx="400" cy="282" r="36"/>
+    <circle cx="880" cy="390" r="36"/>
+    <circle cx="526" cy="430" r="28"/>
+    <circle cx="780" cy="244" r="28"/>
+  </g>
+  <rect x="156" y="558" width="968" height="44" rx="10" fill="#111613"/>
+  <text x="196" y="596" fill="#efe8d8" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="24" font-weight="700">CASE 04 / SERVER AUTHORITY RUNTIME</text>
+  <text x="196" y="198" fill="#efe8d8" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="22">client input -> server rule check -> replicated result</text>
+</svg>

@@ -1,0 +1,240 @@
+/* ============================================================
+   LITE YOUTUBE — facade pattern: thumbnail + play overlay,
+   iframe loads only on click. Fits any 16:9 container.
+   ============================================================ */
+.lite-yt-btn {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  margin: 0;
+  border: 0;
+  background: var(--bg-sunk);
+  cursor: pointer;
+  overflow: hidden;
+  display: block;
+}
+.lite-yt-thumb {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 240ms ease, filter 240ms ease;
+}
+.lite-yt-btn:hover .lite-yt-thumb,
+.lite-yt-btn:focus-visible .lite-yt-thumb {
+  transform: scale(1.015);
+  filter: brightness(0.92);
+}
+.lite-yt-play {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 64px;
+  height: 64px;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  background: rgba(20, 20, 20, 0.72);
+  color: #fff;
+  font-size: 1.5rem;
+  line-height: 1;
+  padding-inline-start: 4px; /* optical center for ▶ glyph */
+  backdrop-filter: blur(4px);
+  transition: background 160ms ease, transform 160ms ease;
+}
+[dir="rtl"] .lite-yt-play {
+  padding-inline-start: 0;
+  padding-inline-end: 4px;
+}
+.lite-yt-btn:hover .lite-yt-play,
+.lite-yt-btn:focus-visible .lite-yt-play {
+  background: rgba(20, 20, 20, 0.92);
+  transform: translate(-50%, -50%) scale(1.04);
+}
+.lite-yt-frame {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  display: block;
+}
+
+/* Language pill overlaid on the player. Visible on both the thumbnail
+   facade and the live iframe — clicking switches the global UI lang,
+   which swaps the project payload so the iframe reloads with the
+   matching language cut. */
+.lite-yt-langs {
+  position: absolute;
+  top: var(--space-2);
+  inset-inline-end: var(--space-2);
+  z-index: 3;
+  display: inline-flex;
+  gap: 2px;
+  padding: 2px;
+  border-radius: 999px;
+  background: rgba(20, 20, 20, 0.6);
+  backdrop-filter: blur(6px);
+  pointer-events: auto;
+}
+.lite-yt-lang-btn {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.72);
+  font: 500 11px/1 var(--font-mono, ui-monospace, monospace);
+  letter-spacing: 0.04em;
+  padding: 4px 8px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background 120ms ease, color 120ms ease;
+}
+.lite-yt-lang-btn:hover,
+.lite-yt-lang-btn:focus-visible {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.08);
+  outline: none;
+}
+.lite-yt-lang-btn[aria-pressed='true'] {
+  background: rgba(255, 255, 255, 0.18);
+  color: #fff;
+}
+
+/* Loading overlay shown during iframe (re)load + on provider swap.
+   Same accent-dot + glow palette as hero embers (single visual motif).
+   Layout: dim backdrop, vertically-stacked rotating ring + provider label. */
+.player-spinner {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: var(--space-4);
+  pointer-events: none;
+  background: color-mix(in oklab, var(--bg-sunk) 70%, transparent);
+}
+.player-spinner-ring {
+  position: relative;
+  width: 56px;
+  height: 56px;
+  animation: player-spinner-spin 0.9s linear infinite;
+}
+.player-spinner-ring span {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  margin-left: -3px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 6px var(--accent);
+  /* transform-origin places the rotation pivot at the parent's center
+     (28px below the dot's top-anchor) — same trick as a clock face. */
+  transform-origin: 50% 28px;
+  transform: rotate(calc(var(--i) * 45deg));
+  /* Brightness chase — dim → bright around the ring; spinning parent
+     makes the bright cluster orbit. */
+  opacity: calc(0.18 + var(--i) * 0.11);
+}
+.player-spinner-label {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+  color: var(--fg);
+}
+.player-spinner-label::after {
+  /* Animated trailing dots: '' → '.' → '..' → '...' → loop.
+     `content` is animatable in modern browsers (Chrome 109+, FF 100+,
+     Safari 17+); older browsers fall back to a static '...' which is fine. */
+  content: '...';
+  display: inline-block;
+  width: 1.5em;
+  text-align: start;
+  animation: player-spinner-dots 1.4s steps(1, end) infinite;
+}
+@keyframes player-spinner-spin {
+  to { transform: rotate(360deg); }
+}
+@keyframes player-spinner-dots {
+  0%   { content: ''; }
+  25%  { content: '.'; }
+  50%  { content: '..'; }
+  75%  { content: '...'; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .player-spinner-ring,
+  .player-spinner-label::after { animation: none; }
+}
+
+/* ============================================================
+   VIDEO MIRROR — RuTube-link below media-frame.
+   In card: tight mono line, sits between media-frame and card-body.
+   On case study page: spaced sibling under the iframe.
+   ============================================================ */
+.video-mirror {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+  color: var(--fg-mute);
+  text-decoration: none;
+  transition: color 120ms linear;
+  /* button reset — same selector now serves both <a> (legacy) and <button> (mirror toggle) */
+  background: transparent;
+  border: none;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+}
+.video-mirror:hover,
+.video-mirror:focus-visible { color: var(--fg); }
+
+.card > .video-mirror {
+  padding: var(--space-3) var(--space-5) 0;
+  font-size: 0.68rem;
+}
+
+.case-video { margin: var(--space-6) 0 var(--space-5); }
+.case-video-frame {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background: var(--bg-sunk);
+  border: var(--line-width) solid var(--line);
+  overflow: hidden;
+}
+.video-mirror--page {
+  display: inline-block;
+  margin-top: var(--space-3);
+}
+
+/* Reveal slot — height animates from 0 to natural, link slides
+   out from behind the media-frame as the slot opens. */
+.video-mirror-slot {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition:
+    grid-template-rows 380ms cubic-bezier(0.2, 0.8, 0.2, 1),
+    opacity 280ms ease-out 80ms;
+  opacity: 0;
+}
+.video-mirror-slot--open {
+  grid-template-rows: 1fr;
+  opacity: 1;
+}
+.video-mirror-slot > * {
+  min-height: 0;
+  overflow: hidden;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .video-mirror-slot { transition: none; }
+}

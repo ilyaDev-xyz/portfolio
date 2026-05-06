@@ -1,0 +1,50 @@
+{
+  "name": "ilya-portfolio",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "engines": {
+    "node": ">=22.12"
+  },
+  "scripts": {
+    "select-content": "echo 'Use npm run content:public or npm run content:private' && exit 1",
+    "content:public": "CONTENT_SOURCE=public node scripts/select-content.mjs",
+    "content:private": "CONTENT_SOURCE=private node scripts/select-content.mjs",
+    "dev:public": "npm run content:public && vite",
+    "dev:private": "npm run content:private && vite",
+    "dev": "echo 'Use npm run dev:public or npm run dev:private' && exit 1",
+    "build:public": "npm run content:public && tsc --noEmit && vite build",
+    "build:private": "npm run content:private && tsc --noEmit && npm run cv:build && vite build && node scripts/overlay-private-og.mjs",
+    "build": "echo 'Use npm run build:public for deploy or npm run build:private for local private checks' && exit 1",
+    "cv:build": "npm run content:private && node scripts/cv/build.mjs",
+    "cv:build:public": "npm run content:public && node scripts/cv/build.mjs",
+    "export:public": "node scripts/export-public.mjs",
+    "preview": "vite preview",
+    "typecheck": "npm run content:public && tsc --noEmit",
+    "typecheck:private": "npm run content:private && tsc --noEmit",
+    "test": "npm run content:public && vitest run",
+    "test:private": "npm run content:private && vitest run",
+    "test:watch": "npm run content:public && vitest",
+    "lint": "npm run content:public && eslint . --max-warnings=0"
+  },
+  "dependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-router-dom": "^6.26.2"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@myriaddreamin/typst-ts-node-compiler": "^0.7.0-rc2",
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "@vitejs/plugin-react": "^5.2.0",
+    "eslint": "^10.3.0",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "globals": "^17.6.0",
+    "jsdom": "^29.1.1",
+    "typescript": "^5.6.3",
+    "typescript-eslint": "^8.59.1",
+    "vite": "^7.3.2",
+    "vitest": "^4.1.5"
+  }
+}

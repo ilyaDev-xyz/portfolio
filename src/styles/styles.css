@@ -1,0 +1,11 @@
+/* ============================================================
+   Entry — splits the design system into per-domain modules.
+   Cascade order matters: base first, runtime last. See decisions.md
+   "styles.css refactor" for the per-file scope.
+   ============================================================ */
+
+@import './base.css';          /* globals · layout · type · nav · chrome · chips · hatch */
+@import './home.css';          /* hero · about · projects · stack · experience · contact · footer · hero-fx · section-bg */
+@import './media.css';         /* lite-youtube facade · video mirror toggle */
+@import './case-study.css';    /* /cases/:slug subsystem (hero · context · architecture · decisions · stack · lessons · next-cta) */
+@import './runtime.css';       /* loader · interface entrance · view transitions · tweaks panel */

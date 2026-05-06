@@ -1,0 +1,480 @@
+/* ============================================================
+   Global styles. Functional minimalism: flat planes + 1px rules.
+   ============================================================ */
+
+*, *::before, *::after { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+html {
+  font-size: var(--base-size);
+  background: var(--bg);
+  color: var(--fg);
+  scroll-behavior: smooth;
+}
+/* keep anchor targets clear of the sticky nav */
+[id="home"], [id="about"], [id="cases"], [id="timeline"], [id="stack"], [id="contact"],
+[id^="cases-"] {
+  scroll-margin-top: 72px;
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+}
+
+body {
+  font-family: var(--font-body);
+  background: var(--bg);
+  color: var(--fg);
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-feature-settings: 'ss01', 'cv11';
+  line-height: 1.5;
+  transition: background 160ms linear, color 160ms linear;
+}
+
+a { color: inherit; text-decoration: none; }
+a:hover { color: var(--accent); }
+
+::selection { background: var(--accent); color: var(--accent-contrast); }
+
+button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; padding: 0; }
+
+/* ---------- Layout ---------- */
+.page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.container {
+  width: 100%;
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 0 var(--space-6);
+}
+@media (max-width: 640px) {
+  .container { padding: 0 var(--space-5); }
+}
+
+.rule { border: 0; border-top: var(--line-width) solid var(--line); margin: 0; }
+.rule-strong { border-top-color: var(--line-strong); }
+
+/* ---------- Type ---------- */
+.mono {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--fg-mute);
+  font-weight: 500;
+}
+.mono-lower { text-transform: none; letter-spacing: 0.02em; }
+
+.display {
+  font-family: var(--font-display);
+  font-weight: var(--display-weight, 500);
+  font-variation-settings: var(--display-optical);
+  letter-spacing: var(--display-tracking, -0.02em);
+  line-height: 0.95;
+}
+
+.h-xxl { font-size: clamp(3.5rem, 11vw, 10rem); }
+.h-xl  { font-size: clamp(2.5rem, 7vw, 5.5rem); }
+.h-l   { font-size: clamp(1.75rem, 3.2vw, 2.5rem); }
+.h-m   { font-size: clamp(1.25rem, 2vw, 1.5rem); }
+
+.lede { font-size: clamp(1.05rem, 1.3vw, 1.25rem); line-height: 1.5; color: var(--fg); max-width: 58ch; }
+.body { font-size: 1rem; line-height: 1.55; }
+.small { font-size: 0.875rem; }
+
+/* ---------- Nav ---------- */
+.nav {
+  position: sticky; top: 0; z-index: 20;
+  background: color-mix(in oklab, var(--bg) 90%, transparent);
+  backdrop-filter: saturate(1.1) blur(8px);
+  -webkit-backdrop-filter: saturate(1.1) blur(8px);
+  border-bottom: var(--line-width) solid var(--line);
+}
+.nav-inner {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  padding-top: var(--space-3);
+  padding-bottom: var(--space-3);
+  gap: var(--space-5);
+  direction: ltr;
+  unicode-bidi: isolate;
+}
+.nav-links {
+  grid-column: 2;
+  display: flex;
+  gap: var(--space-5);
+  justify-content: center;
+  min-width: 0;
+}
+[data-lang="ar"] .nav-links,
+[data-lang="ar"] .nav-cases {
+  direction: rtl;
+  unicode-bidi: isolate;
+}
+/* Agent layer notice — sits in col 1 of .nav-inner on the home route only.
+   The link is the literal path (`/llms.txt` / `/llms-ru.txt` / `/llms-ar.txt`)
+   in accent — no prose prefix; the path itself is the affordance. Hidden
+   ≤1024px (the Footer-mounted notice takes over on tablet/mobile). */
+.nav-agent-notice {
+  grid-column: 1;
+  justify-self: start;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.04em;
+  color: var(--accent);
+  text-decoration: none;
+  white-space: nowrap;
+  transition: color 180ms ease;
+}
+.nav-agent-notice:focus-visible {
+  outline: none;
+}
+@media (max-width: 1024px) {
+  .nav-agent-notice { display: none; }
+}
+.nav-links a {
+  position: relative;
+  padding-bottom: var(--space-1);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--fg-mute);
+  transition: color 120ms linear;
+  white-space: nowrap;
+}
+.nav-links a:hover { color: var(--fg); }
+.nav-links a.is-active { color: var(--fg); }
+/* progress underline — scales with --progress (0..1) set by JS on active link */
+.nav-links a::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1px;
+  background: var(--accent);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 160ms linear;
+  pointer-events: none;
+}
+.nav-links a.is-active::after {
+  transform: scaleX(var(--progress, 0));
+}
+[data-lang="ar"] .nav-links a::after {
+  transform-origin: right;
+}
+
+/* nav controls — theme + lang */
+.nav-ctrls {
+  grid-column: 3;
+  justify-self: end;
+  display: inline-flex;
+  align-items: stretch;
+  gap: var(--space-2);
+  direction: ltr;
+  unicode-bidi: isolate;
+}
+.nav-ctrl {
+  display: inline-flex;
+  align-items: center;
+  border: var(--line-width) solid var(--line);
+  height: var(--control-sm);
+  background: color-mix(in oklab, var(--bg) 10%, transparent);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  color: var(--fg-mute);
+  transition: border-color 120ms linear, color 120ms linear, background 120ms linear;
+}
+.nav-ctrl:hover { color: var(--fg); border-color: var(--line-strong); }
+.nav-ctrl-theme {
+  padding: 0 var(--space-2);
+  cursor: pointer;
+}
+.nav-ctrl-lang button {
+  padding: 0 var(--space-2);
+  height: 100%;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.1em;
+  color: inherit;
+  border-inline-end: var(--line-width) solid var(--line);
+}
+.nav-ctrl-lang button:last-child { border-inline-end: 0; }
+.nav-ctrl-lang button[aria-pressed="true"] {
+  background: var(--fg);
+  color: var(--bg);
+}
+.nav-ctrl-icon { display: inline-flex; }
+
+/* ---------- Case-study nav variant ----------
+   Triggered by route: /cases/:slug. Replaces the centered section list with
+   a 3-up layout — Back · Work tabs · Controls — and keeps controls visible
+   on mobile (the case page has no hero ctrls slot). */
+.nav-inner--case {
+  grid-template-columns: auto 1fr auto;
+}
+.nav-back {
+  grid-column: 1;
+  justify-self: start;
+}
+.nav-back a {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--fg-mute);
+  transition: color 120ms linear;
+  white-space: nowrap;
+}
+.nav-back a:hover { color: var(--fg); }
+.nav-back-arrow { display: inline-flex; align-items: center; line-height: 1; }
+
+.nav-cases {
+  grid-column: 2;
+  display: flex;
+  gap: var(--space-5);
+  justify-content: center;
+  align-items: center;
+}
+.nav-cases a {
+  position: relative;
+  display: inline-flex;
+  align-items: baseline;
+  gap: var(--space-1-5);
+  padding-bottom: var(--space-1);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--fg-mute);
+  transition: color 120ms linear;
+  white-space: nowrap;
+}
+.nav-cases a:hover { color: var(--fg); }
+.nav-cases a.is-active { color: var(--fg); }
+.nav-cases a .nav-case-num { color: inherit; opacity: 0.7; }
+.nav-cases a.is-active .nav-case-num { opacity: 1; color: var(--accent); }
+.nav-cases a::after {
+  content: "";
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  height: 1px;
+  background: var(--accent);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 160ms linear;
+  pointer-events: none;
+}
+.nav-cases a.is-active::after { transform: scaleX(1); }
+[data-lang="ar"] .nav-cases a::after {
+  transform-origin: right;
+}
+
+[dir="rtl"] code,
+[dir="rtl"] pre,
+[dir="rtl"] .case-diagram pre,
+[dir="rtl"] .foot,
+[dir="rtl"] .mono {
+  direction: ltr;
+  unicode-bidi: isolate;
+}
+
+[data-lang="ar"] .nav-links a,
+[data-lang="ar"] .nav-cases a,
+[data-lang="ar"] .section-head .title .sub,
+[data-lang="ar"] .chip .k,
+[data-lang="ar"] .field-label,
+[data-lang="ar"] .case-hero-facts-eyebrow,
+[data-lang="ar"] .case-lessons-eyebrow {
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+[data-lang="ar"] .nav-ctrl-lang button {
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+/* NavControls duplicate slot inside hero — shown only on mobile.
+   Declared BEFORE the media query so the @media override wins. */
+.hero-ctrls-slot { display: none; }
+
+@media (max-width: 720px) {
+  /* Mobile header: only the nav links; theme + lang toggles move into hero. */
+  .nav-inner { grid-template-columns: 1fr; gap: var(--space-3); }
+  .nav .nav-ctrls { display: none; }
+  .nav-links {
+    grid-column: 1;
+    justify-content: center;
+    gap: var(--space-3);
+    flex-wrap: nowrap;
+    min-width: 0;
+  }
+  .nav-links a { font-size: 0.7rem; }
+
+  /* Show the hero duplicate of the toggles (inline with the § 01/06 row). */
+  .hero-ctrls-slot { display: inline-flex; }
+
+  /* Case nav: outlined back chip + centered "Case NN" tabs.
+     Controls move into the case-hero status row (mirrors home behavior). */
+  .nav.nav--case .nav-inner--case {
+    grid-template-columns: auto 1fr;
+    gap: var(--space-3);
+  }
+  .nav-back-label { display: none; }
+  /* Back gets a chip outline so the bare arrow reads as a tappable button. */
+  .nav.nav--case .nav-back a {
+    border: var(--line-width) solid var(--line);
+    padding: 0 10px;
+    height: var(--control-sm);
+    color: var(--fg);
+  }
+  .nav.nav--case .nav-back a:hover { border-color: var(--line-strong); }
+  /* .nav-cases inherits .nav-links { grid-column: 1 } from the home-mode
+     mobile rule above — restore col 2 so back + tabs stay one row. */
+  .nav.nav--case .nav-cases {
+    grid-column: 2;
+    justify-content: center;
+    gap: var(--space-4);
+    overflow-x: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .nav.nav--case .nav-cases::-webkit-scrollbar { display: none; }
+  .nav.nav--case .nav-cases a { font-size: 0.7rem; gap: 4px; }
+}
+
+/* Tighter viewports (≤520px): with 6 cases the "Case NN" labels won't fit
+   alongside the back chip. Drop the word, keep "#NN" — same info, half the width. */
+@media (max-width: 520px) {
+  .nav.nav--case .nav-cases a .nav-case-label { display: none; }
+  .nav.nav--case .nav-cases a .nav-case-num::before { content: "#"; }
+}
+
+/* Tiny phones (≤380px, e.g. iPhone SE): tighten gap + back-chip padding so
+   six #NN tabs + back chip stop fighting for the same row. */
+@media (max-width: 380px) {
+  .nav.nav--case .nav-inner--case { gap: var(--space-2); }
+  .nav.nav--case .nav-back a { padding: 0 6px; }
+  .nav.nav--case .nav-cases { gap: var(--space-2); }
+}
+
+/* ---------- Section chrome ---------- */
+/* No inter-section rules. Hero↔About separation comes from .hero border-bottom;
+   all other sections breathe via padding alone. */
+.section {
+  padding: var(--space-9) 0 var(--space-9);
+  position: relative;
+}
+
+.section-head {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: var(--gutter);
+  align-items: end;
+  margin-bottom: var(--space-8);
+  padding-bottom: var(--space-4);
+  border-bottom: var(--line-width) solid var(--line);
+}
+.section-head .no {
+  grid-column: 1 / span 3;
+  font-family: var(--font-mono);
+  color: var(--fg-mute);
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  font-weight: 500;
+  align-self: end;
+  padding-bottom: 6px;
+}
+.section-head .title { grid-column: 4 / span 9; display: flex; align-items: baseline; gap: var(--space-3); flex-wrap: wrap; }
+.section-head .title h2 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: var(--display-weight, 500);
+  font-size: var(--fs-display-l);
+  letter-spacing: var(--display-tracking, -0.02em);
+  line-height: 1;
+}
+.section-head .title .sub { color: var(--fg-mute); font-family: var(--font-mono); font-size: 0.75rem; letter-spacing: 0.08em; text-transform: uppercase; }
+
+@media (max-width: 640px) {
+  .section { padding: var(--space-7) 0; }
+  .section-head { grid-template-columns: 1fr; gap: var(--space-2); margin-bottom: var(--space-6); }
+  .section-head .no { grid-column: 1; align-self: start; padding-bottom: 0; }
+  .section-head .title { grid-column: 1; }
+}
+
+/* ---------- Chips / links / buttons ---------- */
+.chip {
+  display: inline-flex; align-items: center; gap: var(--space-2);
+  padding: 6px 10px;
+  border: var(--line-width) solid var(--line);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.04em;
+}
+.chip .glyph { color: var(--accent); }
+
+.btn {
+  display: inline-flex; align-items: center; gap: var(--space-3);
+  padding: 12px 18px;
+  border: var(--line-width) solid var(--line-strong);
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  transition: background 120ms linear, color 120ms linear;
+}
+.btn-primary { background: var(--fg); color: var(--bg); border-color: var(--fg); }
+.btn-primary:hover { background: var(--accent); color: var(--accent-contrast); border-color: var(--accent); }
+.btn-ghost:hover { background: var(--fg); color: var(--bg); }
+
+.link {
+  display: inline-flex; align-items: center; gap: var(--space-2);
+  border-bottom: var(--line-width) solid currentColor;
+  padding-bottom: 2px;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.link:hover { color: var(--accent); }
+
+/* ---------- Hatch placeholder ---------- */
+.hatch {
+  position: relative;
+  background-color: var(--bg-sunk);
+  background-image: repeating-linear-gradient(
+    135deg,
+    var(--hatch) 0 1px,
+    transparent 1px 10px
+  );
+  border: var(--line-width) solid var(--line);
+  overflow: hidden;
+}
+.hatch-label {
+  position: absolute; inset: auto;
+  top: 50%; left: 50%; transform: translate(-50%,-50%);
+  font-family: var(--font-mono); font-size: 0.75rem; letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--fg-mute);
+  background: var(--bg);
+  padding: 4px 8px;
+  border: var(--line-width) solid var(--line);
+  white-space: nowrap;
+}
+.hatch-corner {
+  position: absolute; top: 10px; left: 12px;
+  font-family: var(--font-mono); font-size: 0.7rem; color: var(--fg-mute);
+  letter-spacing: 0.06em;
+}

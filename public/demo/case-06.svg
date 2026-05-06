@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" role="img" aria-labelledby="title desc">
+  <title id="title">Portfolio engine placeholder</title>
+  <desc id="desc">Abstract portfolio architecture placeholder for public demo content.</desc>
+  <rect width="1280" height="720" fill="#111313"/>
+  <rect x="88" y="72" width="1104" height="576" rx="18" fill="#ece6d8"/>
+  <rect x="140" y="128" width="340" height="464" rx="14" fill="#1d2725"/>
+  <rect x="520" y="128" width="620" height="98" rx="14" fill="#c85f48"/>
+  <rect x="520" y="262" width="282" height="128" rx="14" fill="#fff8ed"/>
+  <rect x="858" y="262" width="282" height="128" rx="14" fill="#fff8ed"/>
+  <rect x="520" y="428" width="620" height="164" rx="14" fill="#fff8ed"/>
+  <text x="180" y="190" fill="#ece6d8" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="24" font-weight="700">typed content</text>
+  <text x="180" y="248" fill="#c85f48" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="20">public/private</text>
+  <text x="180" y="306" fill="#c85f48" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="20">agent mirrors</text>
+  <text x="180" y="364" fill="#c85f48" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="20">static heads</text>
+  <text x="558" y="188" fill="#111313" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="28" font-weight="700">CASE 06 / PORTFOLIO ENGINE</text>
+  <text x="558" y="340" fill="#111313" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="22">React + TS</text>
+  <text x="896" y="340" fill="#111313" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="22">Vite build</text>
+  <text x="558" y="508" fill="#111313" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="22">cloneable engine with demo content</text>
+</svg>

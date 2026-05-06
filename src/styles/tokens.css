@@ -1,0 +1,166 @@
+/* ============================================================
+   Design tokens. warm-neutral base + 3 palettes × 2 themes.
+   ============================================================ */
+
+:root {
+  /* default to light palette so body has values before attrs land */
+  --bg: oklch(0.975 0.005 80);
+  --bg-raise: oklch(0.95 0.006 78);
+  --bg-sunk: oklch(0.93 0.007 75);
+  --fg: oklch(0.22 0.008 60);
+  --fg-mute: oklch(0.48 0.012 65);
+  --fg-dim: oklch(0.62 0.01 70);
+  --line: oklch(0.82 0.008 75);
+  --line-strong: oklch(0.35 0.01 65);
+  --hatch: oklch(0.88 0.006 75);
+  --accent: oklch(0.22 0.008 60);
+  --accent-contrast: oklch(0.975 0.005 80);
+  --accent-soft: oklch(0.48 0.012 65);
+
+  /* shared */
+  --line-width: 1px;
+  --max-width: 1440px;
+  --gutter: 24px;
+  /* reading width — for prose paragraphs, list items, captions.
+     Sits in the 60-75ch sweet spot per readability research. */
+  --measure: 65ch;
+
+  /* density -> base scale */
+  --base-size: 16px;
+  --space-0: 2px;
+  --space-1: 4px;
+  --space-1-5: 6px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+  --space-8: 64px;
+  --space-9: 96px;
+  --space-10: 128px;
+  --control-sm: 28px;
+
+  /* type pairs — default: editorial */
+  --font-display: 'Fraunces', 'Times New Roman', serif;
+  --font-body: 'Geist', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+  --display-optical: 'opsz' 96, 'SOFT' 100, 'WONK' 0;
+
+  /* display / heading size scale (shared across sections)
+     hero — hero A name
+     xl   — contact pitch h2
+     l    — section-head h2, about pull quote
+     s    — project card h3, stack stratum label */
+  --fs-display-hero: clamp(3rem, 9vw, 8rem);
+  --fs-display-xl:   clamp(2.5rem, 6.5vw, 6rem);
+  --fs-display-l:    clamp(2rem, 4vw, 3rem);
+  --fs-display-s:    clamp(1.2rem, 1.6vw, 1.5rem);
+  --fs-micro: 0.6rem;
+}
+
+[data-density="compact"] {
+  --base-size: 14px;
+  --space-0: 2px;
+  --space-1: 3px;
+  --space-1-5: 5px;
+  --space-2: 6px;
+  --space-3: 10px;
+  --space-4: 14px;
+  --space-5: 20px;
+  --space-6: 28px;
+  --space-7: 40px;
+  --space-8: 56px;
+  --space-9: 80px;
+  --space-10: 112px;
+  --control-sm: 28px;
+  --gutter: 16px;
+}
+
+/* ---------- type pairs ---------- */
+[data-font-pair="editorial"] {
+  --font-display: 'Fraunces', 'Times New Roman', serif;
+  --font-body: 'Geist', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+  --display-optical: 'opsz' 96, 'SOFT' 100, 'WONK' 0;
+  --display-weight: 500;
+  --display-tracking: -0.02em;
+}
+[data-font-pair="engineer"] {
+  --font-display: 'IBM Plex Sans', ui-sans-serif, system-ui, sans-serif;
+  --font-body: 'IBM Plex Sans', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
+  --display-weight: 600;
+  --display-tracking: -0.035em;
+  --display-optical: normal;
+}
+[data-font-pair="swiss"] {
+  --font-display: 'Space Grotesk', ui-sans-serif, system-ui, sans-serif;
+  --font-body: 'Geist', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'Geist Mono', ui-monospace, monospace;
+  --display-weight: 600;
+  --display-tracking: -0.04em;
+  --display-optical: normal;
+}
+
+[data-lang="ar"] {
+  --font-display: 'Noto Sans Arabic', 'Geist', ui-sans-serif, system-ui, sans-serif;
+  --font-body: 'Noto Sans Arabic', 'Geist', ui-sans-serif, system-ui, sans-serif;
+  --display-tracking: 0;
+}
+
+/* ---------- light theme / palettes ---------- */
+[data-theme="light"] {
+  --bg: oklch(0.975 0.005 80);
+  --bg-raise: oklch(0.95 0.006 78);
+  --bg-sunk: oklch(0.93 0.007 75);
+  --fg: oklch(0.20 0.008 60);
+  --fg-mute: oklch(0.38 0.012 65);
+  --fg-dim: oklch(0.52 0.01 70);
+  --line: oklch(0.78 0.008 75);
+  --line-strong: oklch(0.28 0.01 65);
+  --hatch: oklch(0.86 0.006 75);
+}
+
+[data-theme="dark"] {
+  --bg: oklch(0.165 0.008 60);
+  --bg-raise: oklch(0.205 0.009 62);
+  --bg-sunk: oklch(0.135 0.007 58);
+  --fg: oklch(0.945 0.005 85);
+  --fg-mute: oklch(0.72 0.01 75);
+  --fg-dim: oklch(0.55 0.012 70);
+  --line: oklch(0.32 0.01 65);
+  --line-strong: oklch(0.7 0.012 70);
+  --hatch: oklch(0.24 0.009 62);
+}
+
+/* palettes — accent */
+[data-palette="mono"] {
+  --accent: var(--fg);
+  --accent-contrast: var(--bg);
+  --accent-soft: var(--fg-mute);
+}
+[data-palette="ochre"][data-theme="light"] {
+  --accent: oklch(0.62 0.15 55);
+  --accent-contrast: oklch(0.975 0.005 80);
+  --accent-soft: oklch(0.78 0.08 60);
+  --accent-alt: oklch(0.55 0.19 258);
+}
+[data-palette="ochre"][data-theme="dark"] {
+  --accent: oklch(0.86 0.17 72);
+  --accent-contrast: oklch(0.165 0.008 60);
+  --accent-soft: oklch(0.68 0.14 65);
+  --accent-alt: oklch(0.72 0.17 250);
+}
+[data-palette="electric"][data-theme="light"] {
+  --accent: oklch(0.55 0.19 258);
+  --accent-contrast: oklch(0.975 0.005 80);
+  --accent-soft: oklch(0.76 0.11 255);
+  --accent-alt: oklch(0.68 0.19 55);
+}
+[data-palette="electric"][data-theme="dark"] {
+  --accent: oklch(0.72 0.17 250);
+  --accent-contrast: oklch(0.165 0.008 60);
+  --accent-soft: oklch(0.5 0.14 255);
+  --accent-alt: oklch(0.86 0.17 72);
+}

@@ -1,0 +1,143 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  leakage:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: no private artifacts
+        run: |
+          if test -n "$(git ls-files src/content/.private server/.env public/private server/data)"; then
+            git ls-files src/content/.private server/.env public/private server/data
+            exit 1
+          fi
+          if git ls-files | grep -E '(^|/).*\.(db|sqlite|sqlite3)$|(^|/).*\.(db|sqlite|sqlite3)-(wal|shm)$'; then
+            exit 1
+          fi
+      - name: no real media paths
+        run: |
+          # public/og-image.png and public/og/cases/<slug>.png are committed
+          # sanitized public OG renders by design (see docs/decisions.md
+          # "Favicon family + OG/Twitter meta"). The legacy real-media
+          # blocklist below matches private-only path names.
+          if git ls-files public | grep -E '/(ai-crm-preview\.webp|ai-warehouse-preview\.webp|ai-video-editor-preview\.jpg|roblox-game-preview\.webp|roblox-icons\.png|roblox-bestiary\.png|macos-vpn-(preview|killswitch|start)\.webp|airea-n8n-(omnimodel|specialists)\.png|temp_portfolio_pic_(en|ru)\.jpg|resume-en\.pdf)$'; then
+            exit 1
+          fi
+      - name: no Cyrillic outside content
+        run: |
+          # Cyrillic is allowed only in i18n labels (langConfig section
+          # names, CV section headings) and content/snapshot trees. Anywhere
+          # else it almost certainly means a localized string leaked into
+          # component code.
+          if git grep -n -E '[А-Яа-яЁё]' -- src \
+              ':!src/content' \
+              ':!src/lib/__snapshots__' \
+              ':!src/i18n/langConfig.ts' \
+              ':!src/lib/cvSource.ts'; then
+            exit 1
+          fi
+
+  frontend:
+    name: frontend (lint · test · typecheck · build · audit)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: .
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'npm'
+          cache-dependency-path: package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Unit tests
+        run: npm test
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Build
+        run: npm run build:public
+
+      - name: Verify dist surface
+        run: |
+          # Hard gates against publication-shape regressions:
+          # - dist/private/ would be a deploy leak (vite copies publicDir
+          #   recursively; stripPrivateFromDistPlugin must remove it).
+          # - The CV PDFs land under dist/demo/ via npm run cv:build:public.
+          # - The agent layer must produce llms-full.txt + per-case static
+          #   index.html for every slug.
+          if [ -d dist/private ]; then
+            echo "FAIL: dist/private exists — private files leaked into the public build"
+            ls dist/private || true
+            exit 1
+          fi
+          for f in dist/demo/cv-en.pdf dist/demo/cv-ru.pdf dist/demo/cv-ar.pdf; do
+            if [ ! -s "$f" ]; then
+              echo "FAIL: missing or empty $f"
+              exit 1
+            fi
+          done
+          for f in dist/llms.txt dist/llms-ru.txt dist/llms-ar.txt dist/llms-full.txt; do
+            if [ ! -s "$f" ]; then
+              echo "FAIL: missing or empty $f"
+              exit 1
+            fi
+          done
+          for slug in ai-crm ai-warehouse ai-video-editor roblox-game macos-vpn portfolio-site; do
+            if [ ! -s "dist/cases/$slug/index.html" ]; then
+              echo "FAIL: missing dist/cases/$slug/index.html"
+              exit 1
+            fi
+          done
+
+      - name: Audit (high+critical, prod deps only)
+        run: npm audit --omit=dev --audit-level=high
+
+  server:
+    name: server (test · audit · syntax)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: server
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'npm'
+          cache-dependency-path: server/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Syntax check (node --check)
+        run: |
+          for f in $(find src -name '*.js'); do
+            node --check "$f"
+          done
+
+      - name: Unit tests
+        run: npm test
+
+      - name: Audit (high+critical)
+        run: npm audit --audit-level=high

@@ -1,0 +1,10 @@
+[Unit]
+Description=Run portfolio analytics backup daily
+
+[Timer]
+OnCalendar=*-*-* 00:30:00
+Persistent=true
+Unit=portfolio-backup.service
+
+[Install]
+WantedBy=timers.target

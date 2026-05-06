@@ -1,0 +1,10 @@
+[Unit]
+Description=Run portfolio analytics rollup daily
+
+[Timer]
+OnCalendar=*-*-* 00:10:00
+Persistent=true
+Unit=portfolio-rollup.service
+
+[Install]
+WantedBy=timers.target

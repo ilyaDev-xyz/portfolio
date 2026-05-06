@@ -1,0 +1,697 @@
+/* ============================================================
+   CASE STUDY — /cases/:slug detail page
+
+   Each section mirrors a home page section's motif + layout pattern,
+   so the case page reads as the same site, just with project content.
+   Mapping (in order, like home):
+     § 01 Hero            → bg-dots (handoff from Projects card)
+     § 02 Context         → about-glow + 4+8 split  (mirrors home About)
+     § 03 Architecture    → bg-dots                  (mirrors home Projects)
+     § 04 Decisions       → watermark per card       (mirrors home Experience xp-watermark)
+     § 05 Stack           → scanline + 3-col strata  (mirrors home Stack 1:1)
+     § 06 Lessons & status→ bg-edge + edge-ticks     (mirrors home Contact)
+   ============================================================ */
+.case-page main { padding-top: 0; }
+
+/* ========== § 01 HERO ========== */
+/* Inherits .section { padding: var(--space-9) 0 } — matches home rhythm.
+   Motifs:
+     bg-dots class      — same dot grid as home Projects (handoff)
+     .case-hero-glow    — ochre radial heat, like home Hero but no embers */
+.case-hero { overflow: hidden; }
+
+/* ----- Dot zone ----- one continuous bg-dots wrapper for Hero + Context +
+   Architecture. Single ::before paints the 28px grid through all three
+   sections — no per-section seam, no per-section fade. */
+.case-dot-zone {
+  position: relative;
+  isolation: isolate;
+}
+/* Single soft fade only at the very bottom of the wrapper — transitions
+   from dot grid into Decisions section. No internal fades between
+   Hero / Context / Architecture (they're all inside one ::before). */
+.case-page .bg-dots::before {
+  mask-image: linear-gradient(
+    180deg,
+    #000 0,
+    #000 calc(100% - var(--space-9)),
+    transparent 100%
+  );
+  -webkit-mask-image: linear-gradient(
+    180deg,
+    #000 0,
+    #000 calc(100% - var(--space-9)),
+    transparent 100%
+  );
+}
+
+/* ----- Hero glow ----- mirrors home Hero's multi-layer FX, flipped to TOP.
+   Home has 3 layers: (1) big SVG radialGradient at cy=95%, r=75%, accent
+   28→8→0 opacity; (2) 26 ember particles; (3) `.hero::after` hairline +
+   narrow accent sheen at bottom. We reuse layers (1) and (3) at the top
+   and skip the particles per design call. */
+
+/* Layer 1 — big backdrop radial via inline SVG (same approach as home Hero).
+   Why SVG: `preserveAspectRatio="xMidYMid slice"` keeps the viewBox-relative
+   radius, so on mobile we see the strong CENTER of the gradient instead of
+   the dim outer ring (which is what happens with %-sized CSS radial-gradient
+   when the box gets narrow). Identical opacity stops as home Hero — only cy
+   flips from 95% to 5% so the warmth pools at the top. */
+.case-hero-glow {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+.case-hero-glow svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+[data-theme="light"] .case-hero-glow { opacity: 0.7; }
+
+/* Layer 3 — 1px tapered hairline + narrow accent radial sheen. Mirrors
+   `.hero::after` exactly, flipped to the top edge. */
+.case-hero::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 24px;
+  pointer-events: none;
+  z-index: 2;
+  background:
+    linear-gradient(
+      90deg,
+      transparent 0%,
+      color-mix(in oklab, var(--fg) 35%, transparent) 14%,
+      color-mix(in oklab, var(--fg) 75%, transparent) 50%,
+      color-mix(in oklab, var(--fg) 35%, transparent) 86%,
+      transparent 100%
+    ) no-repeat top center / 100% 1px,
+    radial-gradient(
+      ellipse 18% 100% at 50% 0%,
+      color-mix(in oklab, var(--accent) 30%, transparent) 0%,
+      color-mix(in oklab, var(--accent) 8%, transparent) 45%,
+      transparent 80%
+    );
+}
+.case-hero-top {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: var(--gutter);
+  margin-bottom: var(--space-7);
+}
+/* Status line + mobile-only ctrls slot share one row.
+   Mirrors the home Hero pattern (.row-top: § 01/06 + .hero-ctrls-slot). */
+.case-hero-status-row {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  direction: ltr;
+  unicode-bidi: isolate;
+}
+.case-hero-ctrls-slot { display: none; }
+.case-hero-status-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+.case-hero-top .case-status-line {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--fg-mute);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+/* Copy-as-Markdown action — built on .chip (border + mono).
+   Auto-width keeps the chip tight to its label, matching the hero copy
+   button. Quiet by default, accent on hover/copied. Desktop slot lives
+   in case-hero-status-actions; mobile slot lives on its own row above
+   h1. Visibility flips at ≤720px. */
+.case-copy-md {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-1-5);
+  height: var(--control-sm);
+  width: auto;
+  padding: 0 var(--space-2);
+  font-size: 0.68rem;
+  letter-spacing: 0.1em;
+  color: var(--fg-mute);
+  background: color-mix(in oklab, var(--bg) 10%, transparent);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  cursor: pointer;
+  transition: color 180ms ease, border-color 180ms ease, background 180ms ease;
+  white-space: nowrap;
+}
+.case-copy-md-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.case-copy-md:hover,
+.case-copy-md:focus-visible {
+  color: var(--accent);
+  border-color: color-mix(in oklab, var(--accent) 50%, var(--line));
+  outline: none;
+}
+.case-copy-md--copied {
+  color: var(--accent);
+  border-color: color-mix(in oklab, var(--accent) 50%, var(--line));
+}
+.case-copy-md--error  { color: var(--fg-mute); opacity: 0.6; }
+
+.case-copy-md-mobile-row {
+  grid-column: 1 / -1;
+  display: none;
+  justify-content: flex-end;
+  margin-top: var(--space-2);
+}
+.case-copy-md--mobile { display: none; }
+.case-hero-top h1 {
+  grid-column: 1 / span 10;
+  font-family: var(--font-display);
+  font-weight: var(--display-weight, 500);
+  /* Same token as section-head h2 — case h1 is just another section heading
+     in the site's flat hierarchy; the only true hero is the personal one
+     on home (uses --fs-display-hero). */
+  font-size: var(--fs-display-l);
+  letter-spacing: var(--display-tracking, -0.02em);
+  line-height: 1.05;
+  margin: var(--space-4) 0 var(--space-4);
+}
+.case-hero-top .lede {
+  grid-column: 1 / span 8;
+  margin: 0;
+  max-width: var(--measure);
+}
+
+@media (max-width: 900px) {
+  .case-hero-top .case-status-line,
+  .case-hero-top h1,
+  .case-hero-top .lede { grid-column: 1 / -1; }
+}
+
+/* Mobile: surface theme + lang controls inside the case-hero status row
+   (mirrors home Hero — see .hero-ctrls-slot near the nav block). */
+@media (max-width: 720px) {
+  .case-hero-ctrls-slot { display: inline-flex; }
+  /* Copy-md jumps from desktop status-actions slot to its own row above h1. */
+  .case-copy-md--desktop { display: none; }
+  .case-copy-md-mobile-row { display: flex; }
+  .case-copy-md--mobile { display: inline-flex; }
+  /* Tighten vertical rhythm so the button row sits close to status + h1. */
+  .case-hero-top { gap: var(--space-2); }
+  .case-hero-top h1 { margin-top: var(--space-2); margin-bottom: var(--space-3); }
+}
+
+/* Hero split: video on cols 1-8 (~67%), FACTS panel on cols 9-12 (~33%). */
+.case-hero-grid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: var(--gutter);
+  align-items: start;
+}
+.case-hero-video {
+  grid-column: 1 / span 8;
+  display: flex;
+  flex-direction: column;
+}
+.case-hero-grid--video-only .case-hero-video {
+  grid-column: 1 / span 12;
+}
+.case-hero-facts {
+  grid-column: 9 / span 4;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+.case-hero-facts-eyebrow {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--fg-mute);
+  padding-bottom: var(--space-3);
+  border-bottom: var(--line-width) solid var(--line);
+}
+.case-hero-facts-list {
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--space-4);
+}
+.case-hero-facts-row {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-0);
+}
+.case-hero-facts-row dt {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--fg-dim);
+}
+.case-hero-facts-row dd {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  letter-spacing: 0.02em;
+  color: var(--fg);
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 900px) {
+  .case-hero-grid { grid-template-columns: 1fr; }
+  .case-hero-video,
+  .case-hero-facts { grid-column: 1; }
+  .case-hero-grid--video-only .case-hero-video { grid-column: 1; }
+}
+
+/* ========== Section frame (02–06) ========== */
+/* No border between sections — motifs (dot zone, scanline, watermark,
+   edge-ticks) and section padding alone separate them. */
+.case-section {
+  padding-top: var(--space-9);
+  padding-bottom: var(--space-9);
+}
+
+/* ========== § 02 CONTEXT ========== mirrors home About: about-glow + 4+8 split */
+.case-context-section { position: relative; overflow: hidden; }
+.case-context-section .container { position: relative; z-index: 1; }
+
+.case-context-grid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: var(--gutter);
+}
+.case-context-pull {
+  grid-column: 1 / span 4;
+  font-family: var(--font-display);
+  font-weight: var(--display-weight, 500);
+  font-size: var(--fs-display-l);
+  letter-spacing: var(--display-tracking, -0.025em);
+  line-height: 1;
+  color: var(--fg);
+  white-space: pre-line;
+}
+.case-context-pull .ac { color: var(--accent); }
+.case-context-body {
+  grid-column: 5 / span 7;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  font-size: clamp(1rem, 1.1vw, 1.12rem);
+  line-height: 1.6;
+  color: var(--fg);
+}
+.case-context-body p {
+  margin: 0;
+  max-width: var(--measure);
+}
+@media (max-width: 900px) {
+  .case-context-pull,
+  .case-context-body { grid-column: 1 / span 12; }
+}
+
+/* Diagrams (ASCII in <pre>) — 2-col on desktop:
+     [ title spans both ]
+     [ <pre>          ] [ structured notes ]
+   Stacks to one column below 1024px (the ascii block needs that width). */
+.case-diagram {
+  display: grid;
+  grid-template-columns: minmax(0, max-content) minmax(0, var(--measure));
+  column-gap: var(--space-7);
+  row-gap: var(--space-3);
+  align-items: start;
+  justify-content: start;
+  margin: 0 0 var(--space-7);
+}
+.case-diagram:last-child { margin-bottom: 0; }
+.case-diagram .diagram-title {
+  grid-column: 1 / -1;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--fg-mute);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.case-diagram pre {
+  grid-column: 1;
+  font-family: var(--font-mono);
+  font-size: 0.74rem;
+  line-height: 1.55;
+  color: var(--fg);
+  background: var(--bg-sunk);
+  border: var(--line-width) solid var(--line);
+  padding: var(--space-5);
+  overflow-x: auto;
+  white-space: pre;
+  margin: 0;
+}
+.case-diagram .diagram-notes {
+  grid-column: 2;
+  align-self: start;
+  margin: 0;
+  padding-top: var(--space-3);
+  display: grid;
+  gap: var(--space-6);
+}
+.diagram-note { display: grid; gap: var(--space-2); }
+.diagram-note dt {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--fg-mute);
+}
+.diagram-note dd {
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  line-height: 1.55;
+  color: var(--fg);
+  max-width: var(--measure);
+}
+
+@media (max-width: 1024px) {
+  .case-diagram {
+    grid-template-columns: 1fr;
+  }
+  .case-diagram pre,
+  .case-diagram .diagram-notes { grid-column: 1; }
+  .case-diagram .diagram-notes { padding-top: var(--space-4); }
+}
+
+/* Screenshot variant — image diagrams are full-width (col 1 max-content is too
+   narrow for screenshots). Layout: title → 2-col image grid → notes below.
+   On ≤1024px the image grid stacks 1-col, same as ASCII variant. */
+.case-diagram--screenshots {
+  grid-template-columns: 1fr;
+  row-gap: var(--space-4);
+}
+.case-diagram--screenshots .diagram-title { grid-column: 1 / -1; }
+.case-diagram-images {
+  grid-column: 1 / -1;
+  display: grid;
+  /* Columns proportional to image natural aspects (fr = W/H per image) so
+     both render at full natural size at the same height — no pillarbox /
+     letterbox. Per-diagram override via inline `--diagram-img-cols`. */
+  grid-template-columns: var(--diagram-img-cols, 1fr 1fr);
+  gap: var(--space-5);
+  margin: 0;
+  padding: 0;
+}
+.case-diagram-images figure {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+.case-diagram-images img {
+  display: block;
+  width: 100%;
+  height: auto;
+  background: var(--bg-sunk);
+  border: var(--line-width) solid var(--line);
+  box-sizing: border-box;
+  /* No inner padding — keeps image widths exact for the fr=W/H column
+     convention, so heights match across mismatched aspects. With padding,
+     a constant offset distorts the math (~13px off at 1.33/0.80 aspects). */
+}
+.case-diagram-images figcaption {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--fg-mute);
+}
+.case-diagram--screenshots .diagram-notes {
+  grid-column: 1 / -1;
+  padding-top: var(--space-2);
+  /* Multi-col auto-fit — notes use the full width under the images
+     instead of stacking in a narrow column. Single note → 1 col full
+     width; three notes → side-by-side at desktop, collapsing on narrower. */
+  grid-template-columns: repeat(auto-fit, minmax(min(28ch, 100%), 1fr));
+}
+.case-diagram--screenshots .diagram-note dd { max-width: none; }
+@media (max-width: 1024px) {
+  .case-diagram-images { grid-template-columns: 1fr; gap: var(--space-4); }
+}
+
+/* ========== § 04 DECISIONS ========== mirrors home Experience: huge number watermark per card */
+.case-decisions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-5);
+}
+@media (max-width: 900px) {
+  .case-decisions { grid-template-columns: 1fr; }
+}
+.case-decision {
+  position: relative;
+  isolation: isolate;
+  border: var(--line-width) solid var(--line);
+  padding: var(--space-6) var(--space-6) var(--space-5);
+  background: var(--bg);
+  overflow: hidden;
+}
+.case-decision::before {
+  content: attr(data-num);
+  position: absolute;
+  inset-inline-end: var(--space-4);
+  top: var(--space-2);
+  font-family: var(--font-display);
+  font-weight: var(--display-weight, 500);
+  font-size: clamp(3.5rem, 7vw, 6rem);
+  letter-spacing: -0.04em;
+  line-height: 0.8;
+  color: color-mix(in oklab, var(--fg) 7%, transparent);
+  pointer-events: none;
+  user-select: none;
+  z-index: 0;
+}
+[data-theme="light"] .case-decision::before {
+  color: color-mix(in oklab, var(--fg) 9%, transparent);
+}
+.case-decision > * { position: relative; z-index: 1; }
+.case-decision h3 {
+  margin: 0 0 var(--space-3);
+  font-family: var(--font-display);
+  font-weight: var(--display-weight, 500);
+  font-size: var(--fs-display-s);
+  letter-spacing: var(--display-tracking, -0.02em);
+  line-height: 1.2;
+  max-width: 32ch;
+}
+.case-decision .field {
+  display: grid;
+  grid-template-columns: 88px 1fr;
+  gap: var(--space-4);
+  align-items: baseline;
+  padding-top: var(--space-3);
+  border-top: var(--line-width) solid var(--line);
+  margin-top: var(--space-3);
+}
+.case-decision .field:first-of-type { border-top: 0; padding-top: 0; margin-top: var(--space-2); }
+.case-decision .field-label {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--fg-mute);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.case-decision .field-body {
+  color: var(--fg);
+  font-size: 0.94rem;
+  line-height: 1.55;
+  max-width: var(--measure);
+}
+
+/* ========== § 05 STACK ========== mirrors home Stack: scanline + 3-col strata */
+.section.case-stack-section { position: relative; isolation: isolate; }
+.section.case-stack-section::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image: repeating-linear-gradient(
+    0deg,
+    transparent 0 5px,
+    color-mix(in oklab, var(--fg) 9%, transparent) 5px 6px
+  );
+  opacity: 0.6;
+  mask-image: linear-gradient(180deg, transparent 0, #000 8%, #000 92%, transparent 100%);
+  -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 8%, #000 92%, transparent 100%);
+}
+.section.case-stack-section .container { position: relative; z-index: 1; }
+
+.case-stack-strata {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  column-gap: var(--space-6);
+  row-gap: var(--space-7);
+}
+.case-stack-stratum {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+.case-stack-stratum .label {
+  font-family: var(--font-display);
+  font-weight: var(--display-weight, 500);
+  font-size: var(--fs-display-s);
+  letter-spacing: var(--display-tracking, -0.02em);
+  line-height: 1.1;
+  color: var(--fg);
+}
+.case-stack-stratum .body {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  letter-spacing: 0.02em;
+  color: var(--fg-mute);
+  line-height: 1.6;
+  /* Opaque plate over the scanline — same pattern as home Stack chips. */
+  background: color-mix(in oklab, var(--bg) 65%, var(--bg-raise) 35%);
+  padding: var(--space-3) var(--space-4);
+  border: var(--line-width) solid var(--line);
+}
+@media (max-width: 900px) {
+  .case-stack-strata { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 520px) {
+  .case-stack-strata { grid-template-columns: 1fr; row-gap: var(--space-5); }
+}
+
+/* ========== § 06 LESSONS & STATUS ========== mirrors home Contact:
+   bg-edge + edge-ticks · 6+6 split (Carry forward · Would change) */
+.case-lessons-grid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: var(--gutter);
+}
+.case-lessons-col { grid-column: span 6; }
+@media (max-width: 900px) {
+  .case-lessons-col { grid-column: 1 / -1; }
+}
+.case-lessons-eyebrow {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--fg-mute);
+  padding-bottom: var(--space-3);
+  margin-bottom: var(--space-4);
+  border-bottom: var(--line-width) solid var(--line);
+}
+
+.case-lessons {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: var(--space-4);
+}
+.case-lessons li {
+  position: relative;
+  padding-inline-start: var(--space-5);
+  color: var(--fg);
+  font-size: 0.96rem;
+  line-height: 1.6;
+  max-width: var(--measure);
+}
+.case-lessons li::before {
+  content: '—';
+  position: absolute;
+  inset-inline-start: 0;
+  top: 0;
+  color: var(--accent);
+  font-weight: 600;
+}
+
+/* Status — final paragraph */
+.case-status {
+  margin-top: var(--space-6);
+  padding-top: var(--space-5);
+  border-top: var(--line-width) solid var(--line);
+  font-size: 0.94rem;
+  line-height: 1.55;
+  color: var(--fg-mute);
+  font-style: italic;
+  max-width: var(--measure);
+}
+
+/* ========== NEXT-CASE CTA ========== replaces Footer on case page.
+   bg-dots motif (mirrors Hero) wraps a single centred button. Arrow
+   slides on hover — ↓ for next case (drops down), ← for return home
+   (slides left, "back" semantics). */
+.case-next-section {
+  position: relative;
+  isolation: isolate;
+  padding: var(--space-9) 0;
+}
+
+/* Top fade-in for dots — block emerges from the dotless area above. */
+.case-page .case-next-section.bg-dots::before {
+  mask-image: linear-gradient(
+    180deg,
+    transparent 0,
+    #000 var(--space-9),
+    #000 100%
+  );
+  -webkit-mask-image: linear-gradient(
+    180deg,
+    transparent 0,
+    #000 var(--space-9),
+    #000 100%
+  );
+}
+
+.case-next-wrap {
+  display: flex;
+  justify-content: center;
+}
+
+/* Ghost button + frosted glass — same translucent backdrop-blur pattern as
+   home Hero's chips. Sits over bg-dots with see-through warmth. */
+.case-next-btn {
+  background: color-mix(in oklab, var(--fg) 9%, transparent);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+.case-next-btn .case-next-arrow {
+  display: inline-flex;
+  align-items: center;
+  line-height: 1;
+  transition: transform 240ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.case-next-btn--down:hover .case-next-arrow { transform: translateY(3px); }
+.case-next-btn--back:hover .case-next-arrow { transform: translateX(-3px); }
+
+@media (prefers-reduced-motion: reduce) {
+  .case-next-btn .case-next-arrow { transition: none; }
+}
+
+/* Mobile (case page) */
+@media (max-width: 640px) {
+  .case-section { padding-top: var(--space-7); padding-bottom: var(--space-7); }
+  .case-decision .field {
+    grid-template-columns: 1fr;
+    gap: var(--space-2);
+  }
+  .case-diagram pre { font-size: 0.66rem; padding: var(--space-4); }
+}

@@ -1,0 +1,731 @@
+/* ============================================================
+   HERO — three variants
+   ============================================================ */
+
+.hero {
+  padding: var(--space-9) 0;
+  position: relative;
+}
+@media (max-width: 720px) {
+  .hero { padding: var(--space-5) 0 var(--space-8); }
+  /* Unified 48px rhythm between the three mobile hero groups
+     (§01/06 row → main → meta strip), all via grid row-gap. */
+  .hero-a .grid { row-gap: var(--space-7); }
+}
+
+/* Hero↔About divider: hairline tapered to edges with a faint accent sheen
+   centered above it. Replaces a plain 1px border. */
+.hero::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 24px;
+  pointer-events: none;
+  z-index: 2;
+  background:
+    /* tapered hairline on the hero's bottom edge */
+    linear-gradient(
+      90deg,
+      transparent 0%,
+      color-mix(in oklab, var(--fg) 35%, transparent) 14%,
+      color-mix(in oklab, var(--fg) 75%, transparent) 50%,
+      color-mix(in oklab, var(--fg) 35%, transparent) 86%,
+      transparent 100%
+    ) no-repeat bottom center / 100% 1px,
+    /* narrow accent-tinted sheen rising from the line */
+    radial-gradient(
+      ellipse 18% 100% at 50% 100%,
+      color-mix(in oklab, var(--accent) 30%, transparent) 0%,
+      color-mix(in oklab, var(--accent) 8%, transparent) 45%,
+      transparent 80%
+    );
+}
+
+/* --- variant A: big type, left-aligned metadata frame --- */
+.hero-a .grid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: var(--gutter);
+}
+.hero-a .meta-l {
+  grid-column: 1 / span 3;
+  display: flex; flex-direction: column; gap: var(--space-4);
+  padding-top: 6px;
+}
+.hero-a .meta-l .row { display: flex; flex-direction: column; gap: var(--space-0); }
+.hero-a .meta-l .row-top {
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  direction: ltr;
+  unicode-bidi: isolate;
+}
+
+/* Bottom meta strip — shown on mobile + tablet (incl. iPad landscape);
+   replaces the 3 K:V rows. */
+.hero-meta-strip { display: none; }
+
+@media (max-width: 1024px) {
+  /* Hide the 3 K:V rows below desktop — they re-appear as one bottom strip. */
+  .hero-a .meta-l .row-meta { display: none; }
+
+  .hero-a .meta-l .row-top {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+  }
+
+  /* Compact "passport strip" at the bottom of the hero grid. */
+  .hero-meta-strip {
+    display: flex;
+    grid-column: 1 / span 12;
+    flex-wrap: nowrap;
+    align-items: baseline;
+    gap: var(--space-2);
+    font-family: var(--font-mono);
+    font-size: 0.62rem;
+    letter-spacing: 0.04em;
+    color: var(--fg-dim);
+  }
+  .hero-meta-strip span { white-space: nowrap; }
+  .hero-meta-strip span + span::before {
+    content: "·";
+    margin-inline-end: var(--space-2);
+    color: var(--fg-dim);
+  }
+}
+.hero-a .meta-l .row .k { font-family: var(--font-mono); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--fg-dim); }
+.hero-a .meta-l .row .v { font-family: var(--font-mono); font-size: 0.82rem; color: var(--fg); }
+.hero-a .meta-l .no-label,
+.hero-a .no-label {
+  font-family: var(--font-mono) !important;
+  color: var(--fg-mute) !important;
+  font-size: 0.72rem !important;
+  line-height: 1 !important;
+  letter-spacing: 0.1em !important;
+  text-transform: uppercase !important;
+  font-weight: 500 !important;
+}
+
+.hero-a .main { grid-column: 4 / span 9; }
+.hero-a .name { margin: 0; font-size: var(--fs-display-hero); }
+.hero-a .role { margin-top: var(--space-5); font-size: clamp(1.15rem, 1.6vw, 1.4rem); color: var(--fg); max-width: 48ch; }
+.hero-a .role em { font-style: italic; font-family: var(--font-display); color: var(--accent); font-weight: 500; }
+
+/* Mono role tagline above the name. Each `·`-separated chunk is a nowrap
+   segment so a line break never lands mid-segment. ≤720px: each segment
+   becomes block (one per line) and the visible · separators hide. Same
+   rule covers desktop wrapper (.hero-role) and mobile (.hero-mobile-role)
+   — segments get consistent behaviour in both. */
+.hero-role-seg { white-space: nowrap; }
+@media (max-width: 720px) {
+  .hero-role-seg { display: block; }
+  .hero-role-sep { display: none; }
+}
+.hero-a .chips { display: flex; gap: var(--space-3); flex-wrap: wrap; margin-top: var(--space-6); }
+.hero-a .chips .chip {
+  background: color-mix(in oklab, var(--bg) 10%, transparent);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  transition: border-color 120ms linear, color 120ms linear;
+}
+.hero-a .chips .chip-link:hover .chip {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.hero-a .cta { display: none; }
+/* previously: flex; gap: var(--space-3); margin-top: var(--space-7); flex-wrap: wrap; */
+
+/* Hero actions — two chip-buttons (resume.pdf + copy.md) at the top-right of
+   the hero stage on desktop AND tablet. Absolutely positioned with a negative
+   top to pull them up past hero's own padding so they sit tight against the
+   bottom edge of the sticky Nav, vertically aligned with NavControls' lang +
+   theme buttons. Hidden ≤720px where the in-flow mobile split takes over. */
+.hero-stage { position: relative; }
+.hero-actions {
+  position: absolute;
+  top: calc(var(--space-3) - var(--space-9));
+  /* .container has padding: 0 var(--space-6), so right:0 would land at the
+     outer padding-box edge — past NavControls' content-edge. Match the
+     content-edge by offsetting right by container padding. */
+  inset-inline-end: var(--space-6);
+  display: flex;
+  gap: var(--space-2);
+  z-index: 2;
+}
+/* Two-class chain (.hero-action-chip.case-copy-md) outranks .case-copy-md
+   alone — required to override fixed widths in case-study.css which loads
+   later in the cascade. Auto-width keeps the copy chip tight to its label. */
+.hero-action-chip.case-copy-md,
+.hero-action-chip {
+  width: auto;
+  padding: 0 var(--space-2);
+  text-decoration: none;
+}
+
+/* Hero mobile layout — two stacked rows that replace the desktop role
+   kicker on ≤720px. Row 1: full role tagline, 3 lines (one per segment).
+   Row 2: resume + copy chips. Hidden by default — the @media block below
+   activates them and hides the desktop kicker. The earlier merged-row
+   layout assumed a short first segment; longer titles broke it, so the
+   two concerns now live on independent rows. */
+.hero-mobile-role,
+.hero-mobile-buttons { display: none; }
+
+@media (max-width: 720px) {
+  /* Mobile only — top-right absolute slot collapses, in-flow mobile rows
+     take over above <h1>. Tablets (721–1024px) keep the desktop top-right
+     placement plus the standard role kicker inside .main. */
+  .hero-actions { display: none; }
+  .hero-a .main > .mono { display: none; }
+
+  .hero-mobile-role {
+    display: block;
+    margin-top: var(--space-3);
+    font-size: 0.85rem;
+    letter-spacing: 0.02em;
+    line-height: 1.35;
+    text-align: start;
+  }
+  [data-lang="ar"] .hero-mobile-role {
+    direction: rtl;
+    text-align: start;   /* start under rtl = right edge */
+  }
+  .hero-mobile-buttons {
+    display: flex;
+    gap: var(--space-2);
+    margin-top: var(--space-2);
+    flex-wrap: wrap;
+    /* Right-align under the lang/theme cluster in .row-top above. Stays
+       LTR even under [data-lang="ar"] so chip order matches NavControls. */
+    justify-content: flex-end;
+    direction: ltr;
+    unicode-bidi: isolate;
+  }
+}
+
+/* tablet */
+@media (max-width: 1024px) {
+  .hero-a .meta-l { grid-column: 1 / span 12; }
+  .hero-a .main { grid-column: 1 / span 12; }
+}
+
+/* ============================================================
+   ABOUT
+   ============================================================ */
+.about { position: relative; overflow: hidden; }
+.about .container { position: relative; z-index: 1; }
+.about-glow {
+  position: absolute;
+  left: 0; right: 0; top: 0;
+  height: 55%;
+  pointer-events: none;
+  z-index: 0;
+  background: radial-gradient(
+    ellipse 80% 100% at 50% 0%,
+    color-mix(in oklab, var(--accent-alt) 18%, transparent) 0%,
+    color-mix(in oklab, var(--accent-alt) 5%, transparent) 45%,
+    transparent 75%
+  );
+}
+[data-theme="light"] .about-glow {
+  opacity: 1;
+  background: radial-gradient(
+    ellipse 80% 100% at 50% 0%,
+    color-mix(in oklab, var(--fg) 12%, transparent) 0%,
+    color-mix(in oklab, var(--fg) 5%, transparent) 45%,
+    transparent 75%
+  );
+}
+
+.about .grid {
+  display: grid; grid-template-columns: repeat(12, 1fr); gap: var(--gutter);
+}
+.about .pull { grid-column: 1 / span 4; }
+.about .pull .q { font-family: var(--font-display); font-weight: 500; font-size: var(--fs-display-l); letter-spacing: -0.025em; line-height: 1; }
+.about .pull .q .ac { color: var(--accent); font-style: italic; }
+.about .body { grid-column: 5 / span 7; display: flex; flex-direction: column; gap: var(--space-5); font-size: clamp(1rem, 1.1vw, 1.12rem); line-height: 1.6; color: var(--fg); }
+.about .body strong { font-weight: 600; }
+@media (max-width: 900px) {
+  .about .pull { grid-column: 1 / span 12; }
+  .about .body { grid-column: 1 / span 12; }
+}
+
+/* ============================================================
+   SECTION BACKGROUNDS — one tactile texture per section
+   All static, very low contrast, pulled from the token palette.
+   ============================================================ */
+
+/* shared: make backgrounds sit under content, don't clip reveals */
+.bg-dots, .bg-edge { position: relative; isolation: isolate; }
+.bg-dots > .container,
+.bg-edge > .container { position: relative; z-index: 1; }
+
+/* 03 Projects — dot grid ("pinboard") */
+.bg-dots::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image: radial-gradient(
+    circle,
+    color-mix(in oklab, var(--fg) 22%, transparent) 1px,
+    transparent 1.5px
+  );
+  background-size: 28px 28px;
+  background-position: 0 0;
+  opacity: 0.45;
+  mask-image: linear-gradient(180deg, transparent 0, #000 var(--space-9), #000 calc(100% - var(--space-9)), transparent 100%);
+  -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 var(--space-9), #000 calc(100% - var(--space-9)), transparent 100%);
+}
+[data-theme="light"] .bg-dots::before { opacity: 0.55; }
+
+/* 06 Contact — corner tick marks like on a technical drawing */
+.bg-edge { position: relative; }
+.edge-tick {
+  position: absolute;
+  width: 28px;
+  height: var(--control-sm);
+  pointer-events: none;
+  z-index: 0;
+  color: color-mix(in oklab, var(--fg) 35%, transparent);
+}
+.edge-tick::before,
+.edge-tick::after {
+  content: "";
+  position: absolute;
+  background: currentColor;
+}
+.edge-tick::before { width: 100%; height: 1px; }
+.edge-tick::after  { width: 1px;  height: 100%; }
+
+.edge-tick--tl { top: 24px; left: 24px; }
+.edge-tick--tl::before { top: 0; left: 0; }
+.edge-tick--tl::after  { top: 0; left: 0; }
+
+.edge-tick--tr { top: 24px; right: 24px; }
+.edge-tick--tr::before { top: 0; right: 0; }
+.edge-tick--tr::after  { top: 0; right: 0; }
+
+.edge-tick--bl { bottom: 24px; left: 24px; }
+.edge-tick--bl::before { bottom: 0; left: 0; }
+.edge-tick--bl::after  { bottom: 0; left: 0; }
+
+.edge-tick--br { bottom: 24px; right: 24px; }
+.edge-tick--br::before { bottom: 0; right: 0; }
+.edge-tick--br::after  { bottom: 0; right: 0; }
+
+/* 04 Experience — year watermarks per row (positioned in row CSS) */
+.xp-row { position: relative; }
+.xp-watermark {
+  position: absolute;
+  inset-inline-end: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: clamp(6rem, 14vw, 14rem);
+  letter-spacing: -0.04em;
+  line-height: 0.8;
+  color: color-mix(in oklab, var(--fg) 7%, transparent);
+  pointer-events: none;
+  user-select: none;
+  z-index: 0;
+  white-space: nowrap;
+}
+[data-theme="light"] .xp-watermark { color: color-mix(in oklab, var(--fg) 9%, transparent); }
+.xp-row .when,
+.xp-row .what,
+.xp-row .tag { position: relative; z-index: 1; }
+
+/* ============================================================
+   05 STACK — horizontal strata, each category = one layer
+   ============================================================ */
+.section.stack { position: relative; isolation: isolate; }
+
+/* scanline ambient (fades top/bottom so it doesn't touch section edges) */
+.section.stack::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image: repeating-linear-gradient(
+    0deg,
+    transparent 0 5px,
+    color-mix(in oklab, var(--fg) 9%, transparent) 5px 6px
+  );
+  opacity: 0.6;
+  mask-image: linear-gradient(180deg, transparent 0, #000 8%, #000 92%, transparent 100%);
+  -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 8%, #000 92%, transparent 100%);
+}
+
+.section.stack .container { position: relative; z-index: 1; }
+
+.stack-preface {
+  max-width: var(--measure);
+  margin: 0 0 var(--space-6);
+  color: var(--fg-mute);
+  font-size: clamp(0.95rem, 1.05vw, 1.05rem);
+  line-height: 1.55;
+}
+
+.stack-strata {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  column-gap: var(--space-6);
+  row-gap: var(--space-7);
+}
+
+.stratum {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.stratum-label {
+  font-family: var(--font-display);
+  font-weight: var(--display-weight, 500);
+  font-size: var(--fs-display-s);
+  letter-spacing: var(--display-tracking, -0.02em);
+  line-height: 1.1;
+  color: var(--fg);
+}
+
+.stratum-items {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-3);
+  justify-content: flex-start;
+}
+
+/* Chips inside strata sit over the scanline bg — give them an opaque
+   plate so lines don't show through. --bg-raise is the site's "one step
+   above bg" token (already used for raised surfaces). */
+.stratum-items .chip {
+  background: color-mix(in oklab, var(--bg) 65%, var(--bg-raise) 35%);
+  transition: color 120ms linear, border-color 120ms linear, background 120ms linear;
+}
+.stratum-items .chip:hover {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+@media (max-width: 900px) {
+  .stack-strata { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 520px) {
+  .stack-strata {
+    grid-template-columns: 1fr;
+    row-gap: var(--space-5);
+  }
+}
+
+/* ============================================================
+   PROJECTS — 3-col grid on desktop. Every card: media 16:9 on top,
+   text below.
+   ============================================================ */
+.projects-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--gutter);
+  align-items: stretch;
+}
+
+.card {
+  border: var(--line-width) solid var(--line);
+  background: var(--bg);
+  display: flex; flex-direction: column;
+  position: relative;
+  overflow: hidden;
+  transition: border-color 120ms linear;
+}
+.card:hover { border-color: var(--line-strong); }
+
+.card .card-head {
+  display: flex; justify-content: space-between; align-items: baseline;
+  padding: var(--space-3) var(--space-4);
+  border-bottom: var(--line-width) solid var(--line);
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}
+.card .card-head .idx { font-family: var(--font-mono); color: var(--fg-mute); font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase; }
+.card .card-head .codename { font-family: var(--font-mono); color: var(--fg-mute); font-size: 0.7rem; letter-spacing: 0.08em; text-transform: lowercase; }
+.card .card-head .status { font-family: var(--font-mono); color: var(--accent); font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase; }
+
+/* 16:9 media slot — same for every card */
+.card .media-frame {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  background: var(--bg-sunk);
+  flex: 0 0 auto;
+}
+
+.card .card-body {
+  padding: var(--space-5);
+  display: flex; flex-direction: column; gap: var(--space-3);
+  flex: 1 1 auto;
+  min-width: 0;
+}
+.card .card-body h3 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: var(--display-weight, 500);
+  font-size: var(--fs-display-s);
+  letter-spacing: var(--display-tracking, -0.02em);
+  line-height: 1.15;
+}
+.card .card-body .subtitle {
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: 0.92rem;
+  letter-spacing: 0;
+  color: var(--fg-mute);
+  line-height: 1.55;
+}
+.card .card-meta {
+  margin: var(--space-3) 0 0;
+  padding: var(--space-3) 0 0;
+  border-top: var(--line-width) solid var(--line);
+  display: grid;
+  gap: var(--space-2);
+  margin-top: auto;
+}
+.card .card-meta-row {
+  display: grid;
+  grid-template-columns: 56px 1fr;
+  column-gap: var(--space-3);
+  align-items: baseline;
+}
+.card .card-meta-row dt {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--fg-dim);
+}
+.card .card-meta-row dd {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  letter-spacing: 0.02em;
+  color: var(--fg);
+  line-height: 1.5;
+  word-break: normal;
+  overflow-wrap: anywhere;
+}
+
+.card .card-foot {
+  display: flex; justify-content: flex-end; align-items: center;
+  padding: var(--space-3) var(--space-5);
+  border-top: var(--line-width) solid var(--line);
+  gap: var(--space-4); flex-wrap: wrap;
+}
+
+/* CTA pulse — only on the first card before the user has visited any case
+   study. A small accent ● dot sits as a sibling next to the .link (NOT
+   inside it — keeps the link's border-bottom underline scoped to the text)
+   and breathes on opacity. */
+@keyframes cta-pulse-dot {
+  0%, 100% { opacity: 0.25; }
+  50%      { opacity: 1; }
+}
+.card .cta-with-dot {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+.card .cta-dot {
+  font-size: 0.7em;
+  line-height: 1;
+  color: var(--accent);
+  animation: cta-pulse-dot 1.6s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .card .cta-dot { animation: none; opacity: 1; }
+}
+
+/* ============================================================
+   HERO FX — heat backdrop + turbulent embers (no filter on text)
+   ============================================================ */
+.hero.has-fx { overflow: hidden; position: relative; }
+.hero.has-fx .hero-stage { position: relative; z-index: 1; }
+
+.hero-fx {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+.hero-fx-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+[data-theme="light"] .hero-fx { opacity: 0.7; }
+
+/* Embers — CSS particle system replacing the old SVG filter+SMIL approach.
+   Each <span> is a tiny absolutely-positioned dot animated via transform +
+   opacity only. GPU-composited on every platform; no filter, no displacement,
+   no SMIL — fixes iOS Safari heat/lag and works smoothly on cheap Android. */
+.hero-fx-embers {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+.ember {
+  position: absolute;
+  left: var(--x);
+  bottom: var(--start-y);
+  width: var(--size);
+  height: var(--size);
+  border-radius: 50%;
+  background: var(--accent);
+  /* Soft glow without filter:blur (which forces a layer raster on Safari).
+     box-shadow's spread is GPU-cached per element. */
+  box-shadow: 0 0 4px var(--accent);
+  opacity: 0;
+  will-change: transform, opacity;
+  animation: rise-ember var(--dur) ease-in var(--delay) infinite;
+}
+@keyframes rise-ember {
+  0%   { transform: translate3d(0, 0, 0)                scale(0.6); opacity: 0; }
+  15%  {                                                            opacity: 0.9; }
+  100% { transform: translate3d(var(--drift), -90vh, 0) scale(1.1); opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ember { animation: none; opacity: 0; }
+}
+
+/* tablet — 2 cols, mobile — 1 col */
+@media (max-width: 1024px) {
+  .projects-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 640px) {
+  .projects-grid { grid-template-columns: 1fr; }
+}
+
+/* ============================================================
+   EXPERIENCE timeline
+   ============================================================ */
+.xp-list { display: flex; flex-direction: column; }
+.xp-row {
+  display: grid;
+  grid-template-columns: 180px 1fr 160px;
+  gap: var(--space-6);
+  padding: var(--space-6) 0;
+  border-top: var(--line-width) solid var(--line);
+  align-items: start;
+}
+.xp-row:last-child { border-bottom: var(--line-width) solid var(--line); }
+.xp-row .when { font-family: var(--font-mono); font-size: 0.85rem; letter-spacing: 0.04em; color: var(--fg); text-transform: uppercase; }
+.xp-row .what h4 { margin: 0 0 var(--space-2); font-family: var(--font-display); font-weight: var(--display-weight, 500); font-size: clamp(1.1rem, 1.5vw, 1.35rem); letter-spacing: -0.01em; }
+.xp-row .what p { margin: 0; color: var(--fg-mute); max-width: 62ch; font-size: 0.95rem; line-height: 1.55; }
+.xp-row .tag { font-family: var(--font-mono); font-size: 0.72rem; color: var(--fg-dim); text-transform: uppercase; letter-spacing: 0.08em; text-align: end; }
+
+@media (max-width: 780px) {
+  .xp-row { grid-template-columns: 1fr; gap: var(--space-3); }
+  .xp-row .tag { text-align: start; }
+}
+
+/* ============================================================
+   CONTACT
+   ============================================================ */
+.contact { padding: var(--space-10) 0; }
+.contact .wrap {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: var(--gutter);
+  align-items: end;
+}
+.contact .pitch { grid-column: 1 / span 8; }
+.contact .pitch h2 { margin: 0; font-family: var(--font-display); font-size: var(--fs-display-xl); letter-spacing: -0.035em; line-height: 0.95; font-weight: var(--display-weight, 500); text-wrap: balance; }
+.contact .pitch h2 em { font-style: italic; color: var(--accent); font-family: var(--font-display); }
+.contact .pitch p { color: var(--fg-mute); max-width: 48ch; margin-top: var(--space-5); font-size: 1.05rem; }
+.contact-side {
+  grid-column: 9 / span 4;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+.contact-resume-row {
+  display: flex;
+  justify-content: flex-start;
+}
+.contact-resume {
+  width: auto;
+  min-width: 105px;
+  padding: 0 var(--space-3);
+}
+.contact .ways { display: flex; flex-direction: column; gap: 0; border-top: var(--line-width) solid var(--line); }
+.contact .ways .way {
+  display: flex; justify-content: space-between; align-items: baseline;
+  padding: var(--space-4) 0;
+  border-bottom: var(--line-width) solid var(--line);
+  gap: var(--space-4);
+}
+.contact .ways .way .k { font-family: var(--font-mono); font-size: 0.75rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--fg-mute); }
+.contact .ways .way .v { font-family: var(--font-mono); font-size: 0.95rem; }
+.contact .ways a.way:hover .v { color: var(--accent); }
+.contact .ways .way-static { color: inherit; cursor: default; }
+
+@media (max-width: 900px) {
+  .contact .pitch, .contact-side { grid-column: 1 / span 12; }
+}
+
+/* ============================================================
+   FOOTER
+   ============================================================ */
+.footer {
+  padding: var(--space-5) 0;
+  border-top: var(--line-width) solid var(--line);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--fg-mute);
+}
+.footer .row { display: flex; justify-content: space-between; gap: var(--space-4); flex-wrap: wrap; }
+.footer a:hover { color: var(--fg); }
+.footer-sanitized {
+  max-width: 72ch;
+  margin: var(--space-3) 0 0;
+  color: var(--fg-dim);
+  font-size: 0.62rem;
+  letter-spacing: 0.04em;
+  line-height: 1.55;
+  text-transform: none;
+}
+.footer-sanitized a { color: var(--fg-mute); }
+
+/* Agent notice — surfaced in the Footer on tablet/mobile (≤1024px) where
+   the Nav-left slot collapses. The link is the literal path in accent —
+   no prose prefix; the path itself is the affordance. */
+.footer-agent-notice {
+  display: none;
+  margin-top: var(--space-3);
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.04em;
+  color: var(--accent);
+  text-decoration: none;
+  transition: color 180ms ease;
+}
+.footer .footer-agent-notice:focus-visible {
+  outline: none;
+}
+@media (max-width: 1024px) {
+  .footer-agent-notice { display: inline-block; }
+}

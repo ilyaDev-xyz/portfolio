@@ -1,0 +1,23 @@
+[Unit]
+Description=Portfolio analytics server
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=portfolio
+Group=portfolio
+WorkingDirectory=/srv/portfolio/server
+Environment=NODE_ENV=production
+EnvironmentFile=/srv/portfolio/server/.env
+ExecStart=/usr/bin/npm start
+Restart=on-failure
+RestartSec=5s
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/srv/portfolio/server/data
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" role="img" aria-labelledby="title desc">
+  <title id="title">Demo warehouse placeholder</title>
+  <desc id="desc">Abstract warehouse operations placeholder for public demo content.</desc>
+  <rect width="1280" height="720" fill="#11151b"/>
+  <rect x="96" y="84" width="1088" height="552" rx="18" fill="#f0eadf"/>
+  <rect x="148" y="138" width="984" height="80" rx="10" fill="#1f6f78"/>
+  <g fill="#f0b44f">
+    <rect x="148" y="274" width="188" height="136" rx="12"/>
+    <rect x="384" y="274" width="188" height="136" rx="12"/>
+    <rect x="620" y="274" width="188" height="136" rx="12"/>
+    <rect x="856" y="274" width="188" height="136" rx="12"/>
+  </g>
+  <g fill="#1f6f78">
+    <rect x="174" y="438" width="136" height="14" rx="7"/>
+    <rect x="410" y="438" width="136" height="14" rx="7"/>
+    <rect x="646" y="438" width="136" height="14" rx="7"/>
+    <rect x="882" y="438" width="136" height="14" rx="7"/>
+  </g>
+  <rect x="148" y="510" width="984" height="54" rx="10" fill="#fffaf1"/>
+  <text x="184" y="188" fill="#f8f2e8" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="28" font-weight="700">CASE 02 / DEMO STOCK OPS</text>
+  <text x="184" y="548" fill="#11151b" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="22">receipt evidence -> draft operation -> validated stock commit</text>
+</svg>

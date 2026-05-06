@@ -1,0 +1,9 @@
+# Public portfolio at ilyadev.xyz — open to all crawlers, including AI agents.
+# Markdown twins live next to every HTML page (.md / .ru.md / .ar.md);
+# curated indexes are at /llms.txt, /llms-ru.txt, /llms-ar.txt; full corpus
+# is at /llms-full.txt.
+
+User-agent: *
+Allow: /
+
+Sitemap: https://ilyadev.xyz/sitemap.xml

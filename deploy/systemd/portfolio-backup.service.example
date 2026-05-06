@@ -1,0 +1,15 @@
+[Unit]
+Description=Portfolio analytics SQLite backup
+
+[Service]
+Type=oneshot
+User=portfolio
+Group=portfolio
+WorkingDirectory=/srv/portfolio/server
+EnvironmentFile=/srv/portfolio/server/.env
+ExecStart=/usr/bin/env sh -c 'mkdir -p data/backups && DB="${DB_PATH:-./data/events.db}" && OUT="data/backups/$(basename "$DB" .db)-$(date +%%F).sqlite" && sqlite3 "$DB" ".backup $OUT" && gzip -f "$OUT"'
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/srv/portfolio/server/data

@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Demo Author — AI Product Engineer</title>
+    <meta name="description" content="Public demo portfolio engine with typed content, case routes, agent-readable mirrors, and privacy-first analytics." />
+
+    <!-- Icon family -->
+    <link rel="icon" href="/favicon.ico" sizes="any" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <meta name="theme-color" content="#110e0b" />
+    <link rel="canonical" href="https://ilyadev.xyz/" />
+
+    <!-- Open Graph (Telegram, LinkedIn, Slack, Discord previews) -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="ilyaDev.xyz" />
+    <meta property="og:url" content="https://ilyadev.xyz/" />
+    <meta property="og:title" content="Demo Author — AI Product Engineer" />
+    <meta property="og:description" content="Public demo portfolio engine with typed content, case routes, agent-readable mirrors, and privacy-first analytics." />
+    <meta property="og:image" content="https://ilyadev.xyz/og-image.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:alt" content="ilyaDev.xyz — AI Product Engineer" />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:locale:alternate" content="ru_RU" />
+    <meta property="og:locale:alternate" content="ar_AE" />
+
+    <!-- Twitter / X Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Demo Author — AI Product Engineer" />
+    <meta name="twitter:description" content="Public demo portfolio engine with typed content, case routes, agent-readable mirrors, and privacy-first analytics." />
+    <meta name="twitter:image" content="https://ilyadev.xyz/og-image.png" />
+
+    <!-- Agent layer — Markdown mirrors of every page. The site index lives at
+         /llms.txt; the full corpus at /llms-full.txt; per-page mirrors are
+         siblings of every route (e.g. /cases/ai-crm.md). On case routes the
+         <AlternateMd> component overrides these alternate links per slug. -->
+    <link rel="alternate" type="text/markdown" hreflang="en" href="https://ilyadev.xyz/index.md" />
+    <link rel="alternate" type="text/markdown" hreflang="ru" href="https://ilyadev.xyz/index.ru.md" />
+    <link rel="alternate" type="text/markdown" hreflang="ar" href="https://ilyadev.xyz/index.ar.md" />
+
+    <!-- Schema.org ProfilePage + Person — picked up by Perplexity, ChatGPT
+         search, Google AI Overviews, Bing/Copilot for citation +
+         knowledge-graph entry. ProfilePage wraps Person via mainEntity per
+         Google's profile-page spec; hasOccupation surfaces job-search
+         structured data. -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "ProfilePage",
+        "url": "https://ilyadev.xyz/",
+        "mainEntity": {
+          "@type": "Person",
+          "@id": "https://ilyadev.xyz/#person",
+          "name": "Demo Author",
+          "alternateName": "Demo Author",
+          "jobTitle": "AI Product Engineer",
+          "url": "https://ilyadev.xyz",
+          "image": "https://ilyadev.xyz/og-image.png",
+          "description": "Public demo portfolio engine with typed content, case routes, agent-readable mirrors, and privacy-first analytics.",
+          "email": "mailto:hello@example.com",
+          "address": {
+            "@type": "PostalAddress",
+            "addressCountry": "VN"
+          },
+          "hasOccupation": {
+            "@type": "Occupation",
+            "name": "AI Product Engineer",
+            "occupationLocation": {
+              "@type": "Country",
+              "name": "Remote"
+            }
+          },
+          "sameAs": [
+            "https://github.com/ilyaDev-xyz/portfolio"
+          ],
+          "knowsAbout": [
+            "AI agents",
+            "LLM orchestration",
+            "MCP tool design",
+            "Agentic workflows",
+            "AI audit trails",
+            "Human-in-the-loop verification",
+            "Telegram WebApp products",
+            "Multimodal intake",
+            "Cost tracking",
+            "Python",
+            "FastAPI",
+            "Django",
+            "TypeScript",
+            "React",
+            "PostgreSQL",
+            "Gemini API",
+            "Claude API",
+            "Roblox Lua",
+            "Remotion"
+          ]
+        }
+      }
+    </script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500&family=JetBrains+Mono:wght@400;500&family=Noto+Sans+Arabic:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <!-- Bare-HTML crawler hint. Visible to non-JS clients (most LLM
+         training scrapers + headless agents) before React boots; served
+         alongside <link rel="alternate" type="text/markdown"> so an
+         agent that ignores link rel still sees a literal pointer. -->
+    <noscript>
+      <p>For AI agents: a Markdown mirror of this page is available at the
+      same URL with a <code>.md</code> suffix (e.g. <code>/cases/ai-crm.md</code>).
+      A curated index lives at <a href="/llms.txt">/llms.txt</a> and the
+      full corpus at <a href="/llms-full.txt">/llms-full.txt</a>.</p>
+    </noscript>
+    <div id="root"></div>
+    <script>
+      // Mark the document as loading synchronously so hero entrance animations
+      // stay hidden until React's <Loader /> removes this class after reveal.
+      document.documentElement.classList.add('is-loading');
+    </script>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

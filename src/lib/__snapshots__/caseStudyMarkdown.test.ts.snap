@@ -1,0 +1,1373 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`caseStudyToMarkdown — snapshots > EN · ai-crm 1`] = `
+"# AI CRM · Demo lead desk
+
+\`01 · ai-crm · Demo\`
+
+Fictional operator desk where an AI assistant drafts lead summaries, suggests next actions, and waits for human approval before touching customer state.
+
+**Scope:** Demo · 6 weeks equivalent  
+**Role:** Full-stack CRM workflow demo with auditable AI actions
+
+**Video:** [YouTube](https://www.youtube.com/watch?v=dQw4w9WgXcQ) · [RuTube](https://rutube.ru/video/private/2afc367fc1968ed386e52665ee7a829b/?p=WcFMiE-n0wydU96W_9-nXw)
+
+## Video walkthrough
+
+Demo CRM walkthrough: AI assistant drafts a lead summary, proposes a qualification state and prepares a follow-up. Operator reviews the proposal in a queue and approves, edits or rejects before any state change is committed.
+
+Demo placeholder transcript. The video is a walkthrough of the public CRM demo — assistant drafts, queue review, operator approval, audit trail. No customer data is shown. Replace this transcript when forking the engine with your own content.
+
+---
+
+## Context
+
+> AI can draft the next step. Only a human commits it.
+
+The fictional product models a small operations team that receives more inbound messages than it can triage in real time. The useful automation is not a chatbot that pretends to close deals; it is a review queue that turns messy context into operator-ready decisions.
+
+The demo keeps the hard boundary visible: model output enters the system as a proposal. The backend owns permissions, state transitions, and durable audit rows.
+
+## Facts
+
+| | |
+|---|---|
+| **Surface** | CRM dashboard + review queue |
+| **AI lane** | Draft summaries, statuses, and follow-ups |
+| **Write model** | Human-approved only |
+| **Telemetry** | Review latency, accepted drafts, rejected drafts |
+
+## Architecture
+
+### Review-first action path
+
+\`\`\`text
+Inbound lead -> AI draft -> Review queue -> Operator decision
+                                | approve | edit | reject |
+                                v         v      v
+                          audited state transition
+\`\`\`
+
+**Boundary.** The model never writes directly to the lead table.
+
+**Audit.** Every proposed and accepted change keeps actor, reason, and timestamp.
+
+## Key engineering decisions
+
+### 01 · Proposal records before domain writes
+
+**Decision.** AI output is stored as a proposal object with a typed action and payload.
+
+**Why.** Operators need to inspect intent before mutation, and reviewers need a record of what the model attempted.
+
+**Cost.** Extra screens and state transitions, but debugging becomes straightforward.
+
+### 02 · Small tool surface
+
+**Decision.** The assistant gets narrow read tools and no broad SQL-style execution.
+
+**Why.** The useful capability is retrieval plus drafting, not unrestricted data access.
+
+**Cost.** More purpose-built endpoints to maintain.
+
+### 03 · Accepted draft metrics
+
+**Decision.** The dashboard tracks accepted, edited, and rejected suggestions separately.
+
+**Why.** Raw AI usage is vanity; acceptance quality tells whether the workflow helps operators.
+
+**Cost.** Requires event taxonomy discipline from day one.
+
+## Stack
+
+| | |
+|---|---|
+| **Backend** | FastAPI · PostgreSQL · Redis queue |
+| **Frontend** | React · typed forms · review queue UI |
+| **AI** | LLM tool contracts · constrained JSON payloads |
+| **Ops** | Docker Compose · structured logs · nightly export |
+| **Testing** | Payload fixtures · approval-state tests |
+| **Privacy** | No real customer data in the public repo |
+
+## Lessons & status
+
+### Carry forward
+
+- Proposal-first shape keeps automation explainable.
+- Typed actions make UI review states cheap to render.
+- Acceptance metrics matter more than prompt demos.
+
+### Would change
+
+- Add reviewer notes as first-class data earlier.
+- Model confidence should be displayed as weak signal, not a decision.
+- Tool schemas need versioning once proposals are persisted.
+
+Fictionalized case used to validate the public portfolio engine.
+
+---
+
+Source: https://ilyadev.xyz/cases/ai-crm (HTML) · /cases/ai-crm.md (this file)
+Up next: 02 — AI Warehouse · Demo stock ops → https://ilyadev.xyz/cases/ai-warehouse.md
+Index: https://ilyadev.xyz/llms.txt — full case-study list
+Author: Demo Author — https://ilyadev.xyz/index.md
+"
+`;
+
+exports[`caseStudyToMarkdown — snapshots > EN · ai-video-editor 1`] = `
+"# AI Video Editor · Demo timeline
+
+\`03 · ai-video-editor · Demo\`
+
+Fictional media workspace where prompts generate timeline edits as diffable changesets instead of mutating the project directly.
+
+**Scope:** Demo · R&D prototype  
+**Role:** AI-assisted timeline editor with audit-first changesets
+
+**Video:** [YouTube](https://www.youtube.com/watch?v=dQw4w9WgXcQ) · [RuTube](https://rutube.ru/video/private/2afc367fc1968ed386e52665ee7a829b/?p=WcFMiE-n0wydU96W_9-nXw)
+
+## Video walkthrough
+
+Demo timeline walkthrough: a chat command produces a proposed clip edit as a diffable changeset; the user inspects the diff before it touches the committed timeline. Render and transcription jobs flow through one async registry.
+
+Demo placeholder transcript. The video walks through the public AI video editor demo — prompt-driven changesets, two-cadence playhead, diff preview, async job lanes. Replace this transcript when forking the engine with your own content.
+
+---
+
+## Context
+
+> Prompts can edit fast. A timeline still needs diffs.
+
+Media tools become fragile when AI writes directly into live timeline state. A prompt may be useful, but the user needs to see the proposed edit, compare it against the current timeline, and reject it without losing work.
+
+The demo treats each AI response as a changeset over clips, captions, and render settings. Nothing becomes committed until the user accepts the diff.
+
+## Facts
+
+| | |
+|---|---|
+| **Surface** | Timeline + chat side panel |
+| **AI lane** | Clip edits · captions · render instructions |
+| **State** | Committed timeline vs proposed changeset |
+| **Async** | Render jobs and transcription jobs |
+
+## Architecture
+
+### Changeset boundary
+
+\`\`\`text
+Prompt -> edit planner -> changeset preview -> accept/reject
+                         |              |
+                         v              v
+                 live timeline stays    committed timeline updates only on accept
+\`\`\`
+
+**State split.** Live playback time never drives committed editor state.
+
+**Review.** The user sees exactly which clips and captions change.
+
+## Key engineering decisions
+
+### 01 · Changesets, not hidden mutations
+
+**Decision.** AI edits are represented as explicit timeline patches.
+
+**Why.** Creative tools need trust; invisible mutation destroys trust quickly.
+
+**Cost.** Patch generation and preview UI add complexity.
+
+### 02 · Separate live playback state
+
+**Decision.** Playback time lives outside the committed editor store.
+
+**Why.** Frame-rate updates should not re-render the whole editor tree.
+
+**Cost.** More coordination code around the player bridge.
+
+### 03 · Async job registry
+
+**Decision.** Rendering and transcription share one job tracking shape.
+
+**Why.** The UI should not learn a new transport for every background task.
+
+**Cost.** The registry must be generic enough without becoming vague.
+
+## Stack
+
+| | |
+|---|---|
+| **UI** | React · timeline components · diff preview |
+| **Playback** | Remotion-style player boundary |
+| **AI** | Prompt planner · JSON patches |
+| **Jobs** | Render queue · transcription queue |
+| **State** | Committed editor store · live playback store |
+| **Media** | Local placeholder assets only |
+
+## Lessons & status
+
+### Carry forward
+
+- Diff-first AI editing is easier to trust.
+- Heavy playback state needs isolation.
+- One job registry pays off after the second async lane.
+
+### Would change
+
+- Patch validation should be schema-versioned earlier.
+- Preview thumbnails should be cached by changeset id.
+- Chat history should link directly to accepted timeline patches.
+
+Fictionalized case for the public repository.
+
+---
+
+Source: https://ilyadev.xyz/cases/ai-video-editor (HTML) · /cases/ai-video-editor.md (this file)
+Previous: 02 — AI Warehouse · Demo stock ops → https://ilyadev.xyz/cases/ai-warehouse.md
+Up next: 04 — Roblox Arena · Demo runtime → https://ilyadev.xyz/cases/roblox-game.md
+Index: https://ilyadev.xyz/llms.txt — full case-study list
+Author: Demo Author — https://ilyadev.xyz/index.md
+"
+`;
+
+exports[`caseStudyToMarkdown — snapshots > EN · ai-warehouse 1`] = `
+"# AI Warehouse · Demo stock ops
+
+\`02 · ai-warehouse · Demo\`
+
+Fictional inventory assistant that turns receipt photos and operator notes into reviewable stock operations with weighted-cost math and rollback records.
+
+**Scope:** Demo · 5 weeks equivalent  
+**Role:** Operational inventory workflow with AI-assisted drafts
+
+**Video:** [YouTube](https://www.youtube.com/watch?v=dQw4w9WgXcQ) · [RuTube](https://rutube.ru/video/private/2afc367fc1968ed386e52665ee7a829b/?p=WcFMiE-n0wydU96W_9-nXw)
+
+## Video walkthrough
+
+Demo warehouse walkthrough: AI extracts a draft from a receipt photo, the operator reviews it in the WebApp, and weighted-average cost recalculates only after confirmation. Original evidence stays attached to every proposal.
+
+Demo placeholder transcript. The video walks through the public warehouse demo — receipt intake, draft review, server-side cost math, rollback records. Replace this transcript when forking the engine with your own content.
+
+---
+
+## Context
+
+> A receipt is not an order. It is a draft until review.
+
+Inventory teams often collect messy inputs: receipt photos, supplier messages, and short notes from a busy shift. The useful AI job is to normalize that input into draft operations without bypassing stock integrity.
+
+The demo keeps arithmetic server-owned. Weighted-cost updates, ingredient usage, and negative-stock checks happen after the draft is reviewed, not inside the model response.
+
+## Facts
+
+| | |
+|---|---|
+| **Surface** | Stock operations dashboard |
+| **Inputs** | Receipt image · manual note · supplier text |
+| **Review** | Supply · deduction · preparation lanes |
+| **Safety** | Server-side validation before commit |
+
+## Architecture
+
+### Draft-to-confirm flow
+
+\`\`\`text
+Image / note -> parse draft -> operator review -> validate -> commit
+                     |             | edit / reject |           |
+                     v             v               v           v
+                raw evidence   proposal log    domain checks  stock rows
+\`\`\`
+
+**Evidence.** The original input stays attached to the operation.
+
+**Math.** The model can suggest fields; the backend recomputes totals.
+
+## Key engineering decisions
+
+### 01 · Evidence stays beside the draft
+
+**Decision.** Every proposed operation keeps the source image or note until it is confirmed or rejected.
+
+**Why.** Operators need to compare AI extraction against the original input.
+
+**Cost.** Storage grows faster, but review quality is visible.
+
+### 02 · Server-owned cost math
+
+**Decision.** Weighted average cost and stock deltas are recomputed by the backend.
+
+**Why.** A language model should not be the source of truth for accounting arithmetic.
+
+**Cost.** The UI must explain mismatches between model draft and validated values.
+
+### 03 · Rollback as a product surface
+
+**Decision.** Confirmed operations can be reversed through typed correction records.
+
+**Why.** Operational software must support mistakes without silent database edits.
+
+**Cost.** Reporting queries need to account for corrections.
+
+## Stack
+
+| | |
+|---|---|
+| **Backend** | FastAPI · PostgreSQL · validation layer |
+| **AI intake** | OCR · structured extraction · confidence hints |
+| **Frontend** | React review lanes · diffable fields |
+| **Workers** | Async image processing · retry queue |
+| **Audit** | Raw evidence · proposals · corrections |
+| **Demo media** | Generic SVG placeholder assets |
+
+## Lessons & status
+
+### Carry forward
+
+- Draft and evidence must stay linked.
+- Accounting math belongs outside the model.
+- Rollback records beat manual database repairs.
+
+### Would change
+
+- Add bulk review only after single-item review is trusted.
+- Expose validation errors earlier in the draft state.
+- Keep image preprocessing reproducible for debugging.
+
+Fictionalized case used to stress long-form operational copy.
+
+---
+
+Source: https://ilyadev.xyz/cases/ai-warehouse (HTML) · /cases/ai-warehouse.md (this file)
+Previous: 01 — AI CRM · Demo lead desk → https://ilyadev.xyz/cases/ai-crm.md
+Up next: 03 — AI Video Editor · Demo timeline → https://ilyadev.xyz/cases/ai-video-editor.md
+Index: https://ilyadev.xyz/llms.txt — full case-study list
+Author: Demo Author — https://ilyadev.xyz/index.md
+"
+`;
+
+exports[`caseStudyToMarkdown — snapshots > EN · macos-vpn 1`] = `
+"# macOS Network Guard · Demo client
+
+\`05 · macos-vpn · Demo\`
+
+Fictional macOS menu-bar client that models per-app network policy, connection state, and kill-switch behavior without shipping private infrastructure details.
+
+**Scope:** Demo · desktop systems  
+**Role:** Desktop network-control demo with explicit failure states
+
+---
+
+## Context
+
+> Network tools fail. Product must show what state failed.
+
+The fictional client focuses on the user-facing side of a network-control product: state clarity, predictable app policy, and failure modes that do not silently expose traffic.
+
+Private endpoints, keys, and provider details are intentionally absent. The public case keeps the system shape: a menu-bar surface, a connection state machine, policy storage, and guardrails around unsafe transitions.
+
+## Facts
+
+| | |
+|---|---|
+| **Surface** | macOS menu-bar utility |
+| **Policy** | Per-app allow/block routing model |
+| **State** | Disconnected · connecting · protected · degraded · blocked |
+| **Safety** | Kill-switch state is visible, not silent |
+
+## Architecture
+
+### Connection state model
+
+\`\`\`text
+connect -> connecting -> protected
+   |            | error        | tunnel lost
+   v            v              v
+blocked <- degraded <- reconnect attempt
+\`\`\`
+
+**Blocked.** Unsafe traffic stays blocked until the user or policy exits.
+
+**UI.** Every state maps to one visible label and one allowed action set.
+
+## Key engineering decisions
+
+### 01 · State machine before UI polish
+
+**Decision.** Connection state is modeled as explicit states with allowed transitions.
+
+**Why.** Network products fail in edges; implicit booleans hide those edges.
+
+**Cost.** More up-front modeling before the interface looks finished.
+
+### 02 · Policy is separate from session
+
+**Decision.** Per-app routing policy is stored apart from the active connection session.
+
+**Why.** Users should be able to edit policy without mutating current tunnel state accidentally.
+
+**Cost.** The UI must explain pending vs active policy clearly.
+
+### 03 · Unsafe state stays visible
+
+**Decision.** Kill-switch activation is shown as a first-class blocked state.
+
+**Why.** A security feature that hides itself creates support debt and user confusion.
+
+**Cost.** More copy and edge-case handling in the menu-bar surface.
+
+## Stack
+
+| | |
+|---|---|
+| **App** | SwiftUI-style menu-bar surface |
+| **Network** | NetworkExtension concepts · guarded tunnel state |
+| **Policy** | Per-app routing table · persisted preferences |
+| **Helper** | Signed helper model · privileged boundary notes |
+| **Testing** | State transition fixtures · disconnect scenarios |
+| **Privacy** | No private endpoints, keys, or real client media |
+
+## Lessons & status
+
+### Carry forward
+
+- Explicit states beat boolean connection flags.
+- Policy editing needs a separate mental model from active sessions.
+- Unsafe network behavior must be visible.
+
+### Would change
+
+- Model degraded mode before designing icons.
+- Keep provider-specific logic behind a narrow adapter.
+- Write failure copy while implementing the state machine.
+
+Fictionalized desktop case for public repo review.
+
+---
+
+Source: https://ilyadev.xyz/cases/macos-vpn (HTML) · /cases/macos-vpn.md (this file)
+Previous: 04 — Roblox Arena · Demo runtime → https://ilyadev.xyz/cases/roblox-game.md
+Up next: 06 — Portfolio Engine · Public repo case → https://ilyadev.xyz/cases/portfolio-site.md
+Index: https://ilyadev.xyz/llms.txt — full case-study list
+Author: Demo Author — https://ilyadev.xyz/index.md
+"
+`;
+
+exports[`caseStudyToMarkdown — snapshots > EN · portfolio-site 1`] = `
+"# Portfolio Engine · Public repo case
+
+\`06 · portfolio-site · Open engine\`
+
+The real architecture case for this repository: typed bilingual content, route-aware case pages, Markdown mirrors for agents, and privacy-first analytics.
+
+**Scope:** Production engine · public demo content  
+**Role:** Frontend architecture, content system, telemetry, and static publishing
+
+---
+
+## Context
+
+> Portfolio as resume is weak. Portfolio as auditable system is stronger.
+
+The project started as a portfolio page and became a small publishing engine. That is intentional: the site is both a resume surface and a proof artifact that another engineer can clone, inspect, and reason about.
+
+The public version commits sanitized demo content by default. Private content and private media live in ignored trees, selected only by explicit public/private scripts that generate the active barrel before dev, typecheck, and build.
+
+## Facts
+
+| | |
+|---|---|
+| **Content** | Typed EN/RU/AR structures, not string-key resources |
+| **Publishing** | SPA routes plus generated per-case static heads |
+| **Agents** | Markdown mirrors and llms.txt generated at build time |
+| **Telemetry** | Same-origin endpoint, no third-party tracker |
+
+## Architecture
+
+### Public/private content selection
+
+\`\`\`text
+npm script -> CONTENT_SOURCE -> select-content.mjs
+                         | public/private |
+                         v                v
+              public demo exports      .private exports
+                         \\              /
+                          src/content/active.ts
+\`\`\`
+
+**Default.** Plain dev/build fail until a public or private script is chosen.
+
+**Private.** Local ignored tree can override copy and media only through explicit private scripts.
+
+### Build outputs
+
+\`\`\`text
+typed content -> React UI
+             -> public/*.md + llms.txt
+             -> dist/cases/<slug>/index.html with case head
+\`\`\`
+
+**Humans.** SPA stays fast and route-aware.
+
+**Agents.** Markdown mirrors expose the same case structure without scraping UI.
+
+## Key engineering decisions
+
+### 01 · Typed content over i18n runtime
+
+**Decision.** The site keeps a custom typed content object instead of moving to i18next.
+
+**Why.** The project needs structure, autocomplete, and compile-time locale parity more than plural rules or translation-management workflows.
+
+**Cost.** Adding a third locale later would require another typed content tree.
+
+### 02 · Generated active barrel
+
+**Decision.** Explicit public/private scripts write src/content/active.ts to point at the selected content tree.
+
+**Why.** TypeScript, Vite config, and build-time generators all see the same import path without runtime alias tricks.
+
+**Cost.** The generated file must stay gitignored and created before typecheck/build; plain build/dev intentionally fail instead of guessing.
+
+### 03 · Static head copies for case routes
+
+**Decision.** The build writes dist/cases/<slug>/index.html with case-specific title, description, alternate Markdown links, and JSON-LD.
+
+**Why.** Social scrapers and many bots do not run client JavaScript, so client-only head updates are not enough.
+
+**Cost.** A small Vite plugin owns index.html injection.
+
+## Stack
+
+| | |
+|---|---|
+| **Frontend** | React · TypeScript · Vite 7 |
+| **Design** | CSS custom properties · route-aware case styling |
+| **Content** | Generated active barrel · public/private trees |
+| **Agents** | Markdown mirrors · llms.txt · per-case alternates |
+| **Analytics** | Node ingest · SQLite · same-origin proxy |
+| **CI** | Lint · unit tests · typecheck · build · audit · leakage guards |
+
+## Lessons & status
+
+### Carry forward
+
+- A portfolio can be a proof artifact, not only a brochure.
+- Typed content gives better refactor safety than string keys here.
+- Agent-readable mirrors make the work inspectable without UI scraping.
+- Pure helpers exported from both modules become the natural test surface — Markdown serializers, payload validators, dwell classifier.
+
+### Would change
+
+- Sanitization must include media, not only text.
+- Static metadata should be generated before publication.
+- CI should guard leakage patterns from the first public push.
+- Public proof needs executable checks around mirrors, telemetry validation, and content parity — type signatures alone do not catch array-length drift between EN and RU trees.
+
+Real architecture case with sanitized author-facing copy.
+
+---
+
+Source: https://ilyadev.xyz/cases/portfolio-site (HTML) · /cases/portfolio-site.md (this file)
+Previous: 05 — macOS Network Guard · Demo client → https://ilyadev.xyz/cases/macos-vpn.md
+Index: https://ilyadev.xyz/llms.txt — full case-study list
+Author: Demo Author — https://ilyadev.xyz/index.md
+"
+`;
+
+exports[`caseStudyToMarkdown — snapshots > EN · roblox-game 1`] = `
+"# Roblox Arena · Demo runtime
+
+\`04 · roblox-game · Demo\`
+
+Fictional multiplayer arena slice focused on deterministic combat rules, server authority, and tool-assisted content balancing.
+
+**Scope:** Demo · gameplay systems  
+**Role:** Gameplay systems demo with server-owned rules
+
+**Video:** [YouTube](https://www.youtube.com/watch?v=dQw4w9WgXcQ) · [RuTube](https://rutube.ru/video/private/2afc367fc1968ed386e52665ee7a829b/?p=WcFMiE-n0wydU96W_9-nXw)
+
+## Video walkthrough
+
+Demo arena walkthrough: combat, rewards and spawn logic stay server-owned. Designers tune enemies, abilities and economy through structured data tables; telemetry loops feed the next balance pass.
+
+Demo placeholder transcript. The video walks through the public Roblox arena demo — server authority, balance tables, telemetry loops. Replace this transcript when forking the engine with your own content.
+
+---
+
+## Context
+
+> Fun changes fast. Rules still need one authority.
+
+Small multiplayer prototypes often become brittle when gameplay rules leak across client scripts, UI code, and designer experiments. The fictional arena keeps the loop narrow: players fight, earn rewards, unlock variants, and return to a faster next round.
+
+The useful engineering work is less about visual spectacle and more about rule ownership. The server validates combat, rewards, cooldowns, and inventory updates; the client predicts only what can be safely corrected.
+
+## Facts
+
+| | |
+|---|---|
+| **Surface** | Round-based arena prototype |
+| **Rules** | Server-owned damage, rewards, cooldowns |
+| **Content** | Enemy and ability tables |
+| **Feedback** | Match events, economy sinks, retention hints |
+
+## Architecture
+
+### Authority split
+
+\`\`\`text
+Client input -> server rule check -> replicated result -> UI feedback
+      prediction        authority          correction       effects only
+\`\`\`
+
+**Client.** Feels responsive but does not grant rewards.
+
+**Server.** Owns combat outcomes, drops, and progression.
+
+## Key engineering decisions
+
+### 01 · Server-owned rewards
+
+**Decision.** Rewards are granted only by server rules after validated combat events.
+
+**Why.** Progression bugs are expensive; the economy must not depend on client claims.
+
+**Cost.** More replication code for responsive feedback.
+
+### 02 · Data tables for balance
+
+**Decision.** Enemies, ability numbers, and drop rates live in structured tables.
+
+**Why.** Design iteration should not require code edits for every tuning pass.
+
+**Cost.** Tables need validation so impossible values fail early.
+
+### 03 · Event taxonomy before content scale
+
+**Decision.** Match, reward, failure, and quit events are named before adding more modes.
+
+**Why.** Balance without telemetry becomes guesswork once content grows.
+
+**Cost.** Early naming discipline slows first prototype speed.
+
+## Stack
+
+| | |
+|---|---|
+| **Runtime** | Roblox services · Luau modules |
+| **Rules** | Server combat checks · cooldown registry |
+| **Content** | Enemy tables · ability tables · reward tables |
+| **Client** | Prediction hints · replicated UI state |
+| **Telemetry** | Round events · reward events · quit points |
+| **Demo media** | Generic SVG placeholder assets |
+
+## Lessons & status
+
+### Carry forward
+
+- Server authority keeps the economy debuggable.
+- Balance tables beat scattered constants.
+- Telemetry labels must arrive before content scale.
+
+### Would change
+
+- Prototype validation tools earlier.
+- Separate cosmetic unlocks from combat numbers.
+- Keep client prediction narrow and disposable.
+
+Fictionalized gameplay case for public repo review.
+
+---
+
+Source: https://ilyadev.xyz/cases/roblox-game (HTML) · /cases/roblox-game.md (this file)
+Previous: 03 — AI Video Editor · Demo timeline → https://ilyadev.xyz/cases/ai-video-editor.md
+Up next: 05 — macOS Network Guard · Demo client → https://ilyadev.xyz/cases/macos-vpn.md
+Index: https://ilyadev.xyz/llms.txt — full case-study list
+Author: Demo Author — https://ilyadev.xyz/index.md
+"
+`;
+
+exports[`caseStudyToMarkdown — snapshots > RU · ai-crm 1`] = `
+"# AI CRM · Demo lead desk
+
+\`01 · ai-crm · Demo\`
+
+Вымышленный operator desk: AI черновит summary, предлагает next action и ждёт подтверждения человека перед изменением customer state.
+
+**Scope:** Demo · эквивалент 6 недель  
+**Role:** Full-stack CRM workflow demo с auditable AI actions
+
+**Video:** [YouTube](https://www.youtube.com/watch?v=dQw4w9WgXcQ) · [RuTube](https://rutube.ru/video/private/2afc367fc1968ed386e52665ee7a829b/?p=WcFMiE-n0wydU96W_9-nXw)
+
+## Video walkthrough
+
+Demo-обход CRM: AI черновит summary лида, предлагает qualification state и готовит follow-up. Оператор review proposal в очереди и approve/edit/reject — никакой state change не коммитится без ручного подтверждения.
+
+Demo-транскрипт-заглушка. Видео — walkthrough публичного CRM-демо: черновики ассистента, review-очередь, approve оператором, audit trail. Customer data в кадре нет. Замени этот транскрипт при форке движка своим контентом.
+
+---
+
+## Контекст
+
+> AI черновит следующий шаг. Коммитит только человек.
+
+Вымышленный продукт моделирует small operations team, которая получает больше inbound сообщений, чем успевает разобрать вручную. Полезная автоматизация здесь не chatbot, который делает вид что закрывает сделки, а review queue: messy context превращается в operator-ready decisions.
+
+Demo держит границу видимой: output модели попадает в систему как proposal. Backend отвечает за permissions, state transitions и durable audit rows.
+
+## Факты
+
+| | |
+|---|---|
+| **Surface** | CRM dashboard + review queue |
+| **AI lane** | Draft summaries, statuses, follow-ups |
+| **Write model** | Только human-approved |
+| **Telemetry** | Review latency, accepted drafts, rejected drafts |
+
+## Архитектура
+
+### Review-first action path
+
+\`\`\`text
+Inbound lead -> AI draft -> Review queue -> Operator decision
+                                | approve | edit | reject |
+                                v         v      v
+                          audited state transition
+\`\`\`
+
+**Boundary.** Модель никогда не пишет напрямую в lead table.
+
+**Audit.** Каждое предложенное и принятое изменение хранит actor, reason и timestamp.
+
+## Ключевые инженерные решения
+
+### 01 · Proposal records before domain writes
+
+**Решение.** AI output сохраняется как proposal object с typed action и payload.
+
+**Почему.** Операторам нужно видеть intent до mutation, а reviewer должен видеть что модель пыталась сделать.
+
+**Цена.** Больше screens и state transitions, зато debugging прямой.
+
+### 02 · Small tool surface
+
+**Решение.** Assistant получает узкие read tools без broad SQL-style execution.
+
+**Почему.** Полезная capability — retrieval + drafting, не unrestricted data access.
+
+**Цена.** Больше purpose-built endpoints.
+
+### 03 · Accepted draft metrics
+
+**Решение.** Dashboard отдельно считает accepted, edited и rejected suggestions.
+
+**Почему.** Raw AI usage — vanity; acceptance quality показывает пользу workflow.
+
+**Цена.** Нужна event taxonomy discipline с первого дня.
+
+## Стек
+
+| | |
+|---|---|
+| **Backend** | FastAPI · PostgreSQL · Redis queue |
+| **Frontend** | React · typed forms · review queue UI |
+| **AI** | LLM tool contracts · constrained JSON payloads |
+| **Ops** | Docker Compose · structured logs · nightly export |
+| **Testing** | Payload fixtures · approval-state tests |
+| **Privacy** | Нет real customer data в public repo |
+
+## Уроки и статус
+
+### Оставлю как есть
+
+- Proposal-first shape держит automation explainable.
+- Typed actions удешевляют rendering review states.
+- Acceptance metrics важнее prompt demos.
+
+### Поменял бы
+
+- Reviewer notes нужно делать first-class data раньше.
+- Model confidence показывать как weak signal, не decision.
+- Tool schemas требуют versioning после persistence proposals.
+
+Fictionalized case для проверки public portfolio engine.
+
+---
+
+Source: https://ilyadev.xyz/cases/ai-crm (HTML) · /cases/ai-crm.ru.md (this file)
+Up next: 02 — AI Warehouse · Demo stock ops → https://ilyadev.xyz/cases/ai-warehouse.ru.md
+Index: https://ilyadev.xyz/llms-ru.txt — full case-study list
+Author: Demo Author — https://ilyadev.xyz/index.ru.md
+"
+`;
+
+exports[`caseStudyToMarkdown — snapshots > RU · ai-video-editor 1`] = `
+"# AI Video Editor · Demo timeline
+
+\`03 · ai-video-editor · Demo\`
+
+Вымышленный media workspace, где prompts создают timeline edits как diffable changesets, а не мутируют project напрямую.
+
+**Scope:** Demo · R&D prototype  
+**Role:** AI-assisted timeline editor с audit-first changesets
+
+**Video:** [YouTube](https://www.youtube.com/watch?v=dQw4w9WgXcQ) · [RuTube](https://rutube.ru/video/private/2afc367fc1968ed386e52665ee7a829b/?p=WcFMiE-n0wydU96W_9-nXw)
+
+## Video walkthrough
+
+Demo-обход таймлайна: chat command создаёт proposed clip edit как diffable changeset; пользователь review diff до изменения committed timeline. Render и transcription jobs проходят через один async registry.
+
+Demo-транскрипт-заглушка. Видео — walkthrough публичного AI-видеоредактора: prompt-driven changesets, two-cadence playhead, diff preview, async job lanes. Замени этот транскрипт при форке движка своим контентом.
+
+---
+
+## Контекст
+
+> Prompts могут редактировать быстро. Timeline всё равно нужны diffs.
+
+Media tools становятся fragile, когда AI пишет напрямую в live timeline state. Prompt может быть полезным, но user должен увидеть proposed edit, сравнить его с current timeline и reject без потери работы.
+
+Demo трактует каждый AI response как changeset над clips, captions и render settings. Ничего не становится committed до accept.
+
+## Факты
+
+| | |
+|---|---|
+| **Surface** | Timeline + chat side panel |
+| **AI lane** | Clip edits · captions · render instructions |
+| **State** | Committed timeline vs proposed changeset |
+| **Async** | Render jobs and transcription jobs |
+
+## Архитектура
+
+### Changeset boundary
+
+\`\`\`text
+Prompt -> edit planner -> changeset preview -> accept/reject
+                         |              |
+                         v              v
+                 live timeline stays    committed timeline updates only on accept
+\`\`\`
+
+**State split.** Live playback time не двигает committed editor state.
+
+**Review.** User видит какие clips и captions изменятся.
+
+## Ключевые инженерные решения
+
+### 01 · Changesets, not hidden mutations
+
+**Решение.** AI edits представлены как explicit timeline patches.
+
+**Почему.** Creative tools требуют trust; invisible mutation быстро его ломает.
+
+**Цена.** Patch generation и preview UI добавляют complexity.
+
+### 02 · Separate live playback state
+
+**Решение.** Playback time живёт вне committed editor store.
+
+**Почему.** Frame-rate updates не должны re-render whole editor tree.
+
+**Цена.** Больше coordination code вокруг player bridge.
+
+### 03 · Async job registry
+
+**Решение.** Rendering и transcription используют один job tracking shape.
+
+**Почему.** UI не должен учить новый transport для каждой background task.
+
+**Цена.** Registry должен быть generic, но не vague.
+
+## Стек
+
+| | |
+|---|---|
+| **UI** | React · timeline components · diff preview |
+| **Playback** | Remotion-style player boundary |
+| **AI** | Prompt planner · JSON patches |
+| **Jobs** | Render queue · transcription queue |
+| **State** | Committed editor store · live playback store |
+| **Media** | Local placeholder assets only |
+
+## Уроки и статус
+
+### Оставлю как есть
+
+- Diff-first AI editing проще доверять.
+- Heavy playback state нуждается в isolation.
+- Один job registry окупается после второй async lane.
+
+### Поменял бы
+
+- Patch validation нужно schema-version раньше.
+- Preview thumbnails лучше cache by changeset id.
+- Chat history должен ссылаться прямо на accepted timeline patches.
+
+Fictionalized case для public repository.
+
+---
+
+Source: https://ilyadev.xyz/cases/ai-video-editor (HTML) · /cases/ai-video-editor.ru.md (this file)
+Previous: 02 — AI Warehouse · Demo stock ops → https://ilyadev.xyz/cases/ai-warehouse.ru.md
+Up next: 04 — Roblox Arena · Demo runtime → https://ilyadev.xyz/cases/roblox-game.ru.md
+Index: https://ilyadev.xyz/llms-ru.txt — full case-study list
+Author: Demo Author — https://ilyadev.xyz/index.ru.md
+"
+`;
+
+exports[`caseStudyToMarkdown — snapshots > RU · ai-warehouse 1`] = `
+"# AI Warehouse · Demo stock ops
+
+\`02 · ai-warehouse · Demo\`
+
+Вымышленный inventory assistant превращает receipt photos и operator notes в reviewable stock operations с weighted-cost math и rollback records.
+
+**Scope:** Demo · эквивалент 5 недель  
+**Role:** Operational inventory workflow с AI-assisted drafts
+
+**Video:** [YouTube](https://www.youtube.com/watch?v=dQw4w9WgXcQ) · [RuTube](https://rutube.ru/video/private/2afc367fc1968ed386e52665ee7a829b/?p=WcFMiE-n0wydU96W_9-nXw)
+
+## Video walkthrough
+
+Demo-обход складского интерфейса: AI извлекает черновик из фото чека, оператор review его в WebApp, средневзвешенная себестоимость пересчитывается только после confirm. Original evidence остаётся прикреплён к каждому proposal.
+
+Demo-транскрипт-заглушка. Видео — walkthrough публичного warehouse-демо: receipt intake, draft review, server-side cost math, rollback records. Замени этот транскрипт при форке движка своим контентом.
+
+---
+
+## Контекст
+
+> Чек — не order. Это draft до review.
+
+Inventory teams часто собирают messy inputs: receipt photos, supplier messages и короткие notes со смены. Полезная задача AI — normalize input в draft operations без bypass stock integrity.
+
+Demo держит arithmetic на сервере. Weighted-cost updates, ingredient usage и negative-stock checks происходят после review draft, не внутри model response.
+
+## Факты
+
+| | |
+|---|---|
+| **Surface** | Stock operations dashboard |
+| **Inputs** | Receipt image · manual note · supplier text |
+| **Review** | Supply · deduction · preparation lanes |
+| **Safety** | Server-side validation before commit |
+
+## Архитектура
+
+### Draft-to-confirm flow
+
+\`\`\`text
+Image / note -> parse draft -> operator review -> validate -> commit
+                     |             | edit / reject |           |
+                     v             v               v           v
+                raw evidence   proposal log    domain checks  stock rows
+\`\`\`
+
+**Evidence.** Original input остаётся attached к operation.
+
+**Math.** Модель предлагает fields; backend пересчитывает totals.
+
+## Ключевые инженерные решения
+
+### 01 · Evidence stays beside the draft
+
+**Решение.** Каждый proposed operation хранит source image или note до confirm/reject.
+
+**Почему.** Оператор должен сравнить AI extraction с original input.
+
+**Цена.** Storage растёт быстрее, зато review quality видима.
+
+### 02 · Server-owned cost math
+
+**Решение.** Weighted average cost и stock deltas пересчитываются backend.
+
+**Почему.** Language model не должен быть source of truth для accounting arithmetic.
+
+**Цена.** UI должен объяснять mismatch между model draft и validated values.
+
+### 03 · Rollback as a product surface
+
+**Решение.** Confirmed operations reversable через typed correction records.
+
+**Почему.** Operational software обязан поддерживать mistakes без silent database edits.
+
+**Цена.** Reporting queries должны учитывать corrections.
+
+## Стек
+
+| | |
+|---|---|
+| **Backend** | FastAPI · PostgreSQL · validation layer |
+| **AI intake** | OCR · structured extraction · confidence hints |
+| **Frontend** | React review lanes · diffable fields |
+| **Workers** | Async image processing · retry queue |
+| **Audit** | Raw evidence · proposals · corrections |
+| **Demo media** | Generic SVG placeholder assets |
+
+## Уроки и статус
+
+### Оставлю как есть
+
+- Draft и evidence должны оставаться связаны.
+- Accounting math живёт вне модели.
+- Rollback records лучше manual database repairs.
+
+### Поменял бы
+
+- Bulk review добавлять только после доверия к single-item review.
+- Validation errors показывать раньше в draft state.
+- Image preprocessing должен быть reproducible для debugging.
+
+Fictionalized case для проверки long-form operational copy.
+
+---
+
+Source: https://ilyadev.xyz/cases/ai-warehouse (HTML) · /cases/ai-warehouse.ru.md (this file)
+Previous: 01 — AI CRM · Demo lead desk → https://ilyadev.xyz/cases/ai-crm.ru.md
+Up next: 03 — AI Video Editor · Demo timeline → https://ilyadev.xyz/cases/ai-video-editor.ru.md
+Index: https://ilyadev.xyz/llms-ru.txt — full case-study list
+Author: Demo Author — https://ilyadev.xyz/index.ru.md
+"
+`;
+
+exports[`caseStudyToMarkdown — snapshots > RU · macos-vpn 1`] = `
+"# macOS Network Guard · Demo client
+
+\`05 · macos-vpn · Demo\`
+
+Вымышленный macOS menu-bar client: per-app network policy, connection state и kill-switch behavior без private infrastructure details.
+
+**Scope:** Demo · desktop systems  
+**Role:** Desktop network-control demo с explicit failure states
+
+---
+
+## Контекст
+
+> Network tools fail. Product должен показать which state failed.
+
+Вымышленный client сфокусирован на user-facing стороне network-control product: state clarity, predictable app policy и failure modes, которые не expose traffic silently.
+
+Private endpoints, keys и provider details намеренно отсутствуют. Public case оставляет system shape: menu-bar surface, connection state machine, policy storage и guardrails вокруг unsafe transitions.
+
+## Факты
+
+| | |
+|---|---|
+| **Surface** | macOS menu-bar utility |
+| **Policy** | Per-app allow/block routing model |
+| **State** | Disconnected · connecting · protected · degraded · blocked |
+| **Safety** | Kill-switch state visible, not silent |
+
+## Архитектура
+
+### Connection state model
+
+\`\`\`text
+connect -> connecting -> protected
+   |            | error        | tunnel lost
+   v            v              v
+blocked <- degraded <- reconnect attempt
+\`\`\`
+
+**Blocked.** Unsafe traffic остаётся blocked до user или policy exit.
+
+**UI.** Каждый state maps to one visible label and one allowed action set.
+
+## Ключевые инженерные решения
+
+### 01 · State machine before UI polish
+
+**Решение.** Connection state modeled as explicit states with allowed transitions.
+
+**Почему.** Network products fail в edges; implicit booleans hide those edges.
+
+**Цена.** Больше upfront modeling до finished-looking UI.
+
+### 02 · Policy is separate from session
+
+**Решение.** Per-app routing policy хранится отдельно от active connection session.
+
+**Почему.** User должен менять policy без accidental mutation current tunnel state.
+
+**Цена.** UI должен clearly explain pending vs active policy.
+
+### 03 · Unsafe state stays visible
+
+**Решение.** Kill-switch activation показывается как first-class blocked state.
+
+**Почему.** Security feature, которая hides itself, создаёт support debt и confusion.
+
+**Цена.** Больше copy и edge-case handling в menu-bar surface.
+
+## Стек
+
+| | |
+|---|---|
+| **App** | SwiftUI-style menu-bar surface |
+| **Network** | NetworkExtension concepts · guarded tunnel state |
+| **Policy** | Per-app routing table · persisted preferences |
+| **Helper** | Signed helper model · privileged boundary notes |
+| **Testing** | State transition fixtures · disconnect scenarios |
+| **Privacy** | No private endpoints, keys, or real client media |
+
+## Уроки и статус
+
+### Оставлю как есть
+
+- Explicit states лучше boolean connection flags.
+- Policy editing нужен отдельный mental model от active sessions.
+- Unsafe network behavior должен быть visible.
+
+### Поменял бы
+
+- Model degraded mode до icon design.
+- Provider-specific logic держать за narrow adapter.
+- Failure copy писать вместе со state machine.
+
+Fictionalized desktop case для public repo review.
+
+---
+
+Source: https://ilyadev.xyz/cases/macos-vpn (HTML) · /cases/macos-vpn.ru.md (this file)
+Previous: 04 — Roblox Arena · Demo runtime → https://ilyadev.xyz/cases/roblox-game.ru.md
+Up next: 06 — Portfolio Engine · Public repo case → https://ilyadev.xyz/cases/portfolio-site.ru.md
+Index: https://ilyadev.xyz/llms-ru.txt — full case-study list
+Author: Demo Author — https://ilyadev.xyz/index.ru.md
+"
+`;
+
+exports[`caseStudyToMarkdown — snapshots > RU · portfolio-site 1`] = `
+"# Portfolio Engine · Public repo case
+
+\`06 · portfolio-site · Open engine\`
+
+Реальный architecture case для этого repo: typed bilingual content, route-aware case pages, Markdown mirrors for agents и privacy-first analytics.
+
+**Scope:** Production engine · public demo content  
+**Role:** Frontend architecture, content system, telemetry и static publishing
+
+---
+
+## Контекст
+
+> Portfolio как resume слабее. Portfolio как auditable system сильнее.
+
+Проект начался как portfolio page и стал small publishing engine. Это intentional: site одновременно resume surface и proof artifact, который другой engineer может clone, inspect и reason about.
+
+Public version commits sanitized demo content by default. Private content и private media живут в ignored trees, selected only by explicit public/private scripts that generate the active barrel before dev, typecheck and build.
+
+## Факты
+
+| | |
+|---|---|
+| **Content** | Typed EN/RU/AR structures, not string-key resources |
+| **Publishing** | SPA routes plus generated per-case static heads |
+| **Agents** | Markdown mirrors and llms.txt generated at build time |
+| **Telemetry** | Same-origin endpoint, no third-party tracker |
+
+## Архитектура
+
+### Public/private content selection
+
+\`\`\`text
+npm script -> CONTENT_SOURCE -> select-content.mjs
+                         | public/private |
+                         v                v
+              public demo exports      .private exports
+                         \\              /
+                          src/content/active.ts
+\`\`\`
+
+**Default.** Plain dev/build fail until public или private script chosen.
+
+**Private.** Local ignored tree overrides copy and media only through explicit private scripts.
+
+### Build outputs
+
+\`\`\`text
+typed content -> React UI
+             -> public/*.md + llms.txt
+             -> dist/cases/<slug>/index.html with case head
+\`\`\`
+
+**Humans.** SPA stays fast and route-aware.
+
+**Agents.** Markdown mirrors expose same case structure without UI scraping.
+
+## Ключевые инженерные решения
+
+### 01 · Typed content over i18n runtime
+
+**Решение.** Site keeps custom typed content object вместо i18next.
+
+**Почему.** Project needs structure, autocomplete and compile-time locale parity more than plural rules or translation-management workflows.
+
+**Цена.** Third locale later means another typed content tree.
+
+### 02 · Generated active barrel
+
+**Решение.** Explicit public/private scripts write src/content/active.ts pointing at selected content tree.
+
+**Почему.** TypeScript, Vite config and build-time generators see one import path without runtime alias tricks.
+
+**Цена.** Generated file must stay gitignored and created before typecheck/build; plain build/dev intentionally fail instead of guessing.
+
+### 03 · Static head copies for case routes
+
+**Решение.** Build writes dist/cases/<slug>/index.html with case-specific title, description, alternate Markdown links and JSON-LD.
+
+**Почему.** Social scrapers and many bots do not run client JavaScript; client-only head updates are insufficient.
+
+**Цена.** Small Vite plugin owns index.html injection.
+
+## Стек
+
+| | |
+|---|---|
+| **Frontend** | React · TypeScript · Vite 7 |
+| **Design** | CSS custom properties · route-aware case styling |
+| **Content** | Generated active barrel · public/private trees |
+| **Agents** | Markdown mirrors · llms.txt · per-case alternates |
+| **Analytics** | Node ingest · SQLite · same-origin proxy |
+| **CI** | Lint · unit tests · typecheck · build · audit · leakage guards |
+
+## Уроки и статус
+
+### Оставлю как есть
+
+- Portfolio can be proof artifact, not only brochure.
+- Typed content gives better refactor safety than string keys here.
+- Agent-readable mirrors make work inspectable without UI scraping.
+- Pure helpers exported from both modules become natural test surface — Markdown serializers, payload validators, dwell classifier.
+
+### Поменял бы
+
+- Sanitization must include media, not only text.
+- Static metadata should be generated before publication.
+- CI should guard leakage patterns from first public push.
+- Public proof needs executable checks around mirrors, telemetry validation, and content parity — type signatures alone do not catch array-length drift between EN and RU trees.
+
+Real architecture case with sanitized author-facing copy.
+
+---
+
+Source: https://ilyadev.xyz/cases/portfolio-site (HTML) · /cases/portfolio-site.ru.md (this file)
+Previous: 05 — macOS Network Guard · Demo client → https://ilyadev.xyz/cases/macos-vpn.ru.md
+Index: https://ilyadev.xyz/llms-ru.txt — full case-study list
+Author: Demo Author — https://ilyadev.xyz/index.ru.md
+"
+`;
+
+exports[`caseStudyToMarkdown — snapshots > RU · roblox-game 1`] = `
+"# Roblox Arena · Demo runtime
+
+\`04 · roblox-game · Demo\`
+
+Вымышленный multiplayer arena slice: deterministic combat rules, server authority и tool-assisted content balancing.
+
+**Scope:** Demo · gameplay systems  
+**Role:** Gameplay systems demo с server-owned rules
+
+**Video:** [YouTube](https://www.youtube.com/watch?v=dQw4w9WgXcQ) · [RuTube](https://rutube.ru/video/private/2afc367fc1968ed386e52665ee7a829b/?p=WcFMiE-n0wydU96W_9-nXw)
+
+## Video walkthrough
+
+Demo-обход арены: combat, rewards и spawn logic остаются на сервере. Designers тюнят врагов, способности и экономику через structured data tables; telemetry loops кормят следующий balance pass.
+
+Demo-транскрипт-заглушка. Видео — walkthrough публичного Roblox-демо: server authority, balance tables, telemetry loops. Замени этот транскрипт при форке движка своим контентом.
+
+---
+
+## Контекст
+
+> Fun меняется быстро. Rules всё равно нужен один authority.
+
+Small multiplayer prototypes быстро становятся brittle, когда gameplay rules расползаются по client scripts, UI code и designer experiments. Вымышленная arena держит loop узким: players fight, earn rewards, unlock variants и возвращаются в faster next round.
+
+Главная engineering work здесь не visual spectacle, а ownership правил. Server validates combat, rewards, cooldowns и inventory updates; client predicts только то, что можно safely correct.
+
+## Факты
+
+| | |
+|---|---|
+| **Surface** | Round-based arena prototype |
+| **Rules** | Server-owned damage, rewards, cooldowns |
+| **Content** | Enemy and ability tables |
+| **Feedback** | Match events, economy sinks, retention hints |
+
+## Архитектура
+
+### Authority split
+
+\`\`\`text
+Client input -> server rule check -> replicated result -> UI feedback
+      prediction        authority          correction       effects only
+\`\`\`
+
+**Client.** Feels responsive, но не выдаёт rewards.
+
+**Server.** Owns combat outcomes, drops и progression.
+
+## Ключевые инженерные решения
+
+### 01 · Server-owned rewards
+
+**Решение.** Rewards выдаются только server rules после validated combat events.
+
+**Почему.** Progression bugs дорогие; economy не должна зависеть от client claims.
+
+**Цена.** Больше replication code для responsive feedback.
+
+### 02 · Data tables for balance
+
+**Решение.** Enemies, ability numbers и drop rates живут в structured tables.
+
+**Почему.** Design iteration не должен требовать code edits для каждого tuning pass.
+
+**Цена.** Tables требуют validation, чтобы impossible values падали рано.
+
+### 03 · Event taxonomy before content scale
+
+**Решение.** Match, reward, failure и quit events названы до добавления новых modes.
+
+**Почему.** Balance без telemetry становится guesswork, когда content растёт.
+
+**Цена.** Early naming discipline замедляет первый prototype.
+
+## Стек
+
+| | |
+|---|---|
+| **Runtime** | Roblox services · Luau modules |
+| **Rules** | Server combat checks · cooldown registry |
+| **Content** | Enemy tables · ability tables · reward tables |
+| **Client** | Prediction hints · replicated UI state |
+| **Telemetry** | Round events · reward events · quit points |
+| **Demo media** | Generic SVG placeholder assets |
+
+## Уроки и статус
+
+### Оставлю как есть
+
+- Server authority держит economy debuggable.
+- Balance tables лучше scattered constants.
+- Telemetry labels нужны до content scale.
+
+### Поменял бы
+
+- Prototype validation tools раньше.
+- Cosmetic unlocks отделять от combat numbers.
+- Client prediction держать narrow and disposable.
+
+Fictionalized gameplay case для public repo review.
+
+---
+
+Source: https://ilyadev.xyz/cases/roblox-game (HTML) · /cases/roblox-game.ru.md (this file)
+Previous: 03 — AI Video Editor · Demo timeline → https://ilyadev.xyz/cases/ai-video-editor.ru.md
+Up next: 05 — macOS Network Guard · Demo client → https://ilyadev.xyz/cases/macos-vpn.ru.md
+Index: https://ilyadev.xyz/llms-ru.txt — full case-study list
+Author: Demo Author — https://ilyadev.xyz/index.ru.md
+"
+`;

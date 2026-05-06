@@ -1,0 +1,248 @@
+/* ============================================================
+   Tweaks panel
+   ============================================================ */
+.tw-toggle {
+  position: fixed; right: 20px; bottom: 20px; z-index: 40;
+  padding: 10px 14px;
+  background: var(--fg); color: var(--bg); border: 0;
+  font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase;
+  cursor: pointer;
+  box-shadow: 0 4px 0 0 color-mix(in oklab, var(--fg) 15%, transparent);
+}
+.tw-toggle:hover { background: var(--accent); color: var(--accent-contrast); }
+.tw-panel {
+  position: fixed; right: 20px; bottom: 20px; z-index: 50;
+  width: 320px; max-width: calc(100vw - 40px);
+  background: var(--bg);
+  border: var(--line-width) solid var(--line-strong);
+  padding: var(--space-5);
+  display: flex; flex-direction: column; gap: var(--space-4);
+  box-shadow: 0 6px 0 0 color-mix(in oklab, var(--fg) 10%, transparent);
+}
+.tw-panel h4 { margin: 0; font-family: var(--font-mono); font-size: 0.75rem; letter-spacing: 0.12em; text-transform: uppercase; display: flex; justify-content: space-between; align-items: baseline; }
+.tw-panel h4 .x { font-family: var(--font-mono); cursor: pointer; color: var(--fg-mute); }
+.tw-group { display: flex; flex-direction: column; gap: var(--space-1-5); }
+.tw-group .k { font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--fg-mute); }
+.tw-seg { display: flex; border: var(--line-width) solid var(--line); }
+.tw-seg button {
+  flex: 1; padding: 8px 6px; font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.06em; text-transform: uppercase;
+  border-inline-end: var(--line-width) solid var(--line); color: var(--fg-mute);
+}
+.tw-seg button:last-child { border-inline-end: 0; }
+.tw-seg button[aria-pressed="true"] { background: var(--fg); color: var(--bg); }
+
+/* ============================================================
+   LOADER — whiteish pulsing hairline aligned to the real hero↔about
+   divider, then two rushing pulses → small flash → overlay fade-out.
+   Interface entrance animations live below in the INTERFACE ENTRANCE
+   block and kick in when `html.is-loading` is removed.
+   ============================================================ */
+.loader {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: oklch(0.08 0 0);
+  overflow: hidden;
+  opacity: 1;
+}
+/* Normal path: fade out with a 400ms delay so the hero starts lighting up
+   BEFORE the two pulses collide at center. Total 900ms: wait 400, fade 500. */
+.loader--rush {
+  animation: loader-rush-out 900ms ease-out forwards;
+  pointer-events: none;
+}
+@keyframes loader-rush-out {
+  0%, 44% { opacity: 1; }
+  100%    { opacity: 0; }
+}
+/* Reduced-motion path: plain fade. */
+.loader--reveal {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 500ms ease-out;
+}
+
+.loader-line {
+  position: absolute;
+  top: var(--loader-line-y, 50%);
+  left: 15%;
+  right: 15%;
+  height: 1px;
+  margin-top: -0.5px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    color-mix(in oklab, #fff 45%, transparent) 18%,
+    color-mix(in oklab, #fff 95%, transparent) 50%,
+    color-mix(in oklab, #fff 45%, transparent) 82%,
+    transparent 100%
+  );
+  opacity: 0.25;
+  transition: top 300ms ease-out;
+}
+.loader--pulse .loader-line {
+  animation: loader-pulse 1.2s ease-in-out infinite;
+}
+.loader--rush .loader-line {
+  opacity: 0.85;
+}
+
+@keyframes loader-pulse {
+  0%, 100% { opacity: 0.22; }
+  50%      { opacity: 0.7; }
+}
+
+/* Two whiteish pulses that rush from the edges to the center of the hairline. */
+.loader-pulse {
+  position: absolute;
+  top: var(--loader-line-y, 50%);
+  width: 48px;
+  height: 3px;
+  margin-top: -1.5px;
+  background: color-mix(in oklab, #fff 95%, transparent);
+  filter: blur(5px);
+  opacity: 0;
+  pointer-events: none;
+}
+.loader-pulse--left  { left: 15%; }
+.loader-pulse--right { right: 15%; }
+
+.loader--rush .loader-pulse--left {
+  animation: loader-rush-left 600ms ease-out forwards;
+}
+.loader--rush .loader-pulse--right {
+  animation: loader-rush-right 600ms ease-out forwards;
+}
+
+@keyframes loader-rush-left {
+  0%   { left: 15%; opacity: 0; }
+  20%  { opacity: 1; }
+  100% { left: calc(50% - 24px); opacity: 1; }
+}
+@keyframes loader-rush-right {
+  0%   { right: 15%; opacity: 0; }
+  20%  { opacity: 1; }
+  100% { right: calc(50% - 24px); opacity: 1; }
+}
+
+/* Reduced motion: skip pulse/rush, just fade. */
+@media (prefers-reduced-motion: reduce) {
+  .loader--pulse .loader-line { animation: none; opacity: 0.4; }
+  .loader-pulse { display: none; }
+}
+
+/* ============================================================
+   INTERFACE ENTRANCE — staged reveal of hero / nav elements.
+   `html.is-loading` is added sync in index.html before first paint
+   and removed by <Loader> at the reveal phase. `:not(.is-loading)`
+   then kicks off the entrance animations with per-element delays.
+   ============================================================ */
+html.is-loading .nav,
+html.is-loading .hero-a .hero-fx,
+html.is-loading .hero-a .meta-l,
+html.is-loading .hero-a .main > .mono,
+html.is-loading .hero-a .main .name,
+html.is-loading .hero-a .main .role,
+html.is-loading .hero-a .chips,
+html.is-loading .hero-meta-strip,
+html.is-loading .about-glow,
+html.is-loading .about .section-head,
+html.is-loading .about .pull .q,
+html.is-loading .about .body {
+  opacity: 0;
+}
+
+html:not(.is-loading) .hero-a .hero-fx {
+  animation: enter-fade 900ms ease-out 0ms backwards;
+}
+html:not(.is-loading) .nav {
+  animation: enter-fade 500ms ease-out 150ms backwards;
+}
+html:not(.is-loading) .hero-a .meta-l {
+  animation: enter-up 500ms ease-out 300ms backwards;
+}
+html:not(.is-loading) .hero-a .main > .mono {
+  animation: enter-up 500ms ease-out 400ms backwards;
+}
+html:not(.is-loading) .hero-a .main .name {
+  animation: enter-up 700ms ease-out 500ms backwards;
+}
+html:not(.is-loading) .hero-a .main .role {
+  animation: enter-up 500ms ease-out 750ms backwards;
+}
+html:not(.is-loading) .hero-a .chips {
+  animation: enter-up 500ms ease-out 950ms backwards;
+}
+html:not(.is-loading) .hero-meta-strip {
+  animation: enter-fade 500ms ease-out 1100ms backwards;
+}
+
+/* About section — continues the cascade so it feels like one reveal. */
+html:not(.is-loading) .about-glow {
+  animation: enter-fade 900ms ease-out 1100ms backwards;
+}
+html:not(.is-loading) .about .section-head {
+  animation: enter-up 500ms ease-out 1250ms backwards;
+}
+html:not(.is-loading) .about .pull .q {
+  animation: enter-up 600ms ease-out 1400ms backwards;
+}
+html:not(.is-loading) .about .body {
+  animation: enter-up 500ms ease-out 1550ms backwards;
+}
+
+@keyframes enter-fade {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes enter-up {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html:not(.is-loading) .hero-a .hero-fx,
+  html:not(.is-loading) .nav,
+  html:not(.is-loading) .hero-a .meta-l,
+  html:not(.is-loading) .hero-a .main > .mono,
+  html:not(.is-loading) .hero-a .main .name,
+  html:not(.is-loading) .hero-a .main .role,
+  html:not(.is-loading) .hero-a .chips,
+  html:not(.is-loading) .hero-meta-strip,
+  html:not(.is-loading) .about-glow,
+  html:not(.is-loading) .about .section-head,
+  html:not(.is-loading) .about .pull .q,
+  html:not(.is-loading) .about .body {
+    animation: none;
+  }
+}
+
+/* ============================================================
+   VIEW TRANSITIONS — home <-> /cases/:slug
+   ============================================================
+   Cards on home and the case-hero share `view-transition-name: video-{slug}`
+   (set inline from React). The browser FLIP-morphs the matched element
+   between snapshots and crossfades the rest of the document.
+   See `useTransitionNavigate` for the wrapper that triggers a transition. */
+
+::view-transition-group(*) {
+  animation-duration: 480ms;
+  animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Page contents (everything not opted into a named transition) crossfades
+   slightly faster — keeps the morph the focal point of the choreography. */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 320ms;
+}
+
+/* Belt-and-suspenders alongside the JS guard in useTransitionNavigate:
+   if a transition does fire under reduced-motion, kill the animations. */
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation-duration: 1ms !important;
+  }
+}
