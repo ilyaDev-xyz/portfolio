@@ -149,9 +149,10 @@ export function generateCvTypst(content: Content, lang: Lang): string {
   };
   const labels = sectionLabels[lang];
 
+  const moreCasesLabel = cv.moreCasesUrl.replace(/^https?:\/\//, '');
   const moreCasesText = esc(cv.moreCasesNote).replace(
     /ilyadev\\\.xyz\\\/cases/,
-    `#link("${cv.moreCasesUrl}")[ilyadev.xyz/cases]`,
+    `#link("${cv.moreCasesUrl}")[${esc(moreCasesLabel)}]`,
   );
 
   return `// Auto-generated CV. Do not edit by hand.

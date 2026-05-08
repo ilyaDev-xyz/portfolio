@@ -49,7 +49,8 @@ export const case06Ru: Project = {
       {
         title: 'Build outputs',
         ascii: `typed content -> React UI
-             -> public/*.md + llms.txt
+             -> public/dev mirrors or private dist mirrors
+             -> llms.txt + per-page Markdown twins
              -> dist/cases/<slug>/index.html with case head`,
         notes: [
           { k: 'Humans', v: 'SPA stays fast and route-aware.' },

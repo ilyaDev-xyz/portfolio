@@ -9,6 +9,7 @@ const force = process.env.EXPORT_FORCE === '1';
 
 const excludedDirs = new Set([
   'scripts/cv/out',
+  'scripts/og/out',
   'server/data',
   'src/content/.private',
   'public/private',

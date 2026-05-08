@@ -51,8 +51,8 @@ export const cvEn: Cv = {
     { name: 'English', level: 'demo placeholder' },
     { name: 'Other', level: 'demo placeholder' },
   ],
-  moreCasesUrl: 'https://ilyadev.xyz/cases',
-  moreCasesNote: 'Six demo case studies — explore the public portfolio engine at ilyadev.xyz/cases',
+  moreCasesUrl: '/cases',
+  moreCasesNote: 'Six demo case studies — explore the public portfolio engine.',
   pdfPath: '/demo/cv-en.pdf',
 };
 
@@ -103,8 +103,8 @@ export const cvRu: Cv = {
     { name: 'Русский', level: 'demo placeholder' },
     { name: 'Другой', level: 'demo placeholder' },
   ],
-  moreCasesUrl: 'https://ilyadev.xyz/cases',
-  moreCasesNote: 'Шесть demo-кейсов — изучите публичный движок портфолио на ilyadev.xyz/cases',
+  moreCasesUrl: '/cases',
+  moreCasesNote: 'Шесть demo-кейсов — изучите публичный движок портфолио.',
   pdfPath: '/demo/cv-ru.pdf',
 };
 
@@ -155,7 +155,7 @@ export const cvAr: Cv = {
     { name: 'العربية', level: 'demo placeholder' },
     { name: 'لغة أخرى', level: 'demo placeholder' },
   ],
-  moreCasesUrl: 'https://ilyadev.xyz/cases',
-  moreCasesNote: 'ست دراسات حالة تجريبية — استكشف portfolio engine العام على ilyadev.xyz/cases',
+  moreCasesUrl: '/cases',
+  moreCasesNote: 'ست دراسات حالة تجريبية — استكشف portfolio engine العام.',
   pdfPath: '/demo/cv-ar.pdf',
 };

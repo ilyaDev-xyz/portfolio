@@ -25,9 +25,8 @@ export function Footer() {
         </a>
         {IS_SANITIZED ? (
           <p className="footer-sanitized">
-            Public repo uses fictional demo content and placeholder media. Live
-            portfolio content is deployed separately at{' '}
-            <a href="https://ilyadev.xyz">ilyadev.xyz</a>.
+            Public repo uses fictional demo content and placeholder media.
+            Private portfolio content is excluded from this build.
           </p>
         ) : null}
       </div>

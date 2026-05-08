@@ -2,6 +2,29 @@
 
 Visible engineering changes to the public portfolio engine. Latest first.
 
+## v1.0.1 — CV OG metadata and publication hardening
+
+Release prep for CV Open Graph metadata and public/private publication safety.
+
+**CV Open Graph** — added a dedicated `/cv` HTML shell with `/og/cv.png`
+for social crawlers, plus browser redirect to the resolved CV PDF. Public
+builds ship sanitized CV OG art; private builds can overlay the live CV OG
+master into `dist/og/cv.png`.
+
+**Case OG data** — added `npm run og:case-data` to export case-card metadata
+from the typed content tree. Public case OG data is placeholder-only; private
+case OG data can read deploy-only facts from an untracked JSON file via
+`CASE_OG_PRIVATE_FACTS_PATH`.
+
+**Publication safety** — private builds now keep Markdown mirrors in `dist/`
+instead of writing private text into `public/`, rewrite deploy metadata
+(`robots.txt`, `sitemap.xml`) to the private origin, and keep public committed
+metadata on `https://example.com`.
+
+**Public surface cleanup** — removed the live-domain link from committed demo
+contact/CV/footer surfaces while keeping the private deploy origin and CV paths
+intact.
+
 ## v1.0 — Initial public release
 
 First public publication of the portfolio engine.

@@ -1,173 +1,179 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://ilyadev.xyz/</loc>
+    <loc>https://example.com/</loc>
     <lastmod>2026-05-06</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://ilyadev.xyz/cases/ai-crm</loc>
+    <loc>https://example.com/cases/ai-crm</loc>
     <lastmod>2026-05-06</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://ilyadev.xyz/cases/ai-warehouse</loc>
+    <loc>https://example.com/cases/ai-warehouse</loc>
     <lastmod>2026-05-06</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://ilyadev.xyz/cases/ai-video-editor</loc>
+    <loc>https://example.com/cases/ai-video-editor</loc>
     <lastmod>2026-05-06</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://ilyadev.xyz/cases/roblox-game</loc>
+    <loc>https://example.com/cases/roblox-game</loc>
     <lastmod>2026-05-06</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://ilyadev.xyz/cases/macos-vpn</loc>
+    <loc>https://example.com/cases/macos-vpn</loc>
     <lastmod>2026-05-06</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://ilyadev.xyz/cases/portfolio-site</loc>
+    <loc>https://example.com/cases/portfolio-site</loc>
     <lastmod>2026-05-06</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://example.com/cv</loc>
+    <lastmod>2026-05-08</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
   </url>
 
   <!-- Markdown mirrors — agent-readable twins of every HTML route.
        Per-language: .md (en) / .ru.md / .ar.md. Lower priority than the
        HTML originals but explicit so AI sitemap consumers index them. -->
   <url>
-    <loc>https://ilyadev.xyz/index.md</loc>
+    <loc>https://example.com/index.md</loc>
     <lastmod>2026-05-06</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://ilyadev.xyz/index.ru.md</loc>
+    <loc>https://example.com/index.ru.md</loc>
     <lastmod>2026-05-06</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://ilyadev.xyz/index.ar.md</loc>
+    <loc>https://example.com/index.ar.md</loc>
     <lastmod>2026-05-06</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://ilyadev.xyz/cases/ai-crm.md</loc>
+    <loc>https://example.com/cases/ai-crm.md</loc>
     <lastmod>2026-05-06</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://ilyadev.xyz/cases/ai-crm.ru.md</loc>
+    <loc>https://example.com/cases/ai-crm.ru.md</loc>
     <lastmod>2026-05-06</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://ilyadev.xyz/cases/ai-crm.ar.md</loc>
+    <loc>https://example.com/cases/ai-crm.ar.md</loc>
     <lastmod>2026-05-06</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://ilyadev.xyz/cases/ai-warehouse.md</loc>
+    <loc>https://example.com/cases/ai-warehouse.md</loc>
     <lastmod>2026-05-06</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://ilyadev.xyz/cases/ai-warehouse.ru.md</loc>
+    <loc>https://example.com/cases/ai-warehouse.ru.md</loc>
     <lastmod>2026-05-06</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://ilyadev.xyz/cases/ai-warehouse.ar.md</loc>
+    <loc>https://example.com/cases/ai-warehouse.ar.md</loc>
     <lastmod>2026-05-06</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://ilyadev.xyz/cases/ai-video-editor.md</loc>
+    <loc>https://example.com/cases/ai-video-editor.md</loc>
     <lastmod>2026-05-06</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://ilyadev.xyz/cases/ai-video-editor.ru.md</loc>
+    <loc>https://example.com/cases/ai-video-editor.ru.md</loc>
     <lastmod>2026-05-06</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://ilyadev.xyz/cases/ai-video-editor.ar.md</loc>
+    <loc>https://example.com/cases/ai-video-editor.ar.md</loc>
     <lastmod>2026-05-06</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://ilyadev.xyz/cases/roblox-game.md</loc>
+    <loc>https://example.com/cases/roblox-game.md</loc>
     <lastmod>2026-05-06</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://ilyadev.xyz/cases/roblox-game.ru.md</loc>
+    <loc>https://example.com/cases/roblox-game.ru.md</loc>
     <lastmod>2026-05-06</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://ilyadev.xyz/cases/roblox-game.ar.md</loc>
+    <loc>https://example.com/cases/roblox-game.ar.md</loc>
     <lastmod>2026-05-06</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://ilyadev.xyz/cases/macos-vpn.md</loc>
+    <loc>https://example.com/cases/macos-vpn.md</loc>
     <lastmod>2026-05-06</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://ilyadev.xyz/cases/macos-vpn.ru.md</loc>
+    <loc>https://example.com/cases/macos-vpn.ru.md</loc>
     <lastmod>2026-05-06</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://ilyadev.xyz/cases/macos-vpn.ar.md</loc>
+    <loc>https://example.com/cases/macos-vpn.ar.md</loc>
     <lastmod>2026-05-06</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://ilyadev.xyz/cases/portfolio-site.md</loc>
+    <loc>https://example.com/cases/portfolio-site.md</loc>
     <lastmod>2026-05-06</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://ilyadev.xyz/cases/portfolio-site.ru.md</loc>
+    <loc>https://example.com/cases/portfolio-site.ru.md</loc>
     <lastmod>2026-05-06</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://ilyadev.xyz/cases/portfolio-site.ar.md</loc>
+    <loc>https://example.com/cases/portfolio-site.ar.md</loc>
     <lastmod>2026-05-06</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
@@ -175,25 +181,25 @@
 
   <!-- Curated agent indexes (llms.txt spec). -->
   <url>
-    <loc>https://ilyadev.xyz/llms.txt</loc>
+    <loc>https://example.com/llms.txt</loc>
     <lastmod>2026-05-06</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.4</priority>
   </url>
   <url>
-    <loc>https://ilyadev.xyz/llms-ru.txt</loc>
+    <loc>https://example.com/llms-ru.txt</loc>
     <lastmod>2026-05-06</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.4</priority>
   </url>
   <url>
-    <loc>https://ilyadev.xyz/llms-ar.txt</loc>
+    <loc>https://example.com/llms-ar.txt</loc>
     <lastmod>2026-05-06</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.4</priority>
   </url>
   <url>
-    <loc>https://ilyadev.xyz/llms-full.txt</loc>
+    <loc>https://example.com/llms-full.txt</loc>
     <lastmod>2026-05-06</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.4</priority>

@@ -19,7 +19,10 @@ import { generateAgentMirrors, type MirrorFiles } from './src/lib/agentMirrors';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const PUBLIC_DIR = resolve(__dirname, 'public');
-const PRODUCTION_ORIGIN = 'https://ilyadev.xyz';
+const PRIVATE_ORIGIN = process.env.PRIVATE_SITE_ORIGIN || 'https://ilyadev.xyz';
+const PUBLIC_ORIGIN = process.env.PUBLIC_SITE_ORIGIN || 'https://example.com';
+const IS_PRIVATE_SOURCE = CONTENT_SOURCE !== 'public';
+const PRODUCTION_ORIGIN = IS_PRIVATE_SOURCE ? PRIVATE_ORIGIN : PUBLIC_ORIGIN;
 
 function escapeHtml(value: string): string {
   return value
@@ -42,8 +45,20 @@ function absoluteUrl(path: string | undefined): string {
   return `${PRODUCTION_ORIGIN}${path.startsWith('/') ? path : `/${path}`}`;
 }
 
+function shorten(value: string, max = 180): string {
+  const oneLine = value.replace(/\s+/g, ' ').trim();
+  if (oneLine.length <= max) return oneLine;
+  const cut = oneLine.slice(0, max - 1);
+  const boundary = cut.lastIndexOf(' ');
+  return `${cut.slice(0, boundary > 120 ? boundary : cut.length).trim()}…`;
+}
+
 function injectBeforeHeadEnd(html: string, tag: string): string {
   return html.replace('</head>', `${tag}\n  </head>`);
+}
+
+function injectAfterBodyStart(html: string, tag: string): string {
+  return html.replace('<body>', `<body>\n    ${tag}`);
 }
 
 function upsertTag(html: string, pattern: RegExp, tag: string): string {
@@ -75,6 +90,18 @@ function setLinkRel(html: string, rel: string, href: string): string {
   );
 }
 
+function setMarkdownAlternate(html: string, lang: 'en' | 'ru' | 'ar', href: string): string {
+  return upsertTag(
+    html,
+    new RegExp(`<link rel="alternate" type="text/markdown" hreflang="${lang}" href="[^"]*"\\s*/>`),
+    `<link rel="alternate" type="text/markdown" hreflang="${lang}" href="${escapeAttr(href)}" />`,
+  );
+}
+
+function siteName(content: Content): string {
+  return IS_PRIVATE_SOURCE ? 'ilyaDev.xyz' : content.hero.name;
+}
+
 function setTitle(html: string, title: string): string {
   return html.replace(
     /<title>[\s\S]*?<\/title>/,
@@ -90,8 +117,19 @@ function socialImage(): string {
   // Canonical home OG. public/og-image.png is the committed PUBLIC variant.
   // build:private overlays the PRIVATE variant into dist/og-image.png via
   // scripts/overlay-private-og.mjs. PNG is mandatory — LinkedIn rejects
-  // SVG/WebP for og:image. Generator: _workspace/.archive/temp_scripts/.
+  // SVG/WebP for og:image.
   return `${PRODUCTION_ORIGIN}/og-image.png`;
+}
+
+function cvSocialImage(): string {
+  // Dedicated Open Graph image for the CV endpoint. The public variant is
+  // committed at public/og/cv.png; build:private overlays the private master
+  // into dist/og/cv.png via scripts/overlay-private-og.mjs.
+  return `${PRODUCTION_ORIGIN}/og/cv.png`;
+}
+
+function cvPdfPath(content: Content, lang: 'en' | 'ru' | 'ar' = 'en'): string {
+  return content.cv?.pdfPath ?? `/private/${LANG_CONFIG[lang].cvFile}`;
 }
 
 function contactEmail(content: Content): string | undefined {
@@ -143,7 +181,7 @@ function applyHomeHead(html: string, content: Content): string {
   next = setMetaName(next, 'description', description);
   next = setLinkRel(next, 'canonical', `${PRODUCTION_ORIGIN}/`);
   next = setMetaProperty(next, 'og:type', 'website');
-  next = setMetaProperty(next, 'og:site_name', 'ilyaDev.xyz');
+  next = setMetaProperty(next, 'og:site_name', siteName(content));
   next = setMetaProperty(next, 'og:url', `${PRODUCTION_ORIGIN}/`);
   next = setMetaProperty(next, 'og:title', title);
   next = setMetaProperty(next, 'og:description', description);
@@ -155,8 +193,67 @@ function applyHomeHead(html: string, content: Content): string {
   next = setMetaName(next, 'twitter:title', title);
   next = setMetaName(next, 'twitter:description', description);
   next = setMetaName(next, 'twitter:image', image);
+  for (const lang of LANGS) {
+    next = setMarkdownAlternate(next, lang, `${PRODUCTION_ORIGIN}/${LANG_CONFIG[lang].homeFile}`);
+  }
   next = replaceFirstJsonLd(next, profileJsonLd(content));
   return next;
+}
+
+function cvJsonLd(content: Content): Record<string, unknown> {
+  const pdfUrl = absoluteUrl(cvPdfPath(content));
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'ProfilePage',
+    url: `${PRODUCTION_ORIGIN}/cv`,
+    name: `CV — ${content.hero.name}`,
+    image: cvSocialImage(),
+    mainEntity: {
+      '@type': 'Person',
+      '@id': `${PRODUCTION_ORIGIN}/#person`,
+      name: content.hero.name,
+      jobTitle: content.hero.role,
+      url: PRODUCTION_ORIGIN,
+      image: cvSocialImage(),
+      description: content.cv?.summary ?? pitch(content),
+      sameAs: sameAs(content),
+      subjectOf: {
+        '@type': 'DigitalDocument',
+        name: `${content.hero.name} CV`,
+        encodingFormat: 'application/pdf',
+        url: pdfUrl,
+      },
+    },
+  };
+}
+
+function applyCvHead(html: string, content: Content): string {
+  const pdfPath = cvPdfPath(content);
+  const title = `CV — ${content.hero.name} · ${content.hero.role}`;
+  const description = shorten(content.cv?.summary ?? pitch(content), 170);
+  const image = cvSocialImage();
+  let next = stripMarkdownAlternates(html);
+  next = setTitle(next, title);
+  next = setMetaName(next, 'description', description);
+  next = setLinkRel(next, 'canonical', `${PRODUCTION_ORIGIN}/cv`);
+  next = setMetaProperty(next, 'og:type', 'website');
+  next = setMetaProperty(next, 'og:url', `${PRODUCTION_ORIGIN}/cv`);
+  next = setMetaProperty(next, 'og:title', title);
+  next = setMetaProperty(next, 'og:description', description);
+  next = setMetaProperty(next, 'og:image', image);
+  next = setMetaProperty(next, 'og:image:width', '1200');
+  next = setMetaProperty(next, 'og:image:height', '630');
+  next = setMetaProperty(next, 'og:image:type', 'image/png');
+  next = setMetaProperty(next, 'og:image:alt', `${content.hero.name} CV — PDF resume`);
+  next = setMetaName(next, 'twitter:title', title);
+  next = setMetaName(next, 'twitter:description', description);
+  next = setMetaName(next, 'twitter:image', image);
+  next = replaceFirstJsonLd(next, cvJsonLd(content));
+  const redirect = `<script data-cv-redirect>
+      window.location.replace(${JSON.stringify(pdfPath)});
+    </script>`;
+  const fallback = `<noscript><p><a href="${escapeAttr(pdfPath)}">Open CV PDF</a></p></noscript>`;
+  return injectAfterBodyStart(next, `${redirect}\n    ${fallback}`);
 }
 
 function stripMarkdownAlternates(html: string): string {
@@ -272,11 +369,11 @@ function applyCaseHead(
   return injectBeforeHeadEnd(next, `    ${markdownLinks}\n    ${jsonLd}${videoBlock}`);
 }
 
-function writeMirrorFiles(files: MirrorFiles): void {
+function writeMirrorFiles(files: MirrorFiles, baseDir = PUBLIC_DIR): void {
   // Slug renames leave orphan mirrors in public/cases/ — both the old and
   // new file get served, splitting agent traffic across stale URLs. Sweep
   // anything not in the canonical set before writing.
-  const casesDir = resolve(PUBLIC_DIR, 'cases');
+  const casesDir = resolve(baseDir, 'cases');
   if (existsSync(casesDir)) {
     const expected = new Set(
       Object.keys(files)
@@ -291,7 +388,7 @@ function writeMirrorFiles(files: MirrorFiles): void {
   }
 
   for (const [relPath, body] of Object.entries(files)) {
-    const fullPath = resolve(PUBLIC_DIR, relPath);
+    const fullPath = resolve(baseDir, relPath);
     mkdirSync(dirname(fullPath), { recursive: true });
     writeFileSync(fullPath, body, 'utf8');
   }
@@ -307,12 +404,16 @@ function writeMirrorFiles(files: MirrorFiles): void {
  *   public/llms-full.txt
  */
 function agentMirrorsPlugin(): Plugin {
-  // Direct-serve middleware for .md / .txt files in publicDir. Bypasses Vite's
+  // Direct-serve middleware for .md / .txt files. Bypasses Vite's
   // static handler — needed because Vite 5.x routes .txt requests through the
   // SPA fallback (returns index.html instead of the file). Also pins
   // Content-Type with charset=utf-8 so browsers don't fall back to Windows-1252
   // and mangle Cyrillic.
-  const directServe: Plugin['configureServer'] = (server) => {
+  const directServe = (
+    server: Parameters<NonNullable<Plugin['configureServer']>>[0],
+    baseDir: string,
+    memoryFiles?: MirrorFiles,
+  ) => {
     server.middlewares.use((req, res, next) => {
       if (req.method !== 'GET' && req.method !== 'HEAD') return next();
       const url = (req.url || '').split('?')[0];
@@ -320,9 +421,24 @@ function agentMirrorsPlugin(): Plugin {
       const isTxt = url.endsWith('.txt');
       if (!isMd && !isTxt) return next();
 
-      const filePath = resolve(PUBLIC_DIR, url.replace(/^\/+/, ''));
-      // Path-traversal guard — reject anything that escapes publicDir.
-      if (!filePath.startsWith(PUBLIC_DIR + '/') && filePath !== PUBLIC_DIR) {
+      const relPath = url.replace(/^\/+/, '');
+      const memoryBody = memoryFiles?.[relPath];
+      if (memoryBody !== undefined) {
+        const body = Buffer.from(memoryBody, 'utf8');
+        res.setHeader(
+          'Content-Type',
+          `text/${isMd ? 'markdown' : 'plain'}; charset=utf-8`,
+        );
+        res.setHeader('Content-Length', String(body.byteLength));
+        res.setHeader('Cache-Control', 'no-cache');
+        res.statusCode = 200;
+        if (req.method === 'HEAD') return res.end();
+        return res.end(body);
+      }
+
+      const filePath = resolve(baseDir, relPath);
+      // Path-traversal guard — reject anything that escapes the static root.
+      if (!filePath.startsWith(baseDir + '/') && filePath !== baseDir) {
         return next();
       }
       if (!existsSync(filePath)) return next();
@@ -344,14 +460,29 @@ function agentMirrorsPlugin(): Plugin {
   return {
     name: 'agent-mirrors',
     buildStart() {
-      writeMirrorFiles(generateAgentMirrors({ en, ru, ar }, PRODUCTION_ORIGIN));
+      if (CONTENT_SOURCE === 'public') {
+        writeMirrorFiles(generateAgentMirrors({ en, ru, ar }, PRODUCTION_ORIGIN));
+      }
+    },
+    closeBundle() {
+      if (IS_PRIVATE_SOURCE) {
+        writeMirrorFiles(
+          generateAgentMirrors({ en, ru, ar }, PRODUCTION_ORIGIN),
+          resolve(__dirname, 'dist'),
+        );
+      }
     },
     configureServer(server) {
-      writeMirrorFiles(generateAgentMirrors({ en, ru, ar }, PRODUCTION_ORIGIN));
-      directServe(server);
+      const memoryFiles = IS_PRIVATE_SOURCE
+        ? generateAgentMirrors({ en, ru, ar }, PRODUCTION_ORIGIN)
+        : undefined;
+      if (!IS_PRIVATE_SOURCE) {
+        writeMirrorFiles(generateAgentMirrors({ en, ru, ar }, PRODUCTION_ORIGIN));
+      }
+      directServe(server, PUBLIC_DIR, memoryFiles);
     },
     configurePreviewServer(server) {
-      directServe(server);
+      directServe(server, resolve(__dirname, 'dist'));
     },
   };
 }
@@ -382,7 +513,7 @@ function stripPrivateFromDistPlugin(): Plugin {
   return {
     name: 'strip-private-from-dist',
     closeBundle() {
-      if (CONTENT_SOURCE !== 'public') return;
+      if (IS_PRIVATE_SOURCE) return;
       const dir = resolve(__dirname, 'dist/private');
       if (existsSync(dir)) rmSync(dir, { recursive: true, force: true });
     },
@@ -412,12 +543,87 @@ function staticCaseHeadsPlugin(): Plugin {
   };
 }
 
+function staticCvHeadPlugin(): Plugin {
+  const isCvRequest = (url: string | undefined): boolean => {
+    const path = (url || '').split('?')[0].replace(/\/+$/, '');
+    return path === '/cv';
+  };
+
+  return {
+    name: 'static-cv-head',
+    configureServer(server) {
+      server.middlewares.use(async (req, res, next) => {
+        if (req.method !== 'GET' && req.method !== 'HEAD') return next();
+        if (!isCvRequest(req.url)) return next();
+        try {
+          const baseHtml = readFileSync(resolve(__dirname, 'index.html'), 'utf8');
+          const transformed = await server.transformIndexHtml('/cv', baseHtml);
+          const html = applyCvHead(transformed, en);
+          res.setHeader('Content-Type', 'text/html; charset=utf-8');
+          res.setHeader('Cache-Control', 'no-cache');
+          res.statusCode = 200;
+          if (req.method === 'HEAD') return res.end();
+          return res.end(html);
+        } catch (error) {
+          return next(error as Error);
+        }
+      });
+    },
+    configurePreviewServer(server) {
+      server.middlewares.use((req, res, next) => {
+        if (req.method !== 'GET' && req.method !== 'HEAD') return next();
+        if (!isCvRequest(req.url)) return next();
+        const filePath = resolve(__dirname, 'dist/cv/index.html');
+        if (!existsSync(filePath)) return next();
+        const html = readFileSync(filePath);
+        res.setHeader('Content-Type', 'text/html; charset=utf-8');
+        res.setHeader('Content-Length', String(html.byteLength));
+        res.setHeader('Cache-Control', 'no-cache');
+        res.statusCode = 200;
+        if (req.method === 'HEAD') return res.end();
+        res.end(html);
+      });
+    },
+    closeBundle() {
+      try {
+        const indexPath = resolve(__dirname, 'dist/index.html');
+        if (!existsSync(indexPath)) return;
+        const baseHtml = readFileSync(indexPath, 'utf8');
+        const outputPath = resolve(__dirname, 'dist/cv', 'index.html');
+        mkdirSync(dirname(outputPath), { recursive: true });
+        writeFileSync(outputPath, applyCvHead(baseHtml, en), 'utf8');
+      } catch (error) {
+        throw new Error('static-cv-head: failed to write cv index.html', {
+          cause: error,
+        });
+      }
+    },
+  };
+}
+
+function privateStaticMetadataPlugin(): Plugin {
+  return {
+    name: 'private-static-metadata',
+    closeBundle() {
+      if (!IS_PRIVATE_SOURCE) return;
+      for (const rel of ['robots.txt', 'sitemap.xml']) {
+        const filePath = resolve(__dirname, 'dist', rel);
+        if (!existsSync(filePath)) continue;
+        const body = readFileSync(filePath, 'utf8');
+        writeFileSync(filePath, body.split(PUBLIC_ORIGIN).join(PRIVATE_ORIGIN), 'utf8');
+      }
+    },
+  };
+}
+
 export default defineConfig({
   plugins: [
     react(),
     homeHeadPlugin(),
     agentMirrorsPlugin(),
     staticCaseHeadsPlugin(),
+    staticCvHeadPlugin(),
+    privateStaticMetadataPlugin(),
     stripPrivateFromDistPlugin(),
   ],
   server: {

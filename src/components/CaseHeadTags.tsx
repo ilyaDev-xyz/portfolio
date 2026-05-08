@@ -3,13 +3,12 @@ import type { Project } from '../content/types';
 import { useLang } from '../i18n/LangContext';
 import { LANG_CONFIG, LANGS, type Lang } from '../i18n/langConfig';
 
-const PRODUCTION_ORIGIN = 'https://ilyadev.xyz';
 const HEAD_TAG_ATTR = 'data-case-head';
 
-function absoluteUrl(path: string | undefined): string {
-  if (!path) return `${PRODUCTION_ORIGIN}/demo/case-06.svg`;
+function absoluteUrl(path: string | undefined, origin: string): string {
+  if (!path) return `${origin}/demo/case-06.svg`;
   if (/^https?:\/\//.test(path)) return path;
-  return `${PRODUCTION_ORIGIN}${path.startsWith('/') ? path : `/${path}`}`;
+  return `${origin}${path.startsWith('/') ? path : `/${path}`}`;
 }
 
 // Mirrors applyHomeHead in vite.config.ts so SPA navigation back from a case
@@ -19,6 +18,7 @@ function applyHomeDefaults(
   content: ReturnType<typeof useLang>['t'],
   activeLang: Lang,
 ): void {
+  const origin = window.location.origin;
   document.title = `${content.hero.name} — ${content.hero.role}`;
   const metaDesc = document.querySelector<HTMLMetaElement>(
     'meta[name="description"]',
@@ -39,7 +39,7 @@ function applyHomeDefaults(
     }
   };
   for (const lang of LANGS) {
-    ensureAlt(lang, `${PRODUCTION_ORIGIN}/${LANG_CONFIG[lang].homeFile}`);
+    ensureAlt(lang, `${origin}/${LANG_CONFIG[lang].homeFile}`);
   }
   document.documentElement.lang = LANG_CONFIG[activeLang].htmlLang;
   document.documentElement.dir = LANG_CONFIG[activeLang].dir;
@@ -66,9 +66,10 @@ export function CaseHeadTags({ project }: { project: Project }) {
     ).forEach((node) => node.remove());
 
     const head = document.head;
+    const origin = window.location.origin;
     const slug = project.slug;
     const codename = project.codename ?? slug;
-    const image = absoluteUrl(project.imageSrc ?? project.thumbnail);
+    const image = absoluteUrl(project.imageSrc ?? project.thumbnail, origin);
 
     for (const lang of LANGS) {
       const ext = LANG_CONFIG[lang].mdExt;
@@ -76,7 +77,7 @@ export function CaseHeadTags({ project }: { project: Project }) {
       link.rel = 'alternate';
       link.type = 'text/markdown';
       link.hreflang = lang;
-      link.href = `${PRODUCTION_ORIGIN}/cases/${slug}${ext}`;
+      link.href = `${origin}/cases/${slug}${ext}`;
       link.setAttribute(HEAD_TAG_ATTR, '');
       head.appendChild(link);
     }
@@ -89,17 +90,17 @@ export function CaseHeadTags({ project }: { project: Project }) {
       author: {
         '@type': 'Person',
         name: authorName,
-        url: PRODUCTION_ORIGIN,
+        url: origin,
       },
-      url: `${PRODUCTION_ORIGIN}/cases/${slug}`,
+      url: `${origin}/cases/${slug}`,
       image,
       keywords: project.foot
         .split(/\s*·\s*/)
         .filter(Boolean),
       isPartOf: {
         '@type': 'CreativeWork',
-        name: 'Case studies — ilyadev.xyz',
-        url: `${PRODUCTION_ORIGIN}/#cases`,
+        name: `Case studies — ${authorName}`,
+        url: `${origin}/#cases`,
       },
     };
     if (project.chips && project.chips.length) {

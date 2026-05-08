@@ -1,7 +1,7 @@
 {
   "name": "ilya-portfolio",
   "private": true,
-  "version": "1.0.0",
+  "version": "1.0.1",
   "type": "module",
   "engines": {
     "node": ">=22.12"
@@ -18,6 +18,7 @@
     "build": "echo 'Use npm run build:public for deploy or npm run build:private for local private checks' && exit 1",
     "cv:build": "npm run content:private && node scripts/cv/build.mjs",
     "cv:build:public": "npm run content:public && node scripts/cv/build.mjs",
+    "og:case-data": "node scripts/og/export-case-og-data.mjs",
     "export:public": "node scripts/export-public.mjs",
     "preview": "vite preview",
     "typecheck": "npm run content:public && tsc --noEmit",

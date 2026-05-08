@@ -153,6 +153,10 @@ Two routes:
 - `/` → `<HomePage />` — composes all sections.
 - `/cases/:slug` → `<ProjectDetailPage />` — full case study when `project.caseStudy` is present, minimal fallback otherwise (project metadata + "[ case study content coming later ]").
 
+Static generated endpoint:
+
+- `/cv` → `dist/cv/index.html` — a crawler-readable Open Graph HTML shell for recruiter surfaces. The head points at `/og/cv.png`; a tiny inline browser redirect sends real visitors to the resolved CV PDF (`cv.pdfPath`, else `/private/cv-en.pdf`). This is intentionally not a React route because LinkedIn needs stable HTML metadata before any client app runs.
+
 `ScrollToHash` (in `src/router/ScrollToHash.tsx`) reacts to route changes — scrolls to `#hash` if present, else jumps to top. In-page hash links use the browser's native smooth scroll (`scroll-behavior: smooth` on `<html>`, with `scroll-margin-top: 72px` on section ids to account for the sticky nav).
 
 `ArrowLink` (`src/components/atoms/ArrowLink.tsx`) automatically picks the right element: `<Link>` for internal routed paths (starting with `/`), `<a>` for hash links and external URLs.
@@ -252,7 +256,8 @@ Per-language mirror config (file extension, llms filename, home filename, markdo
 ```
 src/lib/agentMirrors.ts          Build orchestrator. Iterates LANGS, calls
                                  homeToMarkdown / caseStudyToMarkdown per page,
-                                 writes everything into public/.
+                                 returns the mirror file map for the active
+                                 content tree.
 src/lib/homeMarkdown.ts          Pure serializer: Hero · About · Stack · Cases
                                  · Timeline · Contact → Markdown.
 src/lib/caseStudyMarkdown.ts     Pure serializer: Hero · Context · heroFacts
@@ -269,9 +274,20 @@ src/components/CaseHeadTags.tsx
                                  alternates while a case is mounted.
 ```
 
-The Vite plugin `agentMirrorsPlugin` (in `vite.config.ts`) regenerates files on `buildStart` and on dev-server start. A direct-serve middleware bypasses Vite's static handler for `.md` and `.txt` (Vite's SPA-fallback otherwise routes `.txt` requests through `index.html`) and pins `Content-Type: text/{plain,markdown}; charset=utf-8` — without it browsers fall back to Windows-1252 and Cyrillic mangles to mojibake.
+The Vite plugin `agentMirrorsPlugin` (in `vite.config.ts`) regenerates files for
+the active source without crossing the public/private boundary:
 
-Generated mirror files in `public/` are gitignored — they're build artefacts, derived from the active `en` / `ru` / `ar` content exports.
+- public build/dev writes mirrors under `public/` (gitignored build artefacts)
+  so the committed demo tree can be inspected locally;
+- private build writes mirrors only under `dist/`;
+- private dev serves mirrors from memory instead of writing private text into
+  `public/`;
+- preview serves mirrors from `dist/`.
+
+A direct-serve middleware bypasses Vite's static handler for `.md` and `.txt`
+(Vite's SPA-fallback otherwise routes `.txt` requests through `index.html`) and
+pins `Content-Type: text/{plain,markdown}; charset=utf-8` — without it browsers
+fall back to Windows-1252 and Cyrillic mangles to mojibake.
 
 `llms-full.txt` carries a self-described size in line 1 (HTML comment, hidden from Markdown renderers): `<!-- llms-full.txt · concat of EN home + 6 cases · ~Nk chars · ~N KB -->`. Both language indexes (`llms.txt`, `llms-ru.txt`) cite the same size next to the "Full corpus" link, so agents can budget context before fetching. See `docs/decisions.md` → "Markdown twin per page (agent layer)".
 

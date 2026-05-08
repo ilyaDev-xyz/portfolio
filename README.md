@@ -127,24 +127,29 @@ production refuses to start unless `ADMIN_PASSWORD` is set.
 
 Real `.env` files are gitignored.
 
-## Social previews (Open Graph)
+## Social metadata (Open Graph)
 
-The repository ships committed PNG OG images for the home route and each of
-the six case routes:
+The repository ships committed PNG OG images for the home route, CV route,
+and each of the six case routes:
 
-- `public/og-image.png` — home link preview (1200×630)
-- `public/og/cases/<slug>.png` × 6 — per-case link preview
+- `public/og-image.png` — home Open Graph image (1200×630)
+- `public/og/cv.png` — `/cv` Open Graph image (1200×630)
+- `public/og/cases/<slug>.png` × 6 — per-case Open Graph image
 
 `vite.config.ts` overrides `<head>` per case route so `og:image`,
 `og:image:width/height/type/alt`, `twitter:image`, and the JSON-LD `image`
 field point at `/og/cases/<slug>.png`. The home route uses
-`/og-image.png`. Both are PNG by design — LinkedIn rejects WebP and SVG for
-`og:image`.
+`/og-image.png`. The `/cv` route is emitted as a static HTML head at
+`dist/cv/index.html`; crawlers see `/og/cv.png`, while browsers are redirected
+to the generated PDF. All Open Graph assets are PNG by design — LinkedIn rejects
+WebP and SVG for `og:image`.
 
-The committed bytes are demo content. They are reproducible from a separate
-generator that lives outside this repository (per
+The committed bytes are demo content. They are replaceable static assets (see
 [docs/decisions.md — Favicon family + OG/Twitter meta](docs/decisions.md)).
-Forking the engine: replace the seven PNGs with your own 1200×630 art and
+Per-case OG data is exported from the typed content tree with
+`npm run og:case-data`. The public payload is sanitized placeholder copy; a
+private build can supply deploy-only facts through `CASE_OG_PRIVATE_FACTS_PATH`.
+Forking the engine: replace the eight PNGs with your own 1200×630 art and
 rebuild — no engine code change required.
 
 ## Repo layout

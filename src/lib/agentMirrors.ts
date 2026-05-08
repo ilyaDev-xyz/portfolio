@@ -26,7 +26,7 @@ const VARIANTS: Record<Lang, LangVariant> = Object.fromEntries(
   ]),
 ) as Record<Lang, LangVariant>;
 
-/** Path-keyed map of generated files (path is relative to public/). */
+/** Path-keyed map of generated files (path is relative to the chosen output root). */
 export type MirrorFiles = Record<string, string>;
 
 /** Size annotation used to warn agents before they fetch llms-full.txt. */
@@ -40,13 +40,13 @@ function sizeStats(s: string): SizeStats {
 }
 
 /**
- * Generate every agent-readable mirror file for both languages. Returns a
- * map of `{relative-path: body}` — the Vite plugin walks it and writes
- * each entry into `public/`.
+ * Generate every agent-readable mirror file for all configured languages.
+ * Returns a map of `{relative-path: body}` — the Vite plugin decides whether
+ * to write it into `public/`, write it into `dist/`, or serve it from memory.
  *
- * - `index.md` / `index.ru.md` — home page mirrors
- * - `cases/<slug>.md` / `cases/<slug>.ru.md` — per-case mirrors (×6)
- * - `llms.txt` / `llms-ru.txt` — curated indexes (the spec at llmstxt.org)
+ * - `index.md` / `index.ru.md` / `index.ar.md` — home page mirrors
+ * - `cases/<slug>.md` / `.ru.md` / `.ar.md` — per-case mirrors (×6)
+ * - `llms.txt` / `llms-ru.txt` / `llms-ar.txt` — curated indexes
  * - `llms-full.txt` — concatenated EN corpus (single-fetch convenience)
  */
 export function generateAgentMirrors(
@@ -60,7 +60,7 @@ export function generateAgentMirrors(
     content: contents[lang],
   }));
 
-  // llms-full.txt first — its size annotation goes into both language
+  // llms-full.txt first — its size annotation goes into every language
   // indexes so agents can budget context before fetching.
   const full = buildLlmsFull(contents.en, origin);
   files['llms-full.txt'] = full.body;

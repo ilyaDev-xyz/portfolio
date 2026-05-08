@@ -39,7 +39,7 @@ jobs:
           # names, CV section headings) and content/snapshot trees. Anywhere
           # else it almost certainly means a localized string leaked into
           # component code.
-          if git grep -n -E '[А-Яа-яЁё]' -- src \
+          if git grep -n -P '\p{Cyrillic}' -- src \
               ':!src/content' \
               ':!src/lib/__snapshots__' \
               ':!src/i18n/langConfig.ts' \

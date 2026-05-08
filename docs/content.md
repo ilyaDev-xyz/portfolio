@@ -67,7 +67,7 @@ For static-image cards, set `imageSrc` to a path inside `public/` (e.g. `/temp_p
 
 Set `videoTranscript: { synopsis, fullText }` on any project that has `videoId` to make the demo video discoverable to LLM agents that cannot watch video. When present:
 
-- `caseStudyMarkdown.ts` emits a `## Video walkthrough` section (label localized via `ui.markdown.videoWalkthrough`) into the per-case `.md` mirror under `public/cases/<slug>{.md,.ru.md,.ar.md}` and into the concatenated `public/llms-full.txt`.
+- `caseStudyMarkdown.ts` emits a `## Video walkthrough` section (label localized via `ui.markdown.videoWalkthrough`) into the per-case `.md` mirrors and concatenated `llms-full.txt`. Public build/dev writes those generated mirrors under `public/`; private build writes them under `dist/`, and private dev serves them from memory.
 - `vite.config.ts:videoObjectJsonLd` emits a Schema.org `VideoObject` block per language inside the static `dist/cases/<slug>/index.html` (one `<script type="application/ld+json" data-case-head>` per lang, distinguished by `@id`). Fields: `name`, `description` (synopsis), `thumbnailUrl`, `embedUrl`, `contentUrl`, `inLanguage`, `transcript` (full text). No `duration` / `uploadDate` — agents read transcript, not playback length, and the actual video host (YouTube / RuTube) carries that metadata canonically.
 - `<LiteYouTube>` reads the presence of `videoTranscript` (via the parent component) to decide whether to render its lang-pill overlay (see `docs/architecture.md` → Video player system).
 
@@ -76,6 +76,11 @@ Set `videoTranscript: { synopsis, fullText }` on any project that has `videoId` 
 ### Public CV download (`cv.pdfPath`)
 
 The hero and contact ResumeLink chip renders only when `Content.cv` is populated. The href resolves to `cv.pdfPath` when set, else falls back to `/private/${LANG_CONFIG[lang].cvFile}`.
+
+The static `/cv` endpoint uses the same resolution rule for its browser
+redirect. Its HTML head points at `/og/cv.png` so LinkedIn Featured and other
+scrapers read the CV link as a normal Open Graph HTML page instead of trying
+to extract metadata from a PDF.
 
 - Public demo tree: `src/content/public/shared/cv.ts` declares fictional Cv with `pdfPath: '/demo/cv-<lang>.pdf'`. The build step `npm run cv:build:public` writes the rendered PDF into the resolved path under `public/`. `public/demo/` is committed.
 - Private tree: `cv.pdfPath` may be omitted; PDFs land in the gitignored `public/private/`.

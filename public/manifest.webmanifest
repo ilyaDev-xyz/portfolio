@@ -1,6 +1,6 @@
 {
-  "name": "ilyaDev.xyz",
-  "short_name": "ilyaDev",
+  "name": "Portfolio Engine",
+  "short_name": "Portfolio",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#110e0b",

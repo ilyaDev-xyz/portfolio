@@ -37,3 +37,6 @@ public/llms-full.txt
 # CV pipeline debug output (regenerated on `npm run cv:build`).
 # PDFs land in public/private/ which is already ignored above.
 scripts/cv/out/
+
+# OG exporter scratch output. Public OG PNGs are committed under public/og*.
+scripts/og/out/
