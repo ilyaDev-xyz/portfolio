@@ -140,7 +140,7 @@
 .hero-a .cta { display: none; }
 /* previously: flex; gap: var(--space-3); margin-top: var(--space-7); flex-wrap: wrap; */
 
-/* Hero actions — two chip-buttons (resume.pdf + copy.md) at the top-right of
+/* Hero actions — two chip-buttons (resume.pdf + copy text) at the top-right of
    the hero stage on desktop AND tablet. Absolutely positioned with a negative
    top to pull them up past hero's own padding so they sit tight against the
    bottom edge of the sticky Nav, vertically aligned with NavControls' lang +

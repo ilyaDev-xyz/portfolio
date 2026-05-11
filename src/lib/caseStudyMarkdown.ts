@@ -6,8 +6,8 @@ import { projectStatusLabel } from './projectStatus';
 export type CaseNav = {
   prev?: { slug: string; title: string; idx: string };
   next?: { slug: string; title: string; idx: string };
-  /** Markdown extension for sibling links — '.md' for EN, '.ru.md' for RU. */
-  mdExt: string;
+  /** Text mirror extension for sibling links — '.txt' for EN, '.ru.txt' for RU. */
+  mirrorExt: string;
   /** Filename of the language-specific llms.txt index. */
   indexFile: string;
   /** Filename of the home mirror in the same language. */
@@ -25,7 +25,7 @@ export type CaseNav = {
  * so the markdown stays portable when shared outside the site.
  *
  * If `nav` is provided, the footer includes prev/next case links pointing at
- * sibling .md files plus an index link — used by both the clipboard copy
+ * sibling text mirror files plus an index link — used by both the clipboard copy
  * (where origin is set so links land on production) and the build-time mirror.
  */
 export function caseStudyToMarkdown(
@@ -185,16 +185,16 @@ function appendFooter(
   const labels = nav?.labels ?? LANG_CONFIG.en.markdown;
   if (nav) {
     lines.push(
-      `${labels.source}: ${origin}${slugPath} (HTML) · ${slugPath}${nav.mdExt} (${labels.thisFile})`,
+      `${labels.source}: ${origin}${slugPath} (HTML) · ${slugPath}${nav.mirrorExt} (${labels.thisFile})`,
     );
     if (nav.prev) {
       lines.push(
-        `${labels.previous}: ${nav.prev.idx} — ${nav.prev.title} → ${origin}/cases/${nav.prev.slug}${nav.mdExt}`,
+        `${labels.previous}: ${nav.prev.idx} — ${nav.prev.title} → ${origin}/cases/${nav.prev.slug}${nav.mirrorExt}`,
       );
     }
     if (nav.next) {
       lines.push(
-        `${labels.upNext}: ${nav.next.idx} — ${nav.next.title} → ${origin}/cases/${nav.next.slug}${nav.mdExt}`,
+        `${labels.upNext}: ${nav.next.idx} — ${nav.next.title} → ${origin}/cases/${nav.next.slug}${nav.mirrorExt}`,
       );
     }
     lines.push(

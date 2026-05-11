@@ -22,6 +22,9 @@ const excludedFiles = new Set([
   'public/index.md',
   'public/index.ru.md',
   'public/index.ar.md',
+  'public/index.txt',
+  'public/index.ru.txt',
+  'public/index.ar.txt',
   'public/llms.txt',
   'public/llms-ru.txt',
   'public/llms-ar.txt',
@@ -37,7 +40,7 @@ function isExcluded(rel) {
   const name = basename(p);
   if (p.split('/').some((part) => excludedDirNames.has(part))) return true;
   if (excludedDirs.has(p) || excludedFiles.has(p)) return true;
-  if (p.startsWith('public/cases/') && p.endsWith('.md')) return true;
+  if (p.startsWith('public/cases/') && (p.endsWith('.md') || p.endsWith('.txt'))) return true;
   if (name.startsWith('.env') && name !== '.env.example') return true;
   if (/\.(db|sqlite|sqlite3)(-(wal|shm))?$/.test(name)) return true;
   return false;

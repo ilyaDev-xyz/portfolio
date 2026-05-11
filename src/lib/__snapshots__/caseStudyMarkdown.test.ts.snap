@@ -107,10 +107,10 @@ Fictionalized case used to validate the public portfolio engine.
 
 ---
 
-Source: https://ilyadev.xyz/cases/ai-crm (HTML) · /cases/ai-crm.md (this file)
-Up next: 02 — AI Warehouse · Demo stock ops → https://ilyadev.xyz/cases/ai-warehouse.md
+Source: https://ilyadev.xyz/cases/ai-crm (HTML) · /cases/ai-crm.txt (this file)
+Up next: 02 — AI Warehouse · Demo stock ops → https://ilyadev.xyz/cases/ai-warehouse.txt
 Index: https://ilyadev.xyz/llms.txt — full case-study list
-Author: Demo Author — https://ilyadev.xyz/index.md
+Author: Demo Author — https://ilyadev.xyz/index.txt
 "
 `;
 
@@ -221,11 +221,11 @@ Fictionalized case for the public repository.
 
 ---
 
-Source: https://ilyadev.xyz/cases/ai-video-editor (HTML) · /cases/ai-video-editor.md (this file)
-Previous: 02 — AI Warehouse · Demo stock ops → https://ilyadev.xyz/cases/ai-warehouse.md
-Up next: 04 — Roblox Arena · Demo runtime → https://ilyadev.xyz/cases/roblox-game.md
+Source: https://ilyadev.xyz/cases/ai-video-editor (HTML) · /cases/ai-video-editor.txt (this file)
+Previous: 02 — AI Warehouse · Demo stock ops → https://ilyadev.xyz/cases/ai-warehouse.txt
+Up next: 04 — Roblox Arena · Demo runtime → https://ilyadev.xyz/cases/roblox-game.txt
 Index: https://ilyadev.xyz/llms.txt — full case-study list
-Author: Demo Author — https://ilyadev.xyz/index.md
+Author: Demo Author — https://ilyadev.xyz/index.txt
 "
 `;
 
@@ -336,11 +336,11 @@ Fictionalized case used to stress long-form operational copy.
 
 ---
 
-Source: https://ilyadev.xyz/cases/ai-warehouse (HTML) · /cases/ai-warehouse.md (this file)
-Previous: 01 — AI CRM · Demo lead desk → https://ilyadev.xyz/cases/ai-crm.md
-Up next: 03 — AI Video Editor · Demo timeline → https://ilyadev.xyz/cases/ai-video-editor.md
+Source: https://ilyadev.xyz/cases/ai-warehouse (HTML) · /cases/ai-warehouse.txt (this file)
+Previous: 01 — AI CRM · Demo lead desk → https://ilyadev.xyz/cases/ai-crm.txt
+Up next: 03 — AI Video Editor · Demo timeline → https://ilyadev.xyz/cases/ai-video-editor.txt
 Index: https://ilyadev.xyz/llms.txt — full case-study list
-Author: Demo Author — https://ilyadev.xyz/index.md
+Author: Demo Author — https://ilyadev.xyz/index.txt
 "
 `;
 
@@ -443,11 +443,11 @@ Fictionalized desktop case for public repo review.
 
 ---
 
-Source: https://ilyadev.xyz/cases/macos-vpn (HTML) · /cases/macos-vpn.md (this file)
-Previous: 04 — Roblox Arena · Demo runtime → https://ilyadev.xyz/cases/roblox-game.md
-Up next: 06 — Portfolio Engine · Public repo case → https://ilyadev.xyz/cases/portfolio-site.md
+Source: https://ilyadev.xyz/cases/macos-vpn (HTML) · /cases/macos-vpn.txt (this file)
+Previous: 04 — Roblox Arena · Demo runtime → https://ilyadev.xyz/cases/roblox-game.txt
+Up next: 06 — Portfolio Engine · Public repo case → https://ilyadev.xyz/cases/portfolio-site.txt
 Index: https://ilyadev.xyz/llms.txt — full case-study list
-Author: Demo Author — https://ilyadev.xyz/index.md
+Author: Demo Author — https://ilyadev.xyz/index.txt
 "
 `;
 
@@ -456,7 +456,7 @@ exports[`caseStudyToMarkdown — snapshots > EN · portfolio-site 1`] = `
 
 \`06 · portfolio-site · Open engine\`
 
-The real architecture case for this repository: typed bilingual content, route-aware case pages, Markdown mirrors for agents, and privacy-first analytics.
+The real architecture case for this repository: typed bilingual content, route-aware case pages, text mirrors for agents, and privacy-first analytics.
 
 **Scope:** Production engine · public demo content  
 **Role:** Frontend architecture, content system, telemetry, and static publishing
@@ -477,7 +477,7 @@ The public version commits sanitized demo content by default. Private content an
 |---|---|
 | **Content** | Typed EN/RU/AR structures, not string-key resources |
 | **Publishing** | SPA routes plus generated per-case static heads |
-| **Agents** | Markdown mirrors and llms.txt generated at build time |
+| **Agents** | Text mirrors and llms.txt generated at build time |
 | **Telemetry** | Same-origin endpoint, no third-party tracker |
 
 ## Architecture
@@ -502,13 +502,13 @@ npm script -> CONTENT_SOURCE -> select-content.mjs
 \`\`\`text
 typed content -> React UI
              -> public/dev mirrors or private dist mirrors
-             -> llms.txt + per-page Markdown twins
+             -> llms.txt + per-page text mirrors
              -> dist/cases/<slug>/index.html with case head
 \`\`\`
 
 **Humans.** SPA stays fast and route-aware.
 
-**Agents.** Markdown mirrors expose the same case structure without scraping UI.
+**Agents.** Text mirrors expose the same case structure without scraping UI.
 
 ## Key engineering decisions
 
@@ -530,7 +530,7 @@ typed content -> React UI
 
 ### 03 · Static head copies for case routes
 
-**Decision.** The build writes dist/cases/<slug>/index.html with case-specific title, description, alternate Markdown links, and JSON-LD.
+**Decision.** The build writes dist/cases/<slug>/index.html with case-specific title, description, alternate text links, and JSON-LD.
 
 **Why.** Social scrapers and many bots do not run client JavaScript, so client-only head updates are not enough.
 
@@ -543,7 +543,7 @@ typed content -> React UI
 | **Frontend** | React · TypeScript · Vite 7 |
 | **Design** | CSS custom properties · route-aware case styling |
 | **Content** | Generated active barrel · public/private trees |
-| **Agents** | Markdown mirrors · llms.txt · per-case alternates |
+| **Agents** | Text mirrors · llms.txt · per-case alternates |
 | **Analytics** | Node ingest · SQLite · same-origin proxy |
 | **CI** | Lint · unit tests · typecheck · build · audit · leakage guards |
 
@@ -567,10 +567,10 @@ Real architecture case with sanitized author-facing copy.
 
 ---
 
-Source: https://ilyadev.xyz/cases/portfolio-site (HTML) · /cases/portfolio-site.md (this file)
-Previous: 05 — macOS Network Guard · Demo client → https://ilyadev.xyz/cases/macos-vpn.md
+Source: https://ilyadev.xyz/cases/portfolio-site (HTML) · /cases/portfolio-site.txt (this file)
+Previous: 05 — macOS Network Guard · Demo client → https://ilyadev.xyz/cases/macos-vpn.txt
 Index: https://ilyadev.xyz/llms.txt — full case-study list
-Author: Demo Author — https://ilyadev.xyz/index.md
+Author: Demo Author — https://ilyadev.xyz/index.txt
 "
 `;
 
@@ -679,11 +679,11 @@ Fictionalized gameplay case for public repo review.
 
 ---
 
-Source: https://ilyadev.xyz/cases/roblox-game (HTML) · /cases/roblox-game.md (this file)
-Previous: 03 — AI Video Editor · Demo timeline → https://ilyadev.xyz/cases/ai-video-editor.md
-Up next: 05 — macOS Network Guard · Demo client → https://ilyadev.xyz/cases/macos-vpn.md
+Source: https://ilyadev.xyz/cases/roblox-game (HTML) · /cases/roblox-game.txt (this file)
+Previous: 03 — AI Video Editor · Demo timeline → https://ilyadev.xyz/cases/ai-video-editor.txt
+Up next: 05 — macOS Network Guard · Demo client → https://ilyadev.xyz/cases/macos-vpn.txt
 Index: https://ilyadev.xyz/llms.txt — full case-study list
-Author: Demo Author — https://ilyadev.xyz/index.md
+Author: Demo Author — https://ilyadev.xyz/index.txt
 "
 `;
 
@@ -794,10 +794,10 @@ Fictionalized case для проверки public portfolio engine.
 
 ---
 
-Source: https://ilyadev.xyz/cases/ai-crm (HTML) · /cases/ai-crm.ru.md (this file)
-Up next: 02 — AI Warehouse · Demo stock ops → https://ilyadev.xyz/cases/ai-warehouse.ru.md
+Source: https://ilyadev.xyz/cases/ai-crm (HTML) · /cases/ai-crm.ru.txt (this file)
+Up next: 02 — AI Warehouse · Demo stock ops → https://ilyadev.xyz/cases/ai-warehouse.ru.txt
 Index: https://ilyadev.xyz/llms-ru.txt — full case-study list
-Author: Demo Author — https://ilyadev.xyz/index.ru.md
+Author: Demo Author — https://ilyadev.xyz/index.ru.txt
 "
 `;
 
@@ -908,11 +908,11 @@ Fictionalized case для public repository.
 
 ---
 
-Source: https://ilyadev.xyz/cases/ai-video-editor (HTML) · /cases/ai-video-editor.ru.md (this file)
-Previous: 02 — AI Warehouse · Demo stock ops → https://ilyadev.xyz/cases/ai-warehouse.ru.md
-Up next: 04 — Roblox Arena · Demo runtime → https://ilyadev.xyz/cases/roblox-game.ru.md
+Source: https://ilyadev.xyz/cases/ai-video-editor (HTML) · /cases/ai-video-editor.ru.txt (this file)
+Previous: 02 — AI Warehouse · Demo stock ops → https://ilyadev.xyz/cases/ai-warehouse.ru.txt
+Up next: 04 — Roblox Arena · Demo runtime → https://ilyadev.xyz/cases/roblox-game.ru.txt
 Index: https://ilyadev.xyz/llms-ru.txt — full case-study list
-Author: Demo Author — https://ilyadev.xyz/index.ru.md
+Author: Demo Author — https://ilyadev.xyz/index.ru.txt
 "
 `;
 
@@ -1023,11 +1023,11 @@ Fictionalized case для проверки long-form operational copy.
 
 ---
 
-Source: https://ilyadev.xyz/cases/ai-warehouse (HTML) · /cases/ai-warehouse.ru.md (this file)
-Previous: 01 — AI CRM · Demo lead desk → https://ilyadev.xyz/cases/ai-crm.ru.md
-Up next: 03 — AI Video Editor · Demo timeline → https://ilyadev.xyz/cases/ai-video-editor.ru.md
+Source: https://ilyadev.xyz/cases/ai-warehouse (HTML) · /cases/ai-warehouse.ru.txt (this file)
+Previous: 01 — AI CRM · Demo lead desk → https://ilyadev.xyz/cases/ai-crm.ru.txt
+Up next: 03 — AI Video Editor · Demo timeline → https://ilyadev.xyz/cases/ai-video-editor.ru.txt
 Index: https://ilyadev.xyz/llms-ru.txt — full case-study list
-Author: Demo Author — https://ilyadev.xyz/index.ru.md
+Author: Demo Author — https://ilyadev.xyz/index.ru.txt
 "
 `;
 
@@ -1130,11 +1130,11 @@ Fictionalized desktop case для public repo review.
 
 ---
 
-Source: https://ilyadev.xyz/cases/macos-vpn (HTML) · /cases/macos-vpn.ru.md (this file)
-Previous: 04 — Roblox Arena · Demo runtime → https://ilyadev.xyz/cases/roblox-game.ru.md
-Up next: 06 — Portfolio Engine · Public repo case → https://ilyadev.xyz/cases/portfolio-site.ru.md
+Source: https://ilyadev.xyz/cases/macos-vpn (HTML) · /cases/macos-vpn.ru.txt (this file)
+Previous: 04 — Roblox Arena · Demo runtime → https://ilyadev.xyz/cases/roblox-game.ru.txt
+Up next: 06 — Portfolio Engine · Public repo case → https://ilyadev.xyz/cases/portfolio-site.ru.txt
 Index: https://ilyadev.xyz/llms-ru.txt — full case-study list
-Author: Demo Author — https://ilyadev.xyz/index.ru.md
+Author: Demo Author — https://ilyadev.xyz/index.ru.txt
 "
 `;
 
@@ -1143,7 +1143,7 @@ exports[`caseStudyToMarkdown — snapshots > RU · portfolio-site 1`] = `
 
 \`06 · portfolio-site · Open engine\`
 
-Реальный architecture case для этого repo: typed bilingual content, route-aware case pages, Markdown mirrors for agents и privacy-first analytics.
+Реальный architecture case для этого repo: typed bilingual content, route-aware case pages, text mirrors for agents и privacy-first analytics.
 
 **Scope:** Production engine · public demo content  
 **Role:** Frontend architecture, content system, telemetry и static publishing
@@ -1164,7 +1164,7 @@ Public version commits sanitized demo content by default. Private content и pri
 |---|---|
 | **Content** | Typed EN/RU/AR structures, not string-key resources |
 | **Publishing** | SPA routes plus generated per-case static heads |
-| **Agents** | Markdown mirrors and llms.txt generated at build time |
+| **Agents** | Text mirrors and llms.txt generated at build time |
 | **Telemetry** | Same-origin endpoint, no third-party tracker |
 
 ## Архитектура
@@ -1189,13 +1189,13 @@ npm script -> CONTENT_SOURCE -> select-content.mjs
 \`\`\`text
 typed content -> React UI
              -> public/dev mirrors or private dist mirrors
-             -> llms.txt + per-page Markdown twins
+             -> llms.txt + per-page text mirrors
              -> dist/cases/<slug>/index.html with case head
 \`\`\`
 
 **Humans.** SPA stays fast and route-aware.
 
-**Agents.** Markdown mirrors expose same case structure without UI scraping.
+**Agents.** Text mirrors expose same case structure without UI scraping.
 
 ## Ключевые инженерные решения
 
@@ -1217,7 +1217,7 @@ typed content -> React UI
 
 ### 03 · Static head copies for case routes
 
-**Решение.** Build writes dist/cases/<slug>/index.html with case-specific title, description, alternate Markdown links and JSON-LD.
+**Решение.** Build writes dist/cases/<slug>/index.html with case-specific title, description, alternate text links and JSON-LD.
 
 **Почему.** Social scrapers and many bots do not run client JavaScript; client-only head updates are insufficient.
 
@@ -1230,7 +1230,7 @@ typed content -> React UI
 | **Frontend** | React · TypeScript · Vite 7 |
 | **Design** | CSS custom properties · route-aware case styling |
 | **Content** | Generated active barrel · public/private trees |
-| **Agents** | Markdown mirrors · llms.txt · per-case alternates |
+| **Agents** | Text mirrors · llms.txt · per-case alternates |
 | **Analytics** | Node ingest · SQLite · same-origin proxy |
 | **CI** | Lint · unit tests · typecheck · build · audit · leakage guards |
 
@@ -1254,10 +1254,10 @@ Real architecture case with sanitized author-facing copy.
 
 ---
 
-Source: https://ilyadev.xyz/cases/portfolio-site (HTML) · /cases/portfolio-site.ru.md (this file)
-Previous: 05 — macOS Network Guard · Demo client → https://ilyadev.xyz/cases/macos-vpn.ru.md
+Source: https://ilyadev.xyz/cases/portfolio-site (HTML) · /cases/portfolio-site.ru.txt (this file)
+Previous: 05 — macOS Network Guard · Demo client → https://ilyadev.xyz/cases/macos-vpn.ru.txt
 Index: https://ilyadev.xyz/llms-ru.txt — full case-study list
-Author: Demo Author — https://ilyadev.xyz/index.ru.md
+Author: Demo Author — https://ilyadev.xyz/index.ru.txt
 "
 `;
 
@@ -1366,10 +1366,10 @@ Fictionalized gameplay case для public repo review.
 
 ---
 
-Source: https://ilyadev.xyz/cases/roblox-game (HTML) · /cases/roblox-game.ru.md (this file)
-Previous: 03 — AI Video Editor · Demo timeline → https://ilyadev.xyz/cases/ai-video-editor.ru.md
-Up next: 05 — macOS Network Guard · Demo client → https://ilyadev.xyz/cases/macos-vpn.ru.md
+Source: https://ilyadev.xyz/cases/roblox-game (HTML) · /cases/roblox-game.ru.txt (this file)
+Previous: 03 — AI Video Editor · Demo timeline → https://ilyadev.xyz/cases/ai-video-editor.ru.txt
+Up next: 05 — macOS Network Guard · Demo client → https://ilyadev.xyz/cases/macos-vpn.ru.txt
 Index: https://ilyadev.xyz/llms-ru.txt — full case-study list
-Author: Demo Author — https://ilyadev.xyz/index.ru.md
+Author: Demo Author — https://ilyadev.xyz/index.ru.txt
 "
 `;

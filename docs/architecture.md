@@ -26,7 +26,7 @@
 
 No external library. Three languages: `en`, `ru`, `ar` (RTL).
 
-- `src/i18n/langConfig.ts` is the single source of truth. `Lang = 'en' | 'ru' | 'ar'` plus a `LANG_CONFIG[lang]` table holding everything per-language: `htmlLang`, `dir` (`ltr`/`rtl`), `label`, `mdExt`, `llmsFile`, `homeFile`, `ogLocale`, `cvFile`, and a nested `markdown` labels object (used by mirror serializers).
+- `src/i18n/langConfig.ts` is the single source of truth. `Lang = 'en' | 'ru' | 'ar'` plus a `LANG_CONFIG[lang]` table holding everything per-language: `htmlLang`, `dir` (`ltr`/`rtl`), `label`, `mirrorExt`, `llmsFile`, `homeFile`, `ogLocale`, `cvFile`, and a nested `markdown` labels object (used by mirror serializers).
 - `src/content/index.ts` re-exports the active content tree selected by `scripts/select-content.mjs`. The committed public tree lives under `src/content/public/{en,ru,ar}.ts`; the ignored private tree can mirror that shape under `src/content/.private/`. The `Content` type enforces shape parity across all active language exports at compile time.
 - `src/i18n/LangContext.tsx` holds `lang` state, syncs to `localStorage`, applies `<html lang>` (htmlLang), `<html dir>` (`ltr`/`rtl`), and `<html data-lang>` on every change. Exposes:
   - `useLang()` → `{ lang, setLang, t }`
@@ -222,7 +222,7 @@ The pill renders as an absolute-positioned overlay (top-right, RTL-aware via `in
 
 Per-language `VideoObject` JSON-LD is emitted into the static `dist/cases/<slug>/index.html` head by `vite.config.ts:videoObjectJsonLd`. One `<script type="application/ld+json" data-case-head>` block per lang (en / ru / ar), each disambiguated by `@id: <origin>/cases/<slug>#video-<lang>`. Fields are minimal — `name`, `description` (synopsis), `thumbnailUrl`, `embedUrl`, `contentUrl`, `inLanguage`, `transcript` (full text). No `duration`, no `uploadDate` — those add no signal to LLM crawlers and the video host (YouTube / RuTube) carries them canonically.
 
-The same content also lands in the agent Markdown mirrors as a `## Video walkthrough` section (label localized via `ui.markdown.videoWalkthrough`) emitted by `src/lib/caseStudyMarkdown.ts` whenever `project.videoTranscript` is present. The section carries the synopsis paragraph followed by the verbatim voiceover, paragraph-split by `\n\n` from `videoTranscript.fullText`. Reaches both per-case `cases/<slug>{.md,.ru.md,.ar.md}` files and `llms-full.txt`.
+The same content also lands in the agent text mirrors as a `## Video walkthrough` section (label localized via `ui.markdown.videoWalkthrough`) emitted by `src/lib/caseStudyMarkdown.ts` whenever `project.videoTranscript` is present. The section carries the synopsis paragraph followed by the verbatim voiceover, paragraph-split by `\n\n` from `videoTranscript.fullText`. Reaches both per-case `cases/<slug>{.txt,.ru.txt,.ar.txt}` files and `llms-full.txt`.
 
 ## Telemetry
 
@@ -247,9 +247,9 @@ Wiring points (one analytics call per real user action — no client-side classi
 
 The server lives in `server/` (separate `package.json`, single dep on `better-sqlite3`). In dev, Vite proxies `/api` and `/admin` to `localhost:3000`. In production, Caddy reverse_proxies the same paths same-origin.
 
-## Agent layer (Markdown mirrors)
+## Agent layer (text mirrors)
 
-Every page has a Markdown sibling at the same URL — `/index.md`, `/cases/<slug>.md` × 6, plus the [llmstxt.org](https://llmstxt.org) entry points: `/llms.txt` (curated index) and `/llms-full.txt` (concatenated EN corpus, single fetch). RU gets `.ru.md` siblings + `/llms-ru.txt`. AR gets `.ar.md` siblings + `/llms-ar.txt`. Designed for AI search citation (Perplexity, ChatGPT search, Google AI Overviews, Bing Copilot) which prefers a clean Markdown twin over HTML scraping.
+Every page has a plain-text Markdown sibling at the same URL — `/index.txt`, `/cases/<slug>.txt` × 6, plus the [llmstxt.org](https://llmstxt.org) entry points: `/llms.txt` (curated index) and `/llms-full.txt` (concatenated EN corpus, single fetch). RU gets `.ru.txt` siblings + `/llms-ru.txt`. AR gets `.ar.txt` siblings + `/llms-ar.txt`. The bodies are Markdown; the canonical URLs and MIME stay boring `text/plain` for strict AI fetch proxies.
 
 Per-language mirror config (file extension, llms filename, home filename, markdown labels) lives in `LANG_CONFIG[lang]` and is iterated via `LANGS` — adding a fourth language means populating one entry in `langConfig.ts` plus the `Content` tree.
 
@@ -263,13 +263,13 @@ src/lib/homeMarkdown.ts          Pure serializer: Hero · About · Stack · Case
 src/lib/caseStudyMarkdown.ts     Pure serializer: Hero · Context · heroFacts
                                  · Architecture (ASCII fenced or images) ·
                                  Decisions · Stack · Lessons → Markdown.
-                                 prev/next/index footer links between sibling .md.
+                                 prev/next/index footer links between sibling .txt mirrors.
 src/components/CopyMarkdownButton.tsx
                                  In-page button — re-runs the same serializer
                                  in-memory, writes to clipboard. No file fetch.
 src/components/CaseHeadTags.tsx
                                  On case routes: per-page <link rel="alternate"
-                                 type="text/markdown"> (EN/RU/AR) + Schema.org
+                                 type="text/plain"> (EN/RU/AR) + Schema.org
                                  Article JSON-LD. Hides the global homepage
                                  alternates while a case is mounted.
 ```
@@ -284,12 +284,28 @@ the active source without crossing the public/private boundary:
   `public/`;
 - preview serves mirrors from `dist/`.
 
-A direct-serve middleware bypasses Vite's static handler for `.md` and `.txt`
+A direct-serve middleware bypasses Vite's static handler for generated `.txt`
 (Vite's SPA-fallback otherwise routes `.txt` requests through `index.html`) and
-pins `Content-Type: text/{plain,markdown}; charset=utf-8` — without it browsers
-fall back to Windows-1252 and Cyrillic mangles to mojibake.
+pins an explicit UTF-8 `Content-Type` — without it browsers fall back to
+Windows-1252 and Cyrillic mangles to mojibake.
 
-`llms-full.txt` carries a self-described size in line 1 (HTML comment, hidden from Markdown renderers): `<!-- llms-full.txt · concat of EN home + 6 cases · ~Nk chars · ~N KB -->`. Both language indexes (`llms.txt`, `llms-ru.txt`) cite the same size next to the "Full corpus" link, so agents can budget context before fetching. See `docs/decisions.md` → "Markdown twin per page (agent layer)".
+Production delivery is intentionally conservative for agent compatibility:
+`/llms*.txt` and per-page `.txt` mirrors are served as
+`text/plain; charset=utf-8` with no `X-Robots-Tag`. The `llms.txt` files are
+public crawler entry points, not private "agent-only" surfaces; `nofollow` is
+forbidden because following links is the entire purpose of the index. Legacy
+`.md` URLs redirect to their `.txt` equivalents and are not advertised.
+
+Caddy uses gzip only for compression. `zstd` is efficient, but some AI
+fetch proxies advertise it and then fail to decode it downstream, turning a
+valid origin response into an opaque 502.
+
+The declarative `Link: </llms.txt>; rel="llms-txt"` discovery header is served
+on normal site responses, not on `/llms*.txt` or mirror responses themselves. Agent text
+files should not carry self-referential discovery headers; their body is the
+discovery surface.
+
+`llms-full.txt` carries a self-described size in line 1 (HTML comment, hidden from Markdown renderers): `<!-- llms-full.txt · concat of EN home + 6 cases · ~Nk chars · ~N KB -->`. Both language indexes (`llms.txt`, `llms-ru.txt`) cite the same size next to the "Full corpus" link, so agents can budget context before fetching. See `docs/decisions.md` → "Text mirror per page (agent layer)".
 
 ## File-level conventions
 

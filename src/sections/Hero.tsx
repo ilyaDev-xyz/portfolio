@@ -82,7 +82,7 @@ function HeroActions({
       <CopyMarkdownButton
         getMarkdown={() =>
           homeToMarkdown(content, window.location.origin, {
-            mdExt: cfg.mdExt,
+            mirrorExt: cfg.mirrorExt,
             indexFile: cfg.llmsFile,
             labels: cfg.markdown,
           })
@@ -137,7 +137,7 @@ function HeroMobileButtons({ lang, content }: { lang: Lang; content: Content }) 
       <CopyMarkdownButton
         getMarkdown={() =>
           homeToMarkdown(content, window.location.origin, {
-            mdExt: cfg.mdExt,
+            mirrorExt: cfg.mirrorExt,
             indexFile: cfg.llmsFile,
             labels: cfg.markdown,
           })

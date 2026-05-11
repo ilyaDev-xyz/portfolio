@@ -17,9 +17,9 @@ Files: `src/i18n/LangContext.tsx`, `src/i18n/langConfig.ts`, `src/content/types.
 
 ## langConfig — single source of truth for per-language wiring
 
-Per-language wiring (file extensions, llms filenames, CV PDF filenames, hreflang values, og:locale tags, RTL direction, Arabic font selection, mirror-Markdown labels) used to be scattered across ~12 ternaries (`lang === 'ru' ? '.ru.md' : '.md'`) in Hero.tsx, Footer.tsx, Nav.tsx, CaseHeadTags.tsx, agentMirrors.ts, vite.config.ts, cvSource.ts, ProjectDetailPage.tsx, scripts/cv/build.mjs, server/src/ingest.js. Adding a third language meant grepping for both literal strings — error-prone.
+Per-language wiring (file extensions, llms filenames, CV PDF filenames, hreflang values, og:locale tags, RTL direction, Arabic font selection, mirror-Markdown labels) used to be scattered across ~12 ternaries (`lang === 'ru' ? '.ru.md' : '.md'`, later `.ru.txt` / `.txt`) in Hero.tsx, Footer.tsx, Nav.tsx, CaseHeadTags.tsx, agentMirrors.ts, vite.config.ts, cvSource.ts, ProjectDetailPage.tsx, scripts/cv/build.mjs, server/src/ingest.js. Adding a third language meant grepping for both literal strings — error-prone.
 
-Now: `src/i18n/langConfig.ts` exports `LANG_CONFIG: Record<Lang, LangConfig>`. Every lookup site does `LANG_CONFIG[lang].mdExt` / `.cvFile` / `.dir` / `.markdown.source` etc. Adding a fourth language is one entry in the table plus the content files.
+Now: `src/i18n/langConfig.ts` exports `LANG_CONFIG: Record<Lang, LangConfig>`. Every lookup site does `LANG_CONFIG[lang].mirrorExt` / `.cvFile` / `.dir` / `.markdown.source` etc. Adding a fourth language is one entry in the table plus the content files.
 
 `Lang` is the literal union (`'en' | 'ru' | 'ar'`); `LANGS` is a `readonly Lang[]` for iteration. `isLang(value)` is the runtime validator used in `LangContext`'s `localStorage` read and in `server/src/ingest.js` analytics validation (instead of an inline `value === 'en' || value === 'ru' || …` chain).
 
@@ -432,25 +432,39 @@ Renamed to keyword-bearing kebab-case so the URL itself reads as the project typ
 | `mvpn` | `macos-vpn` |
 | `site` | `portfolio-site` |
 
-Touched: `Nav.tsx` + `ProjectDetailPage.tsx` `CASE_SLUGS`, `slug` / `cta.href` / `cls` in both content files, `KNOWN_PATHS` in `server/src/ingest.js`, `SLUGS` in `server/src/{rollup,admin}.js`, comment example in `index.html`. Generated `.md` mirrors follow the new slug naturally.
+Touched: `Nav.tsx` + `ProjectDetailPage.tsx` `CASE_SLUGS`, `slug` / `cta.href` / `cls` in both content files, `KNOWN_PATHS` in `server/src/ingest.js`, `SLUGS` in `server/src/{rollup,admin}.js`, comment example in `index.html`. Generated text mirrors follow the new slug naturally.
 
 The card head row's `codename` slot was made redundant by the rename — title + slug already cover identity, so a separate codename added nothing. Set `codename = slug` for all six projects (`§ 03.03 · ai-video-editor · R&D`). Earlier two cards had `codename: null` which left a visible gap; uniform rule eliminates the gap and reads as deliberate cross-reference between URL and head.
 
 `portfolio-site` status is `Open source` once the public repository URL exists. The footer and Contact section link to the GitHub repository, so the status carries a real proof path rather than a vague promise.
 
-## Markdown twin per page (agent layer)
+## Text mirror per page (agent layer)
 
-Every page has a Markdown sibling at the same URL — `/cases/ai-crm.md`, `/index.md`, etc. RU gets `.ru.md`; AR gets `.ar.md`. Corpora-level entry points sit at the root: `/llms.txt`, `/llms-ru.txt`, `/llms-ar.txt` (curated indexes per [llmstxt.org spec](https://llmstxt.org)), plus `/llms-full.txt` (everything concatenated, EN, single fetch).
+Every page has a plain-text Markdown sibling at the same URL — `/cases/ai-crm.txt`, `/index.txt`, etc. RU gets `.ru.txt`; AR gets `.ar.txt`. Corpora-level entry points sit at the root: `/llms.txt`, `/llms-ru.txt`, `/llms-ar.txt` (curated indexes per [llmstxt.org spec](https://llmstxt.org)), plus `/llms-full.txt` (everything concatenated, EN, single fetch).
 
-Why not just rely on HTML: AI search (Perplexity, ChatGPT search, Google AI Overviews, Bing Copilot) increasingly fetches the `.md` twin when discoverable — cheaper to parse than React-rendered HTML, and citations land more cleanly. The React UI doesn't bend; the Markdown is generated alongside.
+Why not just rely on HTML: AI search and user-directed agent fetchers need a clean text twin that is cheaper to parse than React-rendered HTML. `.md` is a common convention, but some OpenAI/Anthropic browser/fetch layers have shown opaque safety failures on direct `.md` URLs; canonical mirrors therefore use `.txt` while retaining Markdown syntax in the body.
 
-Built at dev-server start and at `vite build` time from the active EN/RU/AR content tree via two pure serializers (`src/lib/homeMarkdown.ts` for the home page, `src/lib/caseStudyMarkdown.ts` for cases). Public build/dev writes the generated files under `public/`; private build writes them under `dist/`; private dev serves them from memory so private mirrors never overwrite public demo mirrors. The same serializers power an in-page "Copy markdown" button (`src/components/CopyMarkdownButton.tsx`) — agents (and humans) can grab the page without scraping the rendered DOM.
+Built at dev-server start and at `vite build` time from the active EN/RU/AR content tree via two pure serializers (`src/lib/homeMarkdown.ts` for the home page, `src/lib/caseStudyMarkdown.ts` for cases). Public build/dev writes the generated files under `public/`; private build writes them under `dist/`; private dev serves them from memory so private mirrors never overwrite public demo mirrors. The same serializers power the in-page "copy text" button (`src/components/CopyMarkdownButton.tsx`) — agents (and humans) can grab the page without scraping the rendered DOM.
 
-Files are gitignored — they're build artefacts, never authoritative source. A direct-serve Vite middleware bypasses Vite's static handler for `.md` and `.txt` because Vite's SPA-fallback otherwise routes `.txt` requests through `index.html` (returning the SPA shell for `/llms.txt`). The middleware serves public files from `publicDir`, private dev files from memory, and preview files from `dist`, while pinning `Content-Type: text/{plain,markdown}; charset=utf-8` — without the explicit charset browsers fall back to Windows-1252 and Cyrillic mangles to mojibake. Same fix needs an explicit `header` directive in Caddy on prod.
+Files are gitignored — they're build artefacts, never authoritative source. A direct-serve Vite middleware bypasses Vite's static handler for generated `.txt` files because Vite's SPA-fallback otherwise routes `.txt` requests through `index.html` (returning the SPA shell for `/llms.txt`). The middleware serves public files from `publicDir`, private dev files from memory, and preview files from `dist`, while pinning an explicit UTF-8 `Content-Type` — without the explicit charset browsers fall back to Windows-1252 and Cyrillic mangles to mojibake.
+
+Production is stricter than the original dev-server shape for compatibility with AI fetch/search proxies: `/llms.txt`, `/llms-ru.txt`, `/llms-ar.txt`, `/llms-full.txt`, and per-page `.txt` mirrors are served as `text/plain; charset=utf-8` and carry no `X-Robots-Tag`. They are public entry points. Legacy `.md` URLs redirect to `.txt` equivalents but are not advertised; the deploy Caddyfile is guarded by `npm run check:agent-surface` so a future `noindex,nofollow`, stale `.md` link, or immutable-cache regression fails CI.
+
+Compression is also part of the contract: Caddy uses `encode gzip`, not
+`encode zstd gzip`. During the 2026-05 agent-fetch incident, direct origin
+fetches worked, but clients that advertised zstd could receive
+`Content-Encoding: zstd`; some fetch stacks then failed decoding and surfaced
+the response as a 502. Gzip is boring and universally handled.
+
+The HTTP `Link` discovery header is intentionally kept off `/llms*.txt` and
+mirror responses themselves. It belongs on normal site responses where it helps
+headless clients discover the agent index without parsing HTML. On the agent
+text files, the body already is the discovery surface, and a self-referential
+`Link: </llms.txt>` adds parser risk without adding signal.
 
 `llms-full.txt` carries size metadata on line 1 as an HTML comment (invisible in Markdown render, line-1 readable for raw-text agents) and in each language index's "Full corpus" link description. Format: `~Nk chars · ~N KB` — chars (string length, deterministic) are preferred over tokens (varies by tokenizer) per the spec's silence on size warnings; tokens are not added because they'd be misleading across cl100k vs o200k vs Claude tokenizer. Recomputed every build, never hand-edited. Filename remains canonical `llms-full.txt` — Cloudflare, Stripe and others use the same fixed path; renaming for size-warning purposes would break the convention agents look for.
 
-Per-case `<link rel="alternate" type="text/markdown" hreflang="...">` is injected by `CaseHeadTags.tsx` — on mount it strips every `[data-case-head]` node (covering both the static head injected at build time for direct-loaded case pages and any stale client-side tag) plus the homepage markdown alternates, then installs case-specific alternates and an `Article` JSON-LD, all tagged. On unmount it strips its tagged set and calls `applyHomeDefaults()` to restore the title / description / homepage markdown alternates that ship in `dist/index.html` so SPA navigation back to Home doesn't carry case state in `<head>`.
+Per-case `<link rel="alternate" type="text/plain" hreflang="...">` is injected by `CaseHeadTags.tsx` — on mount it strips every `[data-case-head]` node (covering both the static head injected at build time for direct-loaded case pages and any stale client-side tag) plus the homepage text alternates, then installs case-specific alternates and an `Article` JSON-LD, all tagged. On unmount it strips its tagged set and calls `applyHomeDefaults()` to restore the title / description / homepage text alternates that ship in `dist/index.html` so SPA navigation back to Home doesn't carry case state in `<head>`.
 
 ## Analytics server stays plain JS, not TypeScript
 
@@ -485,7 +499,7 @@ Each case study with a video ships a Schema.org `VideoObject` block per language
 
 **Cost.** Static HTML carries 3× the JSON-LD weight per case (one block per lang). On six cases × ~2-3 KB transcripts that's ~50 KB extra in `dist/`, paid once per case-page hit and cacheable. Smaller than a single thumbnail.
 
-The same content lands in the agent Markdown mirrors as a `## Video walkthrough` section (label localized via `ui.markdown.videoWalkthrough`) so agents that prefer Markdown over JSON-LD parsing also see the synopsis + transcript. Both surfaces are derived from one `videoTranscript: { synopsis, fullText }` field on `Project` — no duplicate authoring.
+The same content lands in the agent text mirrors as a `## Video walkthrough` section (label localized via `ui.markdown.videoWalkthrough`) so agents that prefer Markdown over JSON-LD parsing also see the synopsis + transcript. Both surfaces are derived from one `videoTranscript: { synopsis, fullText }` field on `Project` — no duplicate authoring.
 
 ## Language pill on the player, not native-script in the pill
 

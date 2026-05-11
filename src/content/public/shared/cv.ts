@@ -31,11 +31,11 @@ export const cvEn: Cv = {
   },
   experienceBullets: {
     'Demo · ongoing': [
-      'Maintains the public portfolio engine as an inspectable artefact: typed bilingual content, agent-readable Markdown mirrors, route-aware case pages.',
+      'Maintains the public portfolio engine as an inspectable artefact: typed bilingual content, agent-readable text mirrors, route-aware case pages.',
       'Drives the demo content tree — every case study is fictional but exercises the same content shape as the real portfolio.',
     ],
     'Demo · prior cycle': [
-      'Prototyped the agent-mirror pipeline that emits llms.txt + per-case Markdown for AI crawlers.',
+      'Prototyped the agent-mirror pipeline that emits llms.txt + per-case text mirrors for AI crawlers.',
       'Designed the privacy-first analytics server bundled with the engine — payload validation, salted visitor IDs, nightly rollup.',
     ],
   },
@@ -83,11 +83,11 @@ export const cvRu: Cv = {
   },
   experienceBullets: {
     'Demo · ongoing': [
-      'Поддерживает публичный движок портфолио как inspectable artefact: typed bilingual content, agent-readable Markdown mirrors, route-aware case pages.',
+      'Поддерживает публичный движок портфолио как inspectable artefact: typed bilingual content, agent-readable text mirrors, route-aware case pages.',
       'Ведёт demo-контент tree — каждый кейс вымышленный, но использует ту же форму данных что реальный portfolio.',
     ],
     'Demo · prior cycle': [
-      'Прототипировал agent-mirror pipeline — эмитит llms.txt + per-case Markdown для AI-краулеров.',
+      'Прототипировал agent-mirror pipeline — эмитит llms.txt + per-case text mirrors для AI-краулеров.',
       'Спроектировал privacy-first analytics server в комплекте с движком — payload validation, salted visitor IDs, nightly rollup.',
     ],
   },
@@ -135,11 +135,11 @@ export const cvAr: Cv = {
   },
   experienceBullets: {
     'Demo · ongoing': [
-      'يحافظ على portfolio engine العام كـ inspectable artefact: typed bilingual content، agent-readable Markdown mirrors، route-aware case pages.',
+      'يحافظ على portfolio engine العام كـ inspectable artefact: typed bilingual content، agent-readable text mirrors، route-aware case pages.',
       'يدير demo content tree — كل دراسة حالة وهمية لكنها تتمرن على نفس شكل البيانات الذي يستخدمه portfolio الحقيقي.',
     ],
     'Demo · prior cycle': [
-      'صمم agent-mirror pipeline — يصدر llms.txt + Markdown لكل حالة لـ AI crawlers.',
+      'صمم agent-mirror pipeline — يصدر llms.txt + text mirror لكل حالة لـ AI crawlers.',
       'صمم privacy-first analytics server المرفق مع المحرك — payload validation، salted visitor IDs، nightly rollup.',
     ],
   },

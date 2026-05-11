@@ -28,7 +28,11 @@ public/private/
 public/index.md
 public/index.ru.md
 public/index.ar.md
+public/index.txt
+public/index.ru.txt
+public/index.ar.txt
 public/cases/*.md
+public/cases/*.txt
 public/llms.txt
 public/llms-ru.txt
 public/llms-ar.txt

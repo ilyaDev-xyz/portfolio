@@ -1,7 +1,7 @@
 {
   "name": "ilya-portfolio",
   "private": true,
-  "version": "1.0.1",
+  "version": "1.0.2",
   "type": "module",
   "engines": {
     "node": ">=22.12"
@@ -19,6 +19,7 @@
     "cv:build": "npm run content:private && node scripts/cv/build.mjs",
     "cv:build:public": "npm run content:public && node scripts/cv/build.mjs",
     "og:case-data": "node scripts/og/export-case-og-data.mjs",
+    "check:agent-surface": "node scripts/check-agent-surface.mjs",
     "export:public": "node scripts/export-public.mjs",
     "preview": "vite preview",
     "typecheck": "npm run content:public && tsc --noEmit",

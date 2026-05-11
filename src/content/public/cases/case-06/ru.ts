@@ -7,7 +7,7 @@ export const case06Ru: Project = {
   codename: 'portfolio-site',
   title: 'Portfolio Engine · Public repo case',
   subtitle:
-    'Реальный architecture case для этого repo: typed bilingual content, route-aware case pages, Markdown mirrors for agents и privacy-first analytics.',
+    'Реальный architecture case для этого repo: typed bilingual content, route-aware case pages, text mirrors for agents и privacy-first analytics.',
   scope: 'Production engine · public demo content',
   proof: 'GitHub-ready codebase',
   production: 'Live deployment uses private content',
@@ -29,7 +29,7 @@ export const case06Ru: Project = {
     heroFacts: [
       { k: 'Content', v: 'Typed EN/RU/AR structures, not string-key resources' },
       { k: 'Publishing', v: 'SPA routes plus generated per-case static heads' },
-      { k: 'Agents', v: 'Markdown mirrors and llms.txt generated at build time' },
+      { k: 'Agents', v: 'Text mirrors and llms.txt generated at build time' },
       { k: 'Telemetry', v: 'Same-origin endpoint, no third-party tracker' },
     ],
     diagrams: [
@@ -50,11 +50,11 @@ export const case06Ru: Project = {
         title: 'Build outputs',
         ascii: `typed content -> React UI
              -> public/dev mirrors or private dist mirrors
-             -> llms.txt + per-page Markdown twins
+             -> llms.txt + per-page text mirrors
              -> dist/cases/<slug>/index.html with case head`,
         notes: [
           { k: 'Humans', v: 'SPA stays fast and route-aware.' },
-          { k: 'Agents', v: 'Markdown mirrors expose same case structure without UI scraping.' },
+          { k: 'Agents', v: 'Text mirrors expose same case structure without UI scraping.' },
         ],
       },
     ],
@@ -73,7 +73,7 @@ export const case06Ru: Project = {
       },
       {
         title: 'Static head copies for case routes',
-        decision: 'Build writes dist/cases/<slug>/index.html with case-specific title, description, alternate Markdown links and JSON-LD.',
+        decision: 'Build writes dist/cases/<slug>/index.html with case-specific title, description, alternate text links and JSON-LD.',
         why: 'Social scrapers and many bots do not run client JavaScript; client-only head updates are insufficient.',
         cost: 'Small Vite plugin owns index.html injection.',
       },
@@ -82,7 +82,7 @@ export const case06Ru: Project = {
       { k: 'Frontend', v: 'React · TypeScript · Vite 7' },
       { k: 'Design', v: 'CSS custom properties · route-aware case styling' },
       { k: 'Content', v: 'Generated active barrel · public/private trees' },
-      { k: 'Agents', v: 'Markdown mirrors · llms.txt · per-case alternates' },
+      { k: 'Agents', v: 'Text mirrors · llms.txt · per-case alternates' },
       { k: 'Analytics', v: 'Node ingest · SQLite · same-origin proxy' },
       { k: 'CI', v: 'Lint · unit tests · typecheck · build · audit · leakage guards' },
     ],

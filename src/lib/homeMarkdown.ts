@@ -4,8 +4,8 @@ import { escapeTableCell } from './markdownUtils';
 import { projectStatusLabel } from './projectStatus';
 
 export type HomeMdOptions = {
-  /** Markdown extension for sibling case links — '.md' for EN, '.ru.md' for RU. */
-  mdExt: string;
+  /** Text mirror extension for sibling case links — '.txt' for EN, '.ru.txt' for RU. */
+  mirrorExt: string;
   /** Filename of the language-specific llms.txt index. */
   indexFile: string;
   labels?: MarkdownLabels;
@@ -15,7 +15,7 @@ export type HomeMdOptions = {
  * Serialize the entire home page (Hero · About · Stack · Projects · Experience
  * · Contact) into recruiter-friendly Markdown. Pure function — no DOM, no React.
  *
- * Project entries link to per-case .md mirrors (in the same language) so the
+ * Project entries link to per-case text mirrors (in the same language) so the
  * resulting document is a self-contained "card index" of the site.
  */
 export function homeToMarkdown(
@@ -75,7 +75,7 @@ export function homeToMarkdown(
   lines.push('---', '', `## ${labels.cases}`, '');
   projects.forEach((p) => {
     const codename = p.codename ?? p.slug;
-    const link = `${origin}/cases/${p.slug}${opts.mdExt}`;
+    const link = `${origin}/cases/${p.slug}${opts.mirrorExt}`;
     lines.push(`### ${p.idx} — ${p.title}`, '');
     lines.push(
       '`' +
@@ -128,7 +128,7 @@ export function homeToMarkdown(
 export function homeMarkdownOptionsForLang(lang: Lang): HomeMdOptions {
   const cfg = LANG_CONFIG[lang];
   return {
-    mdExt: cfg.mdExt,
+    mirrorExt: cfg.mirrorExt,
     indexFile: cfg.llmsFile,
     labels: cfg.markdown,
   };

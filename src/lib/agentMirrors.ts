@@ -6,8 +6,8 @@ import { homeToMarkdown } from './homeMarkdown';
 export type LangVariant = {
   /** Language code — used for hreflang and llms-{lang}.txt naming. */
   lang: Lang;
-  /** File extension applied to per-page mirrors (`.md` or `.ru.md`). */
-  mdExt: string;
+  /** File extension applied to per-page text mirrors (`.txt` or `.ru.txt`). */
+  mirrorExt: string;
   /** Filename of the curated llms.txt index. */
   llmsFile: string;
   /** Filename of the home mirror. */
@@ -19,7 +19,7 @@ const VARIANTS: Record<Lang, LangVariant> = Object.fromEntries(
     lang,
     {
       lang,
-      mdExt: LANG_CONFIG[lang].mdExt,
+      mirrorExt: LANG_CONFIG[lang].mirrorExt,
       llmsFile: LANG_CONFIG[lang].llmsFile,
       homeFile: LANG_CONFIG[lang].homeFile,
     },
@@ -44,8 +44,8 @@ function sizeStats(s: string): SizeStats {
  * Returns a map of `{relative-path: body}` — the Vite plugin decides whether
  * to write it into `public/`, write it into `dist/`, or serve it from memory.
  *
- * - `index.md` / `index.ru.md` / `index.ar.md` — home page mirrors
- * - `cases/<slug>.md` / `.ru.md` / `.ar.md` — per-case mirrors (×6)
+ * - `index.txt` / `index.ru.txt` / `index.ar.txt` — home page mirrors
+ * - `cases/<slug>.txt` / `.ru.txt` / `.ar.txt` — per-case mirrors (×6)
  * - `llms.txt` / `llms-ru.txt` / `llms-ar.txt` — curated indexes
  * - `llms-full.txt` — concatenated EN corpus (single-fetch convenience)
  */
@@ -81,7 +81,7 @@ export function generateAgentMirrors(
   for (const { variant, content } of langs) {
     // Home mirror.
     files[variant.homeFile] = homeToMarkdown(content, origin, {
-      mdExt: variant.mdExt,
+      mirrorExt: variant.mirrorExt,
       indexFile: variant.llmsFile,
       labels: LANG_CONFIG[variant.lang].markdown,
     });
@@ -90,7 +90,7 @@ export function generateAgentMirrors(
     content.projects.forEach((project, index) => {
       const nav = buildCaseNav(content, index, variant);
       const md = caseStudyToMarkdown(project, content.ui, origin, nav);
-      files[`cases/${project.slug}${variant.mdExt}`] = md;
+      files[`cases/${project.slug}${variant.mirrorExt}`] = md;
     });
 
     // llms.txt — curated index.
@@ -122,7 +122,7 @@ function buildCaseNav(
     next: next
       ? { slug: next.slug, title: next.title, idx: next.idx }
       : undefined,
-    mdExt: variant.mdExt,
+    mirrorExt: variant.mirrorExt,
     indexFile: variant.llmsFile,
     homeFile: variant.homeFile,
     authorName: content.hero.name,
@@ -175,7 +175,7 @@ function buildLlmsIndex(
     const codename = p.codename ?? p.slug;
     const desc = p.subtitle.replace(/\s+/g, ' ').trim();
     lines.push(
-      `- [Case ${p.idx} — ${p.title} (${codename})](${origin}/cases/${p.slug}${variant.mdExt}): ${desc}`,
+      `- [Case ${p.idx} — ${p.title} (${codename})](${origin}/cases/${p.slug}${variant.mirrorExt}): ${desc}`,
     );
   });
   lines.push('');
@@ -221,7 +221,7 @@ function buildLlmsFull(
 
   parts.push(
     homeToMarkdown(content, origin, {
-      mdExt: variant.mdExt,
+      mirrorExt: variant.mirrorExt,
       indexFile: variant.llmsFile,
       labels: LANG_CONFIG[variant.lang].markdown,
     }),

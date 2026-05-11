@@ -35,13 +35,13 @@
     <meta name="twitter:description" content="Public demo portfolio engine with typed content, case routes, agent-readable mirrors, and privacy-first analytics." />
     <meta name="twitter:image" content="https://example.com/og-image.png" />
 
-    <!-- Agent layer — Markdown mirrors of every page. The site index lives at
+    <!-- Agent layer — plain-text Markdown mirrors of every page. The site index lives at
          /llms.txt; the full corpus at /llms-full.txt; per-page mirrors are
-         siblings of every route (e.g. /cases/ai-crm.md). On case routes the
-         <AlternateMd> component overrides these alternate links per slug. -->
-    <link rel="alternate" type="text/markdown" hreflang="en" href="https://example.com/index.md" />
-    <link rel="alternate" type="text/markdown" hreflang="ru" href="https://example.com/index.ru.md" />
-    <link rel="alternate" type="text/markdown" hreflang="ar" href="https://example.com/index.ar.md" />
+         siblings of every route (e.g. /cases/ai-crm.txt). On case routes the
+         head manager overrides these alternate links per slug. -->
+    <link rel="alternate" type="text/plain" hreflang="en" href="https://example.com/index.txt" />
+    <link rel="alternate" type="text/plain" hreflang="ru" href="https://example.com/index.ru.txt" />
+    <link rel="alternate" type="text/plain" hreflang="ar" href="https://example.com/index.ar.txt" />
 
     <!-- Schema.org ProfilePage + Person — picked up by Perplexity, ChatGPT
          search, Google AI Overviews, Bing/Copilot for citation +
@@ -113,11 +113,11 @@
   <body>
     <!-- Bare-HTML crawler hint. Visible to non-JS clients (most LLM
          training scrapers + headless agents) before React boots; served
-         alongside <link rel="alternate" type="text/markdown"> so an
+         alongside <link rel="alternate" type="text/plain"> so an
          agent that ignores link rel still sees a literal pointer. -->
     <noscript>
-      <p>For AI agents: a Markdown mirror of this page is available at the
-      same URL with a <code>.md</code> suffix (e.g. <code>/cases/ai-crm.md</code>).
+      <p>For AI agents: a plain-text Markdown mirror of this page is available at the
+      same URL with a <code>.txt</code> suffix (e.g. <code>/cases/ai-crm.txt</code>).
       A curated index lives at <a href="/llms.txt">/llms.txt</a> and the
       full corpus at <a href="/llms-full.txt">/llms-full.txt</a>.</p>
     </noscript>

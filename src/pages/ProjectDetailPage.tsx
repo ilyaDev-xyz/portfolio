@@ -78,7 +78,7 @@ export function ProjectDetailPage() {
   const hasMedia = !!(project.videoId || project.imageSrc);
   const mdCfg = LANG_CONFIG[lang];
   const markdownNav = {
-    mdExt: mdCfg.mdExt,
+    mirrorExt: mdCfg.mirrorExt,
     indexFile: mdCfg.llmsFile,
     homeFile: mdCfg.homeFile,
     authorName: t.hero.name,

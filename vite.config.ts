@@ -90,11 +90,11 @@ function setLinkRel(html: string, rel: string, href: string): string {
   );
 }
 
-function setMarkdownAlternate(html: string, lang: 'en' | 'ru' | 'ar', href: string): string {
+function setTextAlternate(html: string, lang: 'en' | 'ru' | 'ar', href: string): string {
   return upsertTag(
     html,
-    new RegExp(`<link rel="alternate" type="text/markdown" hreflang="${lang}" href="[^"]*"\\s*/>`),
-    `<link rel="alternate" type="text/markdown" hreflang="${lang}" href="${escapeAttr(href)}" />`,
+    new RegExp(`<link rel="alternate" type="text/plain" hreflang="${lang}" href="[^"]*"\\s*/>`),
+    `<link rel="alternate" type="text/plain" hreflang="${lang}" href="${escapeAttr(href)}" />`,
   );
 }
 
@@ -194,7 +194,7 @@ function applyHomeHead(html: string, content: Content): string {
   next = setMetaName(next, 'twitter:description', description);
   next = setMetaName(next, 'twitter:image', image);
   for (const lang of LANGS) {
-    next = setMarkdownAlternate(next, lang, `${PRODUCTION_ORIGIN}/${LANG_CONFIG[lang].homeFile}`);
+    next = setTextAlternate(next, lang, `${PRODUCTION_ORIGIN}/${LANG_CONFIG[lang].homeFile}`);
   }
   next = replaceFirstJsonLd(next, profileJsonLd(content));
   return next;
@@ -232,7 +232,7 @@ function applyCvHead(html: string, content: Content): string {
   const title = `CV — ${content.hero.name} · ${content.hero.role}`;
   const description = shorten(content.cv?.summary ?? pitch(content), 170);
   const image = cvSocialImage();
-  let next = stripMarkdownAlternates(html);
+  let next = stripTextAlternates(html);
   next = setTitle(next, title);
   next = setMetaName(next, 'description', description);
   next = setLinkRel(next, 'canonical', `${PRODUCTION_ORIGIN}/cv`);
@@ -256,9 +256,9 @@ function applyCvHead(html: string, content: Content): string {
   return injectAfterBodyStart(next, `${redirect}\n    ${fallback}`);
 }
 
-function stripMarkdownAlternates(html: string): string {
+function stripTextAlternates(html: string): string {
   return html.replace(
-    /\n\s*<link rel="alternate" type="text\/markdown" hreflang="(?:en|ru|ar)" href="[^"]+"\s*\/>/g,
+    /\n\s*<link rel="alternate" type="text\/(?:markdown|plain)" hreflang="(?:en|ru|ar)" href="[^"]+"\s*\/>/g,
     '',
   );
 }
@@ -325,7 +325,7 @@ function applyCaseHead(
   // build:private overlays PRIVATE variants into dist/og/cases/ via
   // scripts/overlay-private-og.mjs. PNG mandatory — LinkedIn rejects SVG/WebP.
   const image = `${PRODUCTION_ORIGIN}/og/cases/${project.slug}.png`;
-  let next = stripMarkdownAlternates(html);
+  let next = stripTextAlternates(html);
   next = setTitle(next, title);
   next = setMetaName(next, 'description', project.subtitle);
   next = setLinkRel(next, 'canonical', url);
@@ -346,9 +346,9 @@ function applyCaseHead(
   // `[data-case-head]` node and reinstalls a fresh set, avoiding both
   // duplicate Article JSON-LD and stale alternates leaking onto Home after
   // SPA navigation.
-  const markdownLinks = LANGS.map((lang) => {
+  const mirrorLinks = LANGS.map((lang) => {
     const cfg = LANG_CONFIG[lang];
-    return `<link rel="alternate" type="text/markdown" hreflang="${lang}" href="${url}${cfg.mdExt}" data-case-head />`;
+    return `<link rel="alternate" type="text/plain" hreflang="${lang}" href="${url}${cfg.mirrorExt}" data-case-head />`;
   }).join('\n    ');
   const jsonLd = `<script type="application/ld+json" data-case-head>\n${escapeJsonForScript(articleJsonLd(project, content))}\n    </script>`;
   // Emit one VideoObject per language that actually has a transcript and a
@@ -366,13 +366,27 @@ function applyCaseHead(
   const videoBlock = videoTags.length
     ? `\n    ${videoTags.join('\n    ')}`
     : '';
-  return injectBeforeHeadEnd(next, `    ${markdownLinks}\n    ${jsonLd}${videoBlock}`);
+  return injectBeforeHeadEnd(next, `    ${mirrorLinks}\n    ${jsonLd}${videoBlock}`);
 }
 
 function writeMirrorFiles(files: MirrorFiles, baseDir = PUBLIC_DIR): void {
-  // Slug renames leave orphan mirrors in public/cases/ — both the old and
-  // new file get served, splitting agent traffic across stale URLs. Sweep
-  // anything not in the canonical set before writing.
+  // Slug or mirror-suffix changes leave orphan mirrors in public/ and
+  // public/cases/ — both the old and new file get served, splitting agent
+  // traffic across stale URLs. Sweep generated legacy mirrors before writing.
+  const expectedRoot = new Set(
+    Object.keys(files).filter((p) => !p.includes('/')),
+  );
+  if (existsSync(baseDir)) {
+    for (const name of readdirSync(baseDir)) {
+      const generatedRootMirror =
+        /^index(?:\.(?:ru|ar))?\.(?:md|txt)$/.test(name) ||
+        /^llms(?:-(?:ru|ar)|-full)?\.txt$/.test(name);
+      if (generatedRootMirror && !expectedRoot.has(name)) {
+        unlinkSync(resolve(baseDir, name));
+      }
+    }
+  }
+
   const casesDir = resolve(baseDir, 'cases');
   if (existsSync(casesDir)) {
     const expected = new Set(
@@ -381,7 +395,11 @@ function writeMirrorFiles(files: MirrorFiles, baseDir = PUBLIC_DIR): void {
         .map((p) => p.slice('cases/'.length)),
     );
     for (const name of readdirSync(casesDir)) {
-      if (name.endsWith('.md') && !expected.has(name)) {
+      const generatedCaseMirror =
+        /\.(?:md|txt)$/.test(name) ||
+        /\.(?:ru|ar)\.(?:md|txt)$/.test(name) ||
+        name.endsWith('undefined');
+      if (generatedCaseMirror && !expected.has(name)) {
         unlinkSync(resolve(casesDir, name));
       }
     }
@@ -396,15 +414,15 @@ function writeMirrorFiles(files: MirrorFiles, baseDir = PUBLIC_DIR): void {
 
 /**
  * Build-time agent-mirror generator. Walks src/content/{en,ru,ar}.ts, serialises
- * every page into Markdown, writes into public/ so Caddy and Vite's static
+ * every page into Markdown-flavoured text, writes into public/ so Caddy and Vite's static
  * server hand them out alongside the SPA.
- *   public/index.md             public/index.ru.md          public/index.ar.md
- *   public/cases/<slug>.md      public/cases/<slug>.ru.md   public/cases/<slug>.ar.md
+ *   public/index.txt            public/index.ru.txt         public/index.ar.txt
+ *   public/cases/<slug>.txt     public/cases/<slug>.ru.txt  public/cases/<slug>.ar.txt
  *   public/llms.txt             public/llms-ru.txt          public/llms-ar.txt
  *   public/llms-full.txt
  */
 function agentMirrorsPlugin(): Plugin {
-  // Direct-serve middleware for .md / .txt files. Bypasses Vite's
+  // Direct-serve middleware for generated text files. Bypasses Vite's
   // static handler — needed because Vite 5.x routes .txt requests through the
   // SPA fallback (returns index.html instead of the file). Also pins
   // Content-Type with charset=utf-8 so browsers don't fall back to Windows-1252
@@ -417,18 +435,27 @@ function agentMirrorsPlugin(): Plugin {
     server.middlewares.use((req, res, next) => {
       if (req.method !== 'GET' && req.method !== 'HEAD') return next();
       const url = (req.url || '').split('?')[0];
-      const isMd = url.endsWith('.md');
+      const legacyMirror =
+        url === '/index.md' ? '/index.txt' :
+        url === '/index.ru.md' ? '/index.ru.txt' :
+        url === '/index.ar.md' ? '/index.ar.txt' :
+        url.match(/^\/cases\/([^/]+)\.md$/)?.[1] ? url.replace(/\.md$/, '.txt') :
+        url.match(/^\/cases\/([^/]+)\.ru\.md$/)?.[1] ? url.replace(/\.ru\.md$/, '.ru.txt') :
+        url.match(/^\/cases\/([^/]+)\.ar\.md$/)?.[1] ? url.replace(/\.ar\.md$/, '.ar.txt') :
+        undefined;
+      if (legacyMirror) {
+        res.statusCode = 308;
+        res.setHeader('Location', legacyMirror);
+        return res.end();
+      }
       const isTxt = url.endsWith('.txt');
-      if (!isMd && !isTxt) return next();
+      if (!isTxt) return next();
 
       const relPath = url.replace(/^\/+/, '');
       const memoryBody = memoryFiles?.[relPath];
       if (memoryBody !== undefined) {
         const body = Buffer.from(memoryBody, 'utf8');
-        res.setHeader(
-          'Content-Type',
-          `text/${isMd ? 'markdown' : 'plain'}; charset=utf-8`,
-        );
+        res.setHeader('Content-Type', 'text/plain; charset=utf-8');
         res.setHeader('Content-Length', String(body.byteLength));
         res.setHeader('Cache-Control', 'no-cache');
         res.statusCode = 200;
@@ -445,10 +472,7 @@ function agentMirrorsPlugin(): Plugin {
       const st = statSync(filePath);
       if (!st.isFile()) return next();
 
-      res.setHeader(
-        'Content-Type',
-        `text/${isMd ? 'markdown' : 'plain'}; charset=utf-8`,
-      );
+      res.setHeader('Content-Type', 'text/plain; charset=utf-8');
       res.setHeader('Content-Length', String(st.size));
       res.setHeader('Cache-Control', 'no-cache');
       res.statusCode = 200;

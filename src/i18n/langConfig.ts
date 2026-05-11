@@ -7,7 +7,7 @@ export type LangConfig = {
   htmlLang: string;
   dir: 'ltr' | 'rtl';
   label: string;
-  mdExt: string;
+  mirrorExt: string;
   llmsFile: string;
   homeFile: string;
   ogLocale: string;
@@ -50,9 +50,9 @@ export const LANG_CONFIG: Record<Lang, LangConfig> = {
     htmlLang: 'en',
     dir: 'ltr',
     label: 'EN',
-    mdExt: '.md',
+    mirrorExt: '.txt',
     llmsFile: 'llms.txt',
-    homeFile: 'index.md',
+    homeFile: 'index.txt',
     ogLocale: 'en_US',
     cvFile: 'cv-en.pdf',
     markdown: {
@@ -79,7 +79,7 @@ export const LANG_CONFIG: Record<Lang, LangConfig> = {
       author: 'Author',
       thisFile: 'this file',
       fullCorpus: 'Full corpus (single fetch)',
-      markdownMirrorIntro: 'Markdown mirror of this portfolio, built for AI agents. Each public page has a Markdown twin at the same path with `.md` (replace with `.ru.md` or `.ar.md` for translations).',
+      markdownMirrorIntro: 'Plain-text Markdown mirror of this portfolio, built for AI agents. Each public page has a UTF-8 text twin (`.txt`, `.ru.txt`, `.ar.txt`) plus the curated llms.txt indexes.',
       resume: 'Resume',
       lastUpdated: 'Last updated',
     },
@@ -89,9 +89,9 @@ export const LANG_CONFIG: Record<Lang, LangConfig> = {
     htmlLang: 'ru',
     dir: 'ltr',
     label: 'RU',
-    mdExt: '.ru.md',
+    mirrorExt: '.ru.txt',
     llmsFile: 'llms-ru.txt',
-    homeFile: 'index.ru.md',
+    homeFile: 'index.ru.txt',
     ogLocale: 'ru_RU',
     cvFile: 'cv-ru.pdf',
     markdown: {
@@ -118,7 +118,7 @@ export const LANG_CONFIG: Record<Lang, LangConfig> = {
       author: 'Автор',
       thisFile: 'этот файл',
       fullCorpus: 'Полный корпус одним файлом',
-      markdownMirrorIntro: 'Markdown-зеркало этого портфолио для AI-агентов. У каждой публичной страницы есть Markdown-twin по тому же пути с `.md` (замени на `.ru.md` или `.ar.md` для переводов).',
+      markdownMirrorIntro: 'Plain-text Markdown-зеркало этого портфолио для AI-агентов. У каждой публичной страницы есть UTF-8 text twin (`.txt`, `.ru.txt`, `.ar.txt`) плюс curated llms.txt indexes.',
       resume: 'Резюме',
       lastUpdated: 'Обновлено',
     },
@@ -128,9 +128,9 @@ export const LANG_CONFIG: Record<Lang, LangConfig> = {
     htmlLang: 'ar',
     dir: 'rtl',
     label: 'AR',
-    mdExt: '.ar.md',
+    mirrorExt: '.ar.txt',
     llmsFile: 'llms-ar.txt',
-    homeFile: 'index.ar.md',
+    homeFile: 'index.ar.txt',
     ogLocale: 'ar_AE',
     cvFile: 'cv-ar.pdf',
     markdown: {
@@ -157,7 +157,7 @@ export const LANG_CONFIG: Record<Lang, LangConfig> = {
       author: 'المؤلف',
       thisFile: 'هذا الملف',
       fullCorpus: 'الكوربس الكامل في ملف واحد',
-      markdownMirrorIntro: 'مرآة Markdown لهذا portfolio، مبنية لوكلاء AI. لكل صفحة عامة نسخة Markdown على نفس المسار بامتداد `.md` (استبدله بـ `.ru.md` أو `.ar.md` للترجمات).',
+      markdownMirrorIntro: 'مرآة Markdown نصية لهذا portfolio، مبنية لوكلاء AI. لكل صفحة عامة نسخة UTF-8 text (`.txt`, `.ru.txt`, `.ar.txt`) مع فهارس llms.txt المنسقة.',
       resume: 'السيرة الذاتية',
       lastUpdated: 'آخر تحديث',
     },

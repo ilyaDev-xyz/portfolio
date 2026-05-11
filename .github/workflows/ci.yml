@@ -109,6 +109,9 @@ jobs:
             fi
           done
 
+      - name: Verify agent surface contract
+        run: npm run check:agent-surface
+
       - name: Audit (high+critical, prod deps only)
         run: npm audit --omit=dev --audit-level=high
 

@@ -4,7 +4,7 @@ The public engine behind **[ilyadev.xyz](https://ilyadev.xyz)** — a personal
 portfolio site running this codebase with its own content tree.
 
 Vite + React + TS frontend, typed trilingual (EN / RU / AR with full RTL)
-content, agent-readable Markdown mirrors of every page, and a self-hosted
+content, agent-readable text mirrors of every page, and a self-hosted
 privacy-first analytics server. Six case-study routes, a route-aware nav,
 a single-player video system with per-language voiceover cuts, and a
 content-source switch that lets the same engine drive any sibling content
@@ -14,7 +14,7 @@ tree.
 [![License](https://img.shields.io/github/license/ilyaDev-xyz/portfolio.svg)](LICENSE)
 
 This repository is meant to be inspectable as an engineering artefact: typed
-content, route-aware case pages, static Markdown mirrors for AI agents,
+content, route-aware case pages, static text mirrors for AI agents,
 generated case metadata for scrapers, and self-hosted analytics under tight
 data-minimisation constraints.
 
@@ -159,9 +159,9 @@ rebuild — no engine code change required.
 - `scripts/select-content.mjs` — writes ignored `src/content/active.ts` from an
   explicit `CONTENT_SOURCE`.
 - `src/config/cases.ts` — frontend case slug registry for nav and next-case CTA.
-- `vite.config.ts` — generates Markdown mirrors and static
+- `vite.config.ts` — generates text mirrors and static
   `dist/cases/<slug>/index.html` files with per-case title, description,
-  alternate Markdown links, and JSON-LD.
+  alternate text links, and JSON-LD.
 - `server/` — same-origin analytics ingest / admin / rollup implementation.
 - `deploy/` — Caddy and systemd `.example` files only; real host config stays
   out of git.
@@ -174,7 +174,7 @@ rebuild — no engine code change required.
 ├── docs/                   Architecture and maintenance notes
 ├── public/
 │   ├── demo/               Committed placeholder media
-│   └── cases/              Generated Markdown mirrors (build artefact)
+│   └── cases/              Generated text mirrors (build artefact)
 ├── scripts/
 │   └── select-content.mjs  Content source selector
 ├── server/                 Node analytics server (own package.json)
@@ -183,7 +183,7 @@ rebuild — no engine code change required.
     ├── config/             Shared frontend case slug registry
     ├── content/            Types, active barrel, public/private trees
     ├── hooks/              Scroll progress and UI hooks
-    ├── lib/                Markdown mirror + analytics helpers
+    ├── lib/                Text mirror + analytics helpers
     ├── pages/              Home and case routes
     ├── router/             Scroll-to-hash + analytics route tracker
     ├── sections/           Home-page sections

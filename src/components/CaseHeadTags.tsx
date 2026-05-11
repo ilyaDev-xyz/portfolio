@@ -12,7 +12,7 @@ function absoluteUrl(path: string | undefined, origin: string): string {
 }
 
 // Mirrors applyHomeHead in vite.config.ts so SPA navigation back from a case
-// route restores the title / description / markdown alternates that ship in
+// route restores the title / description / text-mirror alternates that ship in
 // dist/index.html (which never get loaded again after the initial HTML).
 function applyHomeDefaults(
   content: ReturnType<typeof useLang>['t'],
@@ -28,11 +28,11 @@ function applyHomeDefaults(
   }
 
   const ensureAlt = (hreflang: Lang, href: string) => {
-    const sel = `link[rel="alternate"][type="text/markdown"][hreflang="${hreflang}"]`;
+    const sel = `link[rel="alternate"][type="text/plain"][hreflang="${hreflang}"]`;
     if (!document.querySelector(sel)) {
       const link = document.createElement('link');
       link.rel = 'alternate';
-      link.type = 'text/markdown';
+      link.type = 'text/plain';
       link.hreflang = hreflang;
       link.href = href;
       document.head.appendChild(link);
@@ -57,11 +57,11 @@ export function CaseHeadTags({ project }: { project: Project }) {
       document.querySelectorAll<HTMLElement>(`[${HEAD_TAG_ATTR}]`),
     ).forEach((node) => node.remove());
 
-    // Drop homepage markdown alternates so hreflang doesn't double up with
+    // Drop homepage text alternates so hreflang doesn't double up with
     // the case-specific alts we're about to install.
     Array.from(
       document.querySelectorAll<HTMLLinkElement>(
-        'link[rel="alternate"][type="text/markdown"]',
+        'link[rel="alternate"][type="text/plain"]',
       ),
     ).forEach((node) => node.remove());
 
@@ -72,10 +72,10 @@ export function CaseHeadTags({ project }: { project: Project }) {
     const image = absoluteUrl(project.imageSrc ?? project.thumbnail, origin);
 
     for (const lang of LANGS) {
-      const ext = LANG_CONFIG[lang].mdExt;
+      const ext = LANG_CONFIG[lang].mirrorExt;
       const link = document.createElement('link');
       link.rel = 'alternate';
-      link.type = 'text/markdown';
+      link.type = 'text/plain';
       link.hreflang = lang;
       link.href = `${origin}/cases/${slug}${ext}`;
       link.setAttribute(HEAD_TAG_ATTR, '');

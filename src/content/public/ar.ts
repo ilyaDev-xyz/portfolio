@@ -44,7 +44,7 @@ export const ar: Content = {
     ...en.about,
     pullQuote: ['هذا المستودع العام يشحن ', 'المحرك', ' لا بيانات البورتفوليو الخاصة.'],
     paragraphs: [
-      'المحتوى الموجود في repo هو demo copy خيالي مصمم لاختبار نفس layouts وMarkdown mirrors وحالات navigation وtelemetry events الموجودة في الموقع live.',
+      'المحتوى الموجود في repo هو demo copy خيالي مصمم لاختبار نفس layouts وtext mirrors وحالات navigation وtelemetry events الموجودة في الموقع live.',
       'الـ private build يستطيع إسقاط content tree موازية بدون تعديل components أو routing أو styles أو analytics أو static mirror generator.',
       'هذا الفصل يبقي open-source artifact مفيدا، ويمنع client names وscreenshots وcontact details وproject-specific claims من التسرب إلى Git history.',
     ],
@@ -53,7 +53,7 @@ export const ar: Content = {
       items: [
         'Typed trilingual content بدون runtime i18n dependency',
         'Case-study pages من structured schema',
-        'Build-time Markdown mirrors للوكلاء والمراجعين',
+        'Build-time text mirrors للوكلاء والمراجعين',
         'Privacy-first telemetry عبر same-origin ingest endpoint',
         'Token-first CSS بلا UI framework',
       ],
@@ -112,7 +112,7 @@ export const ar: Content = {
     caseNextHomeEyebrow: 'العودة للرئيسية',
     caseNextHomeTitle: 'كل الأعمال المختارة',
     caseNextHomeSubtitle: 'ستة مشاريع مختارة في صفحة واحدة.',
-    copyMarkdown: 'نسخ .md',
+    copyMarkdown: 'نسخ text',
     copyMarkdownDone: 'تم النسخ',
     heroResumeDownload: 'CV PDF',
     projectStatusLabels: {

@@ -5,7 +5,7 @@ export const timelineEn: ExperienceRow[] = [
     when: '2026 — now',
     title: 'Public portfolio engine',
     tag: 'Open source demo',
-    body: 'A sanitized version of a production portfolio system: typed bilingual content, static Markdown mirrors, custom design tokens, route-aware case pages, and privacy-first telemetry.',
+    body: 'A sanitized version of a production portfolio system: typed bilingual content, static text mirrors, custom design tokens, route-aware case pages, and privacy-first telemetry.',
   },
   {
     when: '2025 — 2026',
@@ -32,7 +32,7 @@ export const timelineRu: ExperienceRow[] = [
     when: '2026 — сейчас',
     title: 'Public portfolio engine',
     tag: 'Open source demo',
-    body: 'Sanitized версия production portfolio system: typed bilingual content, static Markdown mirrors, custom design tokens, route-aware case pages и privacy-first telemetry.',
+    body: 'Sanitized версия production portfolio system: typed bilingual content, static text mirrors, custom design tokens, route-aware case pages и privacy-first telemetry.',
   },
   {
     when: '2025 — 2026',

@@ -7,7 +7,7 @@ export const aboutEn: About = {
     ', not the private portfolio data.',
   ],
   paragraphs: [
-    'The committed content is fictional demo copy designed to exercise the same layouts, Markdown mirrors, navigation states, and telemetry events as the live site.',
+    'The committed content is fictional demo copy designed to exercise the same layouts, text mirrors, navigation states, and telemetry events as the live site.',
     'The private build can drop in a mirrored content tree without touching components, routing, styles, analytics, or the static mirror generator.',
     'That split keeps the open-source artifact useful while preventing client names, screenshots, contact details, and project-specific claims from leaking into Git history.',
   ],
@@ -16,7 +16,7 @@ export const aboutEn: About = {
     items: [
       'Typed bilingual content without a runtime i18n dependency',
       'Case-study pages that render from a structured schema',
-      'Build-time Markdown mirrors for agents and reviewers',
+      'Build-time text mirrors for agents and reviewers',
       'Privacy-first telemetry with a same-origin ingest endpoint',
       'Token-first CSS with no UI framework',
     ],
@@ -39,8 +39,8 @@ export const aboutRu: About = {
     ', а не приватные данные портфолио.',
   ],
   paragraphs: [
-    'Закоммиченный контент — вымышленный demo-copy, который нагружает те же layouts, Markdown mirrors, состояния навигации и telemetry events, что и live-сайт.',
-    'Приватная сборка подставляет зеркальное content-дерево без правок компонентов, роутинга, стилей, аналитики и генератора Markdown-зеркал.',
+    'Закоммиченный контент — вымышленный demo-copy, который нагружает те же layouts, text mirrors, состояния навигации и telemetry events, что и live-сайт.',
+    'Приватная сборка подставляет зеркальное content-дерево без правок компонентов, роутинга, стилей, аналитики и генератора text mirrors.',
     'Так open-source артефакт остаётся полезным, но client names, screenshots, контакты и проектные claims не утекают в Git history.',
   ],
   bestFit: {
@@ -48,7 +48,7 @@ export const aboutRu: About = {
     items: [
       'Типизированный bilingual content без runtime i18n dependency',
       'Case-study страницы из structured schema',
-      'Build-time Markdown mirrors для агентов и ревьюеров',
+      'Build-time text mirrors для агентов и ревьюеров',
       'Privacy-first telemetry через same-origin endpoint',
       'Token-first CSS без UI framework',
     ],

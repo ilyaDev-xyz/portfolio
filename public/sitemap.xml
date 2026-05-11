@@ -2,43 +2,43 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://example.com/</loc>
-    <lastmod>2026-05-06</lastmod>
+    <lastmod>2026-05-09</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
     <loc>https://example.com/cases/ai-crm</loc>
-    <lastmod>2026-05-06</lastmod>
+    <lastmod>2026-05-09</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>https://example.com/cases/ai-warehouse</loc>
-    <lastmod>2026-05-06</lastmod>
+    <lastmod>2026-05-09</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>https://example.com/cases/ai-video-editor</loc>
-    <lastmod>2026-05-06</lastmod>
+    <lastmod>2026-05-09</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>https://example.com/cases/roblox-game</loc>
-    <lastmod>2026-05-06</lastmod>
+    <lastmod>2026-05-09</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>https://example.com/cases/macos-vpn</loc>
-    <lastmod>2026-05-06</lastmod>
+    <lastmod>2026-05-09</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>https://example.com/cases/portfolio-site</loc>
-    <lastmod>2026-05-06</lastmod>
+    <lastmod>2026-05-09</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
@@ -49,132 +49,132 @@
     <priority>0.8</priority>
   </url>
 
-  <!-- Markdown mirrors — agent-readable twins of every HTML route.
-       Per-language: .md (en) / .ru.md / .ar.md. Lower priority than the
+  <!-- plain-text Markdown mirrors — agent-readable twins of every HTML route.
+       Per-language: .txt (en) / .ru.txt / .ar.txt. Lower priority than the
        HTML originals but explicit so AI sitemap consumers index them. -->
   <url>
-    <loc>https://example.com/index.md</loc>
-    <lastmod>2026-05-06</lastmod>
+    <loc>https://example.com/index.txt</loc>
+    <lastmod>2026-05-09</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://example.com/index.ru.md</loc>
-    <lastmod>2026-05-06</lastmod>
+    <loc>https://example.com/index.ru.txt</loc>
+    <lastmod>2026-05-09</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://example.com/index.ar.md</loc>
-    <lastmod>2026-05-06</lastmod>
+    <loc>https://example.com/index.ar.txt</loc>
+    <lastmod>2026-05-09</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://example.com/cases/ai-crm.md</loc>
-    <lastmod>2026-05-06</lastmod>
+    <loc>https://example.com/cases/ai-crm.txt</loc>
+    <lastmod>2026-05-09</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://example.com/cases/ai-crm.ru.md</loc>
-    <lastmod>2026-05-06</lastmod>
+    <loc>https://example.com/cases/ai-crm.ru.txt</loc>
+    <lastmod>2026-05-09</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://example.com/cases/ai-crm.ar.md</loc>
-    <lastmod>2026-05-06</lastmod>
+    <loc>https://example.com/cases/ai-crm.ar.txt</loc>
+    <lastmod>2026-05-09</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://example.com/cases/ai-warehouse.md</loc>
-    <lastmod>2026-05-06</lastmod>
+    <loc>https://example.com/cases/ai-warehouse.txt</loc>
+    <lastmod>2026-05-09</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://example.com/cases/ai-warehouse.ru.md</loc>
-    <lastmod>2026-05-06</lastmod>
+    <loc>https://example.com/cases/ai-warehouse.ru.txt</loc>
+    <lastmod>2026-05-09</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://example.com/cases/ai-warehouse.ar.md</loc>
-    <lastmod>2026-05-06</lastmod>
+    <loc>https://example.com/cases/ai-warehouse.ar.txt</loc>
+    <lastmod>2026-05-09</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://example.com/cases/ai-video-editor.md</loc>
-    <lastmod>2026-05-06</lastmod>
+    <loc>https://example.com/cases/ai-video-editor.txt</loc>
+    <lastmod>2026-05-09</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://example.com/cases/ai-video-editor.ru.md</loc>
-    <lastmod>2026-05-06</lastmod>
+    <loc>https://example.com/cases/ai-video-editor.ru.txt</loc>
+    <lastmod>2026-05-09</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://example.com/cases/ai-video-editor.ar.md</loc>
-    <lastmod>2026-05-06</lastmod>
+    <loc>https://example.com/cases/ai-video-editor.ar.txt</loc>
+    <lastmod>2026-05-09</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://example.com/cases/roblox-game.md</loc>
-    <lastmod>2026-05-06</lastmod>
+    <loc>https://example.com/cases/roblox-game.txt</loc>
+    <lastmod>2026-05-09</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://example.com/cases/roblox-game.ru.md</loc>
-    <lastmod>2026-05-06</lastmod>
+    <loc>https://example.com/cases/roblox-game.ru.txt</loc>
+    <lastmod>2026-05-09</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://example.com/cases/roblox-game.ar.md</loc>
-    <lastmod>2026-05-06</lastmod>
+    <loc>https://example.com/cases/roblox-game.ar.txt</loc>
+    <lastmod>2026-05-09</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://example.com/cases/macos-vpn.md</loc>
-    <lastmod>2026-05-06</lastmod>
+    <loc>https://example.com/cases/macos-vpn.txt</loc>
+    <lastmod>2026-05-09</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://example.com/cases/macos-vpn.ru.md</loc>
-    <lastmod>2026-05-06</lastmod>
+    <loc>https://example.com/cases/macos-vpn.ru.txt</loc>
+    <lastmod>2026-05-09</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://example.com/cases/macos-vpn.ar.md</loc>
-    <lastmod>2026-05-06</lastmod>
+    <loc>https://example.com/cases/macos-vpn.ar.txt</loc>
+    <lastmod>2026-05-09</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://example.com/cases/portfolio-site.md</loc>
-    <lastmod>2026-05-06</lastmod>
+    <loc>https://example.com/cases/portfolio-site.txt</loc>
+    <lastmod>2026-05-09</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://example.com/cases/portfolio-site.ru.md</loc>
-    <lastmod>2026-05-06</lastmod>
+    <loc>https://example.com/cases/portfolio-site.ru.txt</loc>
+    <lastmod>2026-05-09</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://example.com/cases/portfolio-site.ar.md</loc>
-    <lastmod>2026-05-06</lastmod>
+    <loc>https://example.com/cases/portfolio-site.ar.txt</loc>
+    <lastmod>2026-05-09</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
@@ -182,25 +182,25 @@
   <!-- Curated agent indexes (llms.txt spec). -->
   <url>
     <loc>https://example.com/llms.txt</loc>
-    <lastmod>2026-05-06</lastmod>
+    <lastmod>2026-05-09</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.4</priority>
   </url>
   <url>
     <loc>https://example.com/llms-ru.txt</loc>
-    <lastmod>2026-05-06</lastmod>
+    <lastmod>2026-05-09</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.4</priority>
   </url>
   <url>
     <loc>https://example.com/llms-ar.txt</loc>
-    <lastmod>2026-05-06</lastmod>
+    <lastmod>2026-05-09</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.4</priority>
   </url>
   <url>
     <loc>https://example.com/llms-full.txt</loc>
-    <lastmod>2026-05-06</lastmod>
+    <lastmod>2026-05-09</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.4</priority>
   </url>

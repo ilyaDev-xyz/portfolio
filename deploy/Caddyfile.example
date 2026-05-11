@@ -1,6 +1,8 @@
 portfolio.example.com {
 	root * /srv/portfolio/dist
-	encode zstd gzip
+	# Keep gzip only. Some AI fetch proxies advertise zstd but fail to decode
+	# it downstream, surfacing as opaque 502s on plain-text agent files.
+	encode gzip
 
 	header {
 		Strict-Transport-Security "max-age=31536000; includeSubDomains"
@@ -9,10 +11,6 @@ portfolio.example.com {
 		Referrer-Policy "strict-origin-when-cross-origin"
 		Permissions-Policy "interest-cohort=(), browsing-topics=()"
 		-Server
-		# Agent-layer pointer — declarative `Link:` so headless clients
-		# discover the curated llms.txt index without parsing HTML <head>.
-		# Per llmstxt.org spec + Mintlify recommendation.
-		Link `</llms.txt>; rel="llms-txt", </llms-full.txt>; rel="llms-full-txt"`
 	}
 
 	@api path /api/*
@@ -21,25 +19,61 @@ portfolio.example.com {
 	@admin path /admin /admin/*
 	reverse_proxy @admin 127.0.0.1:3000
 
-	# Markdown mirrors and llms*.txt indexes. Caddy auto-detects .md as
-	# text/plain; force text/markdown so agents that branch on
-	# Content-Type get clean Markdown handling. X-Robots-Tag noindex
-	# prevents Google indexing the Markdown twins as duplicate content
-	# alongside the canonical HTML routes.
-	@markdown path *.md /llms.txt /llms-*.txt /llms-full.txt
-	header @markdown {
-		Content-Type "text/markdown; charset=utf-8"
-		X-Robots-Tag "noindex, nofollow"
+	# Agent entry points. Keep these as plain UTF-8 text and do not attach
+	# robots directives: /llms.txt is a public crawler entry point, not an
+	# "agent-only" private surface.
+	@llms path /llms.txt /llms-ru.txt /llms-ar.txt /llms-full.txt
+	handle @llms {
+		header {
+			Content-Type "text/plain; charset=utf-8"
+			-X-Robots-Tag
+			Cache-Control "no-cache, must-revalidate"
+		}
+		file_server
 	}
 
-	@static file
-	handle @static {
+	# Legacy Markdown URLs. Do not advertise these to agents; they exist so
+	# old human/curl links keep working while canonical mirrors use .txt.
+	@legacyIndexMd path /index.md
+	redir @legacyIndexMd /index.txt 308
+	@legacyIndexRuMd path /index.ru.md
+	redir @legacyIndexRuMd /index.ru.txt 308
+	@legacyIndexArMd path /index.ar.md
+	redir @legacyIndexArMd /index.ar.txt 308
+	@legacyCaseMd path_regexp legacyCaseMd ^/cases/([^/]+)\.md$
+	redir @legacyCaseMd /cases/{re.legacyCaseMd.1}.txt 308
+	@legacyCaseRuMd path_regexp legacyCaseRuMd ^/cases/([^/]+)\.ru\.md$
+	redir @legacyCaseRuMd /cases/{re.legacyCaseRuMd.1}.ru.txt 308
+	@legacyCaseArMd path_regexp legacyCaseArMd ^/cases/([^/]+)\.ar\.md$
+	redir @legacyCaseArMd /cases/{re.legacyCaseArMd.1}.ar.txt 308
+
+	# Per-page text mirrors are duplicate-friendly source material for agents.
+	# They contain Markdown syntax but are served as text/plain to avoid strict
+	# fetch-proxy handling around .md URLs and text/markdown MIME.
+	@mirrors path /index.txt /index.ru.txt /index.ar.txt /cases/*.txt
+	handle @mirrors {
+		header {
+			Content-Type "text/plain; charset=utf-8"
+			Cache-Control "no-cache, must-revalidate"
+		}
+		file_server
+	}
+
+	@assets path /assets/*
+	handle @assets {
 		header Cache-Control "public, max-age=31536000, immutable"
 		file_server
 	}
 
 	handle {
-		header Cache-Control "no-cache"
+		header {
+			Cache-Control "no-cache, must-revalidate"
+			# Agent-layer pointer — declarative `Link:` so headless clients
+			# discover the curated llms.txt index without parsing HTML <head>.
+			# Keep it off /llms*.txt themselves to avoid self-referential link
+			# handling bugs in strict fetch proxies.
+			Link `</llms.txt>; rel="llms-txt", </llms-full.txt>; rel="llms-full-txt"`
+		}
 		# Static case heads live at dist/cases/<slug>/index.html — try the
 		# directory variant before falling back to the SPA shell so crawlers
 		# hitting /cases/<slug> (no trailing slash) get the per-case head.
