@@ -125,17 +125,19 @@ Footer is replaced by a frosted-glass ghost button (`.case-next-btn`) that links
 
 **Hero morph from home card.** Three paired elements get matching `view-transition-name` on the home card and the case hero so they FLIP-morph in sync during home → `/cases/:slug` navigation: video frame (`video-${slug}`), title (`title-${slug}`), subtitle (`subtitle-${slug}`). Case → case nav strips these names on the old snapshot via `TransitionLink` to collapse into a clean root crossfade. See `docs/decisions.md` → "View transitions extended to title and subtitle".
 
-## Player overlays
+## Player overlays and controls
 
-`<LiteYouTube>` (`src/components/LiteYouTube.tsx`) carries two overlay primitives that sit absolutely over both the thumbnail facade and the active iframe; the facade itself is `inset: 0` inside any 16:9 frame, which gives both overlays a stable parent.
+`<LiteYouTube>` (`src/components/LiteYouTube.tsx`) keeps only the primitives that must sit over the media frame. User controls that would obscure playback live in `<VideoControlsRow>` underneath the 16:9 frame.
 
 | Class               | Purpose                                                   | Position             |
 |---------------------|-----------------------------------------------------------|----------------------|
 | `.player-spinner`   | Provider-swap loader (8-dot ring + label, ember palette)  | Centered, full inset |
-| `.lite-yt-langs`    | Language-pill container (frosted, RTL-aware)              | Top, inset-inline-end |
+| `.video-controls-row` | One-line row for language cuts + provider mirror         | Below the frame      |
+| `.lite-yt-langs`    | Language-pill container                                  | Inline in row        |
 | `.lite-yt-lang-btn` | One per available language; `aria-pressed` = current lang | Inline inside pill   |
+| `.video-mirror`     | Provider mirror toggle; full label collapses on narrow mobile | Inline in row    |
 
-The lang pill uses the same dark frosted-chrome palette as `.lite-yt-play` (rgba black + `backdrop-filter: blur`) so it does not introduce a third visual treatment over the player. Native-script labels are intentionally NOT used in the pill — short Latin codes (`EN`/`RU`/`AR`) match the global `NavControls` lang switcher and stay readable at the small player-overlay size. The longer native variants (`EN · Русский · العربية`) belong in the case-page Snapshot row, not the pill.
+The language pill uses short Latin codes (`EN`/`RU`/`AR`) to match the global `NavControls` switcher and keep the row on one line. Native-script labels are intentionally not used here; the longer variants (`EN · Русский · العربية`) belong in larger page-level surfaces. On narrow screens the mirror button displays only the destination provider (`RuTube` / `YouTube`) while the full localized text remains available to assistive tech through `aria-label`.
 
 ## CSS conventions
 

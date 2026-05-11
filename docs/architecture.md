@@ -186,17 +186,17 @@ When `caseStudy` is absent, the page falls back to a minimal block: project meta
 
 ## Video player system
 
-Two layers on top of `<LiteYouTube>` make the player feel coherent across all six cards + their case-study heroes.
+`<LiteYouTube>` owns the lazy iframe/facade and loading overlay. The language selector and provider mirror live in a shared `<VideoControlsRow>` underneath the 16:9 frame so controls do not cover the video on cards or case-study heroes.
 
 ### Provider toggle (YouTube ↔ RuTube)
 
 The mirror button under each video used to be an external link (`<a target="_blank">` opening RuTube). It is now a toggle:
 
 - Default provider: **YouTube** (`videoId` in content drives the embed).
-- Click mirror → flip provider to RuTube → `LiteYouTube` re-renders with the RuTube embed iframe (URL derived from `videoMirrorUrl` via `toRutubeEmbedUrl()`: `/video/...` → `/play/embed/...`).
+- Click mirror → flip provider to RuTube and activate that exact player → `LiteYouTube` renders the RuTube embed iframe (URL derived from `videoMirrorUrl` via `toRutubeEmbedUrl()`: `/video/...` → `/play/embed/...`).
 - Mirror label flips: `Mirror on RuTube` → `Mirror on YouTube` (`ui.videoMirrorYoutube`).
 
-The choice is **global, sticky, persisted in localStorage** (`src/state/videoProviderState.ts`) — kept in a module-level cache + a `Set` of subscribers + a `localStorage` key (`video-provider`). React-bound view via `src/hooks/useVideoProvider.ts`. One toggle on any card swaps every mounted player site-wide and remembers the choice on the next visit.
+The toggle is visible before the first play so a visitor can choose RuTube without loading a YouTube iframe. When clicked on an inactive lite facade, it counts as the user's play intent for that specific video: provider changes and the iframe loads immediately. The provider choice is **global, sticky, persisted in localStorage** (`src/state/videoProviderState.ts`) — kept in a module-level cache + a `Set` of subscribers + a `localStorage` key (`video-provider`). React-bound view via `src/hooks/useVideoProvider.ts`. One toggle on any card swaps every mounted player site-wide and remembers the choice on the next visit, but only the clicked row sends an activation request to its own `<LiteYouTube>`.
 
 ### Single-player rule
 
@@ -208,15 +208,15 @@ The choice is **global, sticky, persisted in localStorage** (`src/state/videoPro
 
 The same gating handles the provider-swap autoplay-burst: when the toggle fires, all mounted players re-render with the new provider, but only the one matching `currentSlug` gets `autoplay=1`.
 
-### Language pill (multilingual cuts)
+### Language controls (multilingual cuts)
 
-Each video case ships **separate cuts per language** — different `videoId` on each lang's `Project` payload, recorded with native voiceover. To make those cuts discoverable without forcing the visitor to dig in the global lang switcher, `<LiteYouTube>` accepts:
+Each video case ships **separate cuts per language** — different `videoId` on each lang's `Project` payload, recorded with native voiceover. To make those cuts discoverable without forcing the visitor to dig in the global lang switcher, `<VideoControlsRow>` accepts:
 
 - `availableLanguages?: Lang[]` — list of langs that carry a transcript for this video. The caller derives this from `project.videoTranscript ? [...LANGS] : undefined`.
 - `currentLanguage?: Lang` — used to mark the active pill via `aria-pressed`.
 - `onSelectLanguage?: (lang) => void` — wired to `setLang` from `useLang()`. Clicking a pill swaps the global UI language; the project payload swaps with it (different `videoId` per lang); the iframe reloads with the matching cut.
 
-The pill renders as an absolute-positioned overlay (top-right, RTL-aware via `inset-inline-end`) above both the thumbnail facade and the active iframe. CSS classes `.lite-yt-langs` (container) and `.lite-yt-lang-btn` (each lang button) live in `src/styles/media.css`. Click handler stops propagation so it doesn't trigger the play-overlay click on the thumbnail. The pill is hidden when `availableLanguages` is unset or has fewer than 2 entries — single-language videos stay clean.
+The pill renders in the same one-line control row as the mirror toggle, directly below the player frame. CSS classes `.video-controls-row`, `.lite-yt-langs`, `.lite-yt-lang-btn`, and `.video-mirror` live in `src/styles/media.css`. The row never wraps on mobile: language buttons stay compact (`EN` / `RU` / `AR`) and the mirror label collapses to the provider name on narrow screens while preserving the full label in `aria-label` / `title`. The pill is hidden when `availableLanguages` is unset or has fewer than 2 entries — single-language videos stay clean.
 
 ### Agent-discoverable transcripts
 

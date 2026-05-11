@@ -9,12 +9,12 @@ import { LiteYouTube, toRutubeEmbedUrl } from '../components/LiteYouTube';
 import { Nav } from '../components/Nav';
 import { NavControls } from '../components/NavControls';
 import { TransitionLink } from '../components/TransitionLink';
+import { VideoControlsRow } from '../components/VideoControlsRow';
 import { Footer } from '../sections/Footer';
 import { useLang } from '../i18n/LangContext';
 import { LANG_CONFIG, LANGS } from '../i18n/langConfig';
 import { useVideoProvider } from '../hooks/useVideoProvider';
 import { CASE_SLUGS } from '../config/cases';
-import { isVideoActive } from '../state/videoState';
 import { markVisitedWork } from '../state/visitState';
 import {
   getSuppressVideoMorph,
@@ -25,10 +25,8 @@ export function ProjectDetailPage() {
   const { slug } = useParams<{ slug: string }>();
   const { t, lang, setLang } = useLang();
   const project = t.projects.find((p) => p.slug === slug);
-  const [videoActive, setVideoActive] = useState(() =>
-    slug ? isVideoActive(slug) : false,
-  );
   const [provider, setProvider] = useVideoProvider();
+  const [activationRequest, setActivationRequest] = useState(0);
 
   // Read the case→case suppress flag synchronously on mount. If set, this
   // render emits no `view-transition-name` on .case-video-frame, so the
@@ -204,7 +202,6 @@ export function ProjectDetailPage() {
                             title={project.title}
                             playLabel={t.ui.videoPlay}
                             loadingLabel={t.ui.videoLoading}
-                            onActivate={() => setVideoActive(true)}
                             provider={provider}
                             rutubeEmbedUrl={
                               project.videoMirrorUrl
@@ -212,11 +209,7 @@ export function ProjectDetailPage() {
                                 : undefined
                             }
                             thumbnail={project.thumbnail}
-                            availableLanguages={
-                              project.videoTranscript ? Array.from(LANGS) : undefined
-                            }
-                            currentLanguage={lang}
-                            onSelectLanguage={setLang}
+                            activationRequest={activationRequest}
                           />
                         ) : (
                           <img
@@ -233,24 +226,30 @@ export function ProjectDetailPage() {
                           />
                         )}
                       </div>
-                      {project.videoId && project.videoMirrorUrl && (
-                        <div
-                          className={`video-mirror-slot${
-                            videoActive ? ' video-mirror-slot--open' : ''
-                          }`}
-                        >
-                          <button
-                            type="button"
-                            className="video-mirror video-mirror--page"
-                            onClick={() =>
-                              setProvider(provider === 'youtube' ? 'rutube' : 'youtube')
-                            }
-                            tabIndex={videoActive ? 0 : -1}
-                            aria-hidden={!videoActive}
-                          >
-                            ↗ {provider === 'youtube' ? t.ui.videoMirror : t.ui.videoMirrorYoutube}
-                          </button>
-                        </div>
+                      {project.videoId && (
+                        <VideoControlsRow
+                          availableLanguages={
+                            project.videoTranscript ? Array.from(LANGS) : undefined
+                          }
+                          currentLanguage={lang}
+                          onSelectLanguage={setLang}
+                          provider={provider}
+                          mirrorLabel={
+                            project.videoMirrorUrl
+                              ? provider === 'youtube'
+                                ? t.ui.videoMirror
+                                : t.ui.videoMirrorYoutube
+                              : undefined
+                          }
+                          onToggleMirror={
+                            project.videoMirrorUrl
+                              ? () => {
+                                  setProvider(provider === 'youtube' ? 'rutube' : 'youtube');
+                                  setActivationRequest((value) => value + 1);
+                                }
+                              : undefined
+                          }
+                        />
                       )}
                     </div>
                   )}

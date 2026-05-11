@@ -59,7 +59,7 @@ Two parallel content trees: `src/content/public/` (committed, sanitized demo) an
 4. The router stub at `/cases/:slug` (`src/pages/ProjectDetailPage.tsx`) reads from the same dictionary — your new project will work automatically.
 5. Mind the grid balance: 3-col on desktop, 2 on tablet, 1 on mobile. Six projects = clean 3+3 layout. Five = 3+2. Plan before adding.
 
-The current `placeholder` field renders a hatch placeholder; project demos are video-based — set `videoId` (YouTube ID) on a project to replace the placeholder with a `<LiteYouTube>` facade. Set `videoMirrorUrl` (full RuTube URL) to surface a "Mirror on RuTube" toggle below the video that reveals after the user clicks play. The toggle is a sticky global switch — clicking it swaps every player site-wide to the alternate provider and remembers the choice (see `docs/architecture.md` → Video player system).
+The current `placeholder` field renders a hatch placeholder; project demos are video-based — set `videoId` (YouTube ID) on a project to replace the placeholder with a `<LiteYouTube>` facade. Set `videoMirrorUrl` (full RuTube URL) to surface a compact "Mirror on RuTube" toggle below the video. The toggle is visible before play so users can choose RuTube before loading the iframe; clicking it also activates that exact lite player and loads the selected provider. The provider choice is a sticky global switch — clicking it swaps every player site-wide to the alternate provider and remembers the choice (see `docs/architecture.md` → Video player system).
 
 For static-image cards, set `imageSrc` to a path inside `public/` (e.g. `/temp_portfolio_pic.jpg`). The card renders a lazy-loaded `<img>` covering the same 16:9 frame (`object-fit: cover`) — used on the `site` card until a video walkthrough is recorded. The render order in `Projects.tsx` is `videoId` → `imageSrc` → `isVideo` hatch → default hatch.
 
@@ -69,7 +69,7 @@ Set `videoTranscript: { synopsis, fullText }` on any project that has `videoId` 
 
 - `caseStudyMarkdown.ts` emits a `## Video walkthrough` section (label localized via `ui.markdown.videoWalkthrough`) into the per-case `.txt` mirrors and concatenated `llms-full.txt`. Public build/dev writes those generated mirrors under `public/`; private build writes them under `dist/`, and private dev serves them from memory.
 - `vite.config.ts:videoObjectJsonLd` emits a Schema.org `VideoObject` block per language inside the static `dist/cases/<slug>/index.html` (one `<script type="application/ld+json" data-case-head>` per lang, distinguished by `@id`). Fields: `name`, `description` (synopsis), `thumbnailUrl`, `embedUrl`, `contentUrl`, `inLanguage`, `transcript` (full text). No `duration` / `uploadDate` — agents read transcript, not playback length, and the actual video host (YouTube / RuTube) carries that metadata canonically.
-- `<LiteYouTube>` reads the presence of `videoTranscript` (via the parent component) to decide whether to render its lang-pill overlay (see `docs/architecture.md` → Video player system).
+- `<VideoControlsRow>` reads the presence of `videoTranscript` (via the parent component) to decide whether to render the language selector below the player (see `docs/architecture.md` → Video player system).
 
 `synopsis` is two claim-bearing sentences. `fullText` is the verbatim voiceover, paragraph-separated by `\n\n`. When a case ships a native voiceover cut per language, the EN / RU / AR `videoTranscript` payloads should NOT be machine-translated copies of each other. The public demo tree currently overlays AR at the site level only and inherits EN per-case payloads (including `videoTranscript`); private trees with a recorded native AR cut should override the inherited transcript explicitly to keep the JSON-LD `inLanguage` accurate.
 
@@ -93,7 +93,7 @@ Every project card on the home page has the same rendering slots — fixed struc
 ```
 [head]      § 03.NN  ·  codename  ·  ● status      (mono row)
 [media]     16:9 video, static image, or hatch placeholder
-[mirror]    ↗ Mirror on RuTube                     (optional, reveals after play)
+[controls]  EN RU AR                     ↗ Mirror on RuTube
 [title]     {title}                                (display h3, --fs-display-s)
 [subtitle]  {subtitle}                             (mono mute, wraps as needed)
 [meta]      SCOPE  {scope}                         (60-char hidden grid)

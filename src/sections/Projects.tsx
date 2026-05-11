@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { ArrowLink, HatchPlaceholder, SectionHead } from '../components/atoms';
 import { LiteYouTube, toRutubeEmbedUrl } from '../components/LiteYouTube';
+import { VideoControlsRow } from '../components/VideoControlsRow';
 import { useLang, useT } from '../i18n/LangContext';
-import { isVideoActive } from '../state/videoState';
 import { getHasVisitedWork } from '../state/visitState';
 import { useVideoProvider } from '../hooks/useVideoProvider';
 import { LANGS } from '../i18n/langConfig';
@@ -19,10 +19,8 @@ function ProjectCard({
   pulseCta?: boolean;
 }) {
   const cls = ['card', p.cls, pulseCta ? 'pulse-cta' : ''].filter(Boolean).join(' ');
-  // Seed from the cross-route store so the mirror link is already visible
-  // when returning to home with an activated card video.
-  const [videoActive, setVideoActive] = useState(() => isVideoActive(p.slug));
   const [provider, setProvider] = useVideoProvider();
+  const [activationRequest, setActivationRequest] = useState(0);
   const { lang, setLang } = useLang();
   const rutubeEmbedUrl = p.videoMirrorUrl ? toRutubeEmbedUrl(p.videoMirrorUrl) : undefined;
   // Each video case ships separate cuts in EN/RU/AR — switching lang
@@ -39,13 +37,10 @@ function ProjectCard({
         title={p.title}
         playLabel={ui.videoPlay}
         loadingLabel={ui.videoLoading}
-        onActivate={() => setVideoActive(true)}
         provider={provider}
         rutubeEmbedUrl={rutubeEmbedUrl}
         thumbnail={p.thumbnail}
-        availableLanguages={availableLanguages}
-        currentLanguage={lang}
-        onSelectLanguage={setLang}
+        activationRequest={activationRequest}
       />
     );
   } else if (p.imageSrc) {
@@ -88,19 +83,25 @@ function ProjectCard({
       >
         {imageNode}
       </div>
-      {p.videoMirrorUrl && (
-        <div className={`video-mirror-slot${videoActive ? ' video-mirror-slot--open' : ''}`}>
-          <button
-            type="button"
-            className="video-mirror"
-            onClick={() => setProvider(provider === 'youtube' ? 'rutube' : 'youtube')}
-            tabIndex={videoActive ? 0 : -1}
-            aria-hidden={!videoActive}
-          >
-            ↗ {provider === 'youtube' ? ui.videoMirror : ui.videoMirrorYoutube}
-          </button>
-        </div>
-      )}
+      <VideoControlsRow
+        availableLanguages={availableLanguages}
+        currentLanguage={lang}
+        onSelectLanguage={setLang}
+        provider={provider}
+        mirrorLabel={
+          p.videoMirrorUrl
+            ? provider === 'youtube' ? ui.videoMirror : ui.videoMirrorYoutube
+            : undefined
+        }
+        onToggleMirror={
+          p.videoMirrorUrl
+            ? () => {
+                setProvider(provider === 'youtube' ? 'rutube' : 'youtube');
+                setActivationRequest((value) => value + 1);
+              }
+            : undefined
+        }
+      />
       <div className="card-body">
         <h3 style={{ viewTransitionName: `title-${p.slug}` }}>{p.title}</h3>
         <p className="subtitle" style={{ viewTransitionName: `subtitle-${p.slug}` }}>

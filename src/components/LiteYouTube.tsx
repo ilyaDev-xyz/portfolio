@@ -30,12 +30,17 @@ type Props = {
    *  the ytimg.com chain — works under RU CDN throttling and avoids any
    *  third-party request before the user clicks play. */
   thumbnail?: string;
-  /** Language variants in which this video has a separate cut. When 2+,
-   *  the player overlays a pill that switches the global UI lang on click —
-   *  the new lang's project carries its own videoId and the iframe reloads. */
+  /** Incremented by a parent control that should activate this exact player
+   *  without dispatching a synthetic DOM click (e.g. mirror toggle before
+   *  the lite facade has loaded the iframe). */
+  activationRequest?: number;
+};
+
+type VideoLanguageControlsProps = {
   availableLanguages?: Lang[];
   currentLanguage?: Lang;
   onSelectLanguage?: (lang: Lang) => void;
+  className?: string;
 };
 
 const LANG_PILL_LABEL: Record<Lang, string> = {
@@ -43,6 +48,40 @@ const LANG_PILL_LABEL: Record<Lang, string> = {
   ru: 'RU',
   ar: 'AR',
 };
+
+export function VideoLanguageControls({
+  availableLanguages,
+  currentLanguage,
+  onSelectLanguage,
+  className,
+}: VideoLanguageControlsProps) {
+  if (!availableLanguages || availableLanguages.length < 2 || !onSelectLanguage) {
+    return null;
+  }
+
+  return (
+    <div
+      className={['lite-yt-langs', className].filter(Boolean).join(' ')}
+      role="group"
+      aria-label="Video language"
+    >
+      {availableLanguages.map((lang) => (
+        <button
+          key={lang}
+          type="button"
+          className="lite-yt-lang-btn"
+          aria-pressed={currentLanguage === lang}
+          onClick={(e) => {
+            e.stopPropagation();
+            onSelectLanguage(lang);
+          }}
+        >
+          {LANG_PILL_LABEL[lang]}
+        </button>
+      ))}
+    </div>
+  );
+}
 
 /**
  * Convert a RuTube public URL to its embed equivalent.
@@ -82,33 +121,8 @@ export function LiteYouTube({
   provider = 'youtube',
   rutubeEmbedUrl,
   thumbnail,
-  availableLanguages,
-  currentLanguage,
-  onSelectLanguage,
+  activationRequest,
 }: Props) {
-  const langPill =
-    availableLanguages && availableLanguages.length > 1 && onSelectLanguage ? (
-      <div
-        className="lite-yt-langs"
-        role="group"
-        aria-label="Video language"
-      >
-        {availableLanguages.map((lang) => (
-          <button
-            key={lang}
-            type="button"
-            className="lite-yt-lang-btn"
-            aria-pressed={currentLanguage === lang}
-            onClick={(e) => {
-              e.stopPropagation();
-              onSelectLanguage(lang);
-            }}
-          >
-            {LANG_PILL_LABEL[lang]}
-          </button>
-        ))}
-      </div>
-    ) : null;
   const providerName = provider === 'youtube' ? 'YouTube' : 'RuTube';
   const fullLoadingLabel = `${providerName} ${loadingLabel}`;
   // Initial state mirrors the cross-route store: if the matching card was
@@ -120,6 +134,22 @@ export function LiteYouTube({
   // and broadcasts via claimPlayback() so others reload without autoplay.
   const currentSlug = useCurrentPlayer();
   const isCurrent = currentSlug === slug;
+
+  const activateFromUser = () => {
+    claimPlayback(slug);
+    activateVideo(slug);
+    setActive(true);
+    if (!active) analytics.video(slug, 'play');
+    onActivate?.();
+  };
+
+  const activationRequestRef = useRef(activationRequest);
+  useEffect(() => {
+    if (activationRequest === undefined) return;
+    if (activationRequestRef.current === activationRequest) return;
+    activationRequestRef.current = activationRequest;
+    activateFromUser();
+  });
 
   // Loader gating: spinner overlay appears on first activation and on every
   // provider swap, hides on iframe load (with min 300ms anti-flicker).
@@ -257,7 +287,6 @@ export function LiteYouTube({
             onLoad={handleIframeLoad}
           />
           {loading && <PlayerSpinner label={fullLoadingLabel} />}
-          {langPill}
         </>
       );
     }
@@ -286,7 +315,6 @@ export function LiteYouTube({
           onLoad={handleIframeLoad}
         />
         {loading && <PlayerSpinner label={fullLoadingLabel} />}
-        {langPill}
       </>
     );
   }
@@ -302,13 +330,7 @@ export function LiteYouTube({
       <button
         type="button"
         className="lite-yt-btn"
-        onClick={() => {
-          claimPlayback(slug);
-          activateVideo(slug);
-          setActive(true);
-          analytics.video(slug, 'play');
-          onActivate?.();
-        }}
+        onClick={activateFromUser}
         aria-label={title ? `${playLabel}: ${title}` : playLabel}
       >
         <img
@@ -328,7 +350,6 @@ export function LiteYouTube({
           ▶
         </span>
       </button>
-      {langPill}
     </>
   );
 }

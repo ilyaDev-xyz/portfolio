@@ -501,15 +501,19 @@ Each case study with a video ships a Schema.org `VideoObject` block per language
 
 The same content lands in the agent text mirrors as a `## Video walkthrough` section (label localized via `ui.markdown.videoWalkthrough`) so agents that prefer Markdown over JSON-LD parsing also see the synopsis + transcript. Both surfaces are derived from one `videoTranscript: { synopsis, fullText }` field on `Project` — no duplicate authoring.
 
-## Language pill on the player, not native-script in the pill
+## Language selector below the player
 
-`<LiteYouTube>` overlays a small pill `EN · RU · AR` (top-right, RTL-aware via `inset-inline-end`) when the project carries a `videoTranscript` and there are 2+ available languages. Clicking a pill calls `setLang` from `useLang()`; the project payload swaps with the global lang (different `videoId` per lang) and the iframe reloads with the matching cut.
+The first multilingual-video pass put a small `EN · RU · AR` pill as a top-right overlay inside `<LiteYouTube>`. It worked technically, but it sat on top of the actual demo and competed with the play affordance / iframe controls.
 
-**Why.** The global `NavControls` lang switcher already exists in the page header, but most visitors won't think to reach for it just to discover the video has alt-language cuts. A localized affordance on the player itself signals the choice in the spot where it matters. The handler stops propagation so the pill click doesn't register as a play-overlay tap on the thumbnail facade.
+The controls now live below the frame in `<VideoControlsRow>`: language buttons on the left, provider mirror on the right. Mirror is visible immediately, before play, because the whole point of a mirror is letting a user choose RuTube before a YouTube iframe is loaded. If the player is still in lite-facade mode, clicking mirror also sends an activation request to that exact `<LiteYouTube>` instance so the selected provider loads immediately instead of silently changing state. Clicking a language still calls `setLang` from `useLang()`; the project payload swaps with the global lang (different `videoId` per lang) and the iframe reloads with the matching cut. The row is shared by home cards and case-study heroes, so both surfaces keep the same behavior.
+
+**Why.** The global `NavControls` lang switcher already exists in the page header, but most visitors won't think to reach for it just to discover the video has alt-language cuts. A localized affordance under the player signals the choice in the spot where it matters without covering the thumbnail or the active iframe.
 
 **Why short Latin codes, not native scripts.** The pill is small. Native-script labels (`EN · Русский · العربية`) are wide enough to push the play overlay or wrap on mobile. Latin codes match the global `NavControls` (`LANG_CONFIG[l].label`) so visitors already pattern-match the affordance.
 
-**Cost.** Three extra props on `<LiteYouTube>` (`availableLanguages`, `currentLanguage`, `onSelectLanguage`); each caller (`Projects.tsx` home cards + `ProjectDetailPage.tsx` hero) computes `availableLanguages = project.videoTranscript ? [...LANGS] : undefined`. The pill is hidden when not applicable — single-language videos stay clean.
+**Mobile fit.** The row is single-line by design. Language buttons stay compact (`EN`/`RU`/`AR`). The mirror button shows the full localized label on normal widths and collapses to the destination provider (`RuTube` / `YouTube`) on narrow phones; the full text remains in `aria-label` / `title`.
+
+**Cost.** A small shared component (`src/components/VideoControlsRow.tsx`) and one exported `VideoLanguageControls` helper from `LiteYouTube.tsx`. Each caller (`Projects.tsx` home cards + `ProjectDetailPage.tsx` hero) computes `availableLanguages = project.videoTranscript ? [...LANGS] : undefined`. The language pill is hidden when not applicable; the mirror button renders whenever `videoMirrorUrl` exists.
 
 ## Resume link: gate on `cv` content presence, not `IS_SANITIZED`
 
