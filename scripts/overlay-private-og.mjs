@@ -9,9 +9,9 @@
  *   leaving `public/og/` untouched.
  *
  * Inputs (under PRIVATE_OG_DIR, default ../portfolio-og-private/out):
- *   - og/home/private/og_private_1200x630.png
- *   - og/cv/private/cv_private_1200x630.png
- *   - og/cases/private/case_<slug>_private_en_1200x630.png × 6
+ *   - masters/private/og-image.png
+ *   - masters/private/og/cv.png
+ *   - masters/private/og/cases/<slug>.png × 6
  *
  * Targets:
  *   - dist/og-image.png
@@ -62,14 +62,14 @@ if (!existsSync(masters)) {
   process.exit(1);
 }
 
-const home = join(masters, 'og', 'home', 'private', 'og_private_1200x630.png');
+const home = join(masters, 'masters', 'private', 'og-image.png');
 if (!existsSync(home)) {
   console.error(`overlay-private-og: missing ${home}`);
   console.error('Run: python gen_og.py --source private');
   process.exit(1);
 }
 
-const cv = join(masters, 'og', 'cv', 'private', 'cv_private_1200x630.png');
+const cv = join(masters, 'masters', 'private', 'og', 'cv.png');
 if (!existsSync(cv)) {
   console.error(`overlay-private-og: missing ${cv}`);
   console.error('Run: python gen_cv_og.py --source private');
@@ -78,7 +78,7 @@ if (!existsSync(cv)) {
 
 const cases = SLUGS.map((slug) => ({
   slug,
-  src: join(masters, 'og', 'cases', 'private', `case_${slug}_private_en_1200x630.png`),
+  src: join(masters, 'masters', 'private', 'og', 'cases', `${slug}.png`),
 }));
 const missingCases = cases.filter((c) => !existsSync(c.src));
 if (missingCases.length) {
