@@ -466,6 +466,8 @@ text files, the body already is the discovery surface, and a self-referential
 
 Per-case `<link rel="alternate" type="text/plain" hreflang="...">` is injected by `CaseHeadTags.tsx` — on mount it strips every `[data-case-head]` node (covering both the static head injected at build time for direct-loaded case pages and any stale client-side tag) plus the homepage text alternates, then installs case-specific alternates and an `Article` JSON-LD, all tagged. On unmount it strips its tagged set and calls `applyHomeDefaults()` to restore the title / description / homepage text alternates that ship in `dist/index.html` so SPA navigation back to Home doesn't carry case state in `<head>`.
 
+The curated `llms*.txt` indexes are intentionally not written as complete summaries. A top-level "Recommended reading for agents" block makes `/llms-full.txt` the default path for complete EN technical review, while keeping per-case links for targeted project reads and non-EN mirrors. This is stronger than neutral prose on purpose: in practice agents often read the index, decide they are done, and leave the site before the case-study mirrors that contain the actual implementation signal.
+
 ## Analytics server stays plain JS, not TypeScript
 
 The frontend is TypeScript end-to-end. The analytics server in `server/` is plain ES-module JavaScript: no `tsc`, no source maps, no separate watch loop, no transpile step in production.

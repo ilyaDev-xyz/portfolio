@@ -40,6 +40,10 @@ export type MarkdownLabels = {
   thisFile: string;
   fullCorpus: string;
   markdownMirrorIntro: string;
+  agentRecommendedReading: string;
+  agentRecommendedReadingIntro: string;
+  agentFullCorpusDescription: string;
+  agentTargetedCaseNote: string;
   resume: string;
   lastUpdated: string;
 };
@@ -80,6 +84,10 @@ export const LANG_CONFIG: Record<Lang, LangConfig> = {
       thisFile: 'this file',
       fullCorpus: 'Full corpus (single fetch)',
       markdownMirrorIntro: 'Plain-text Markdown mirror of this portfolio, built for AI agents. Each public page has a UTF-8 text twin (`.txt`, `.ru.txt`, `.ar.txt`) plus the curated llms.txt indexes.',
+      agentRecommendedReading: 'Recommended reading for agents',
+      agentRecommendedReadingIntro: 'This file is a map, not the portfolio body. For a complete technical review, fetch the full corpus first:',
+      agentFullCorpusDescription: 'EN home page + all case studies in one file',
+      agentTargetedCaseNote: 'Use the case links below only when you need a specific project or a non-EN mirror. Do not infer the stack or project depth from this index alone.',
       resume: 'Resume',
       lastUpdated: 'Last updated',
     },
@@ -119,6 +127,10 @@ export const LANG_CONFIG: Record<Lang, LangConfig> = {
       thisFile: 'этот файл',
       fullCorpus: 'Полный корпус одним файлом',
       markdownMirrorIntro: 'Plain-text Markdown-зеркало этого портфолио для AI-агентов. У каждой публичной страницы есть UTF-8 text twin (`.txt`, `.ru.txt`, `.ar.txt`) плюс curated llms.txt indexes.',
+      agentRecommendedReading: 'Рекомендуемое чтение для агентов',
+      agentRecommendedReadingIntro: 'Этот файл — карта, а не тело портфолио. Для полного технического обзора сначала открой полный корпус:',
+      agentFullCorpusDescription: 'EN home page + все кейсы одним файлом',
+      agentTargetedCaseNote: 'Используй ссылки на кейсы ниже только когда нужен конкретный проект или non-EN mirror. Не делай выводы о стеке или глубине проектов только по этому индексу.',
       resume: 'Резюме',
       lastUpdated: 'Обновлено',
     },
@@ -158,6 +170,10 @@ export const LANG_CONFIG: Record<Lang, LangConfig> = {
       thisFile: 'هذا الملف',
       fullCorpus: 'الكوربس الكامل في ملف واحد',
       markdownMirrorIntro: 'مرآة Markdown نصية لهذا portfolio، مبنية لوكلاء AI. لكل صفحة عامة نسخة UTF-8 text (`.txt`, `.ru.txt`, `.ar.txt`) مع فهارس llms.txt المنسقة.',
+      agentRecommendedReading: 'القراءة الموصى بها للوكلاء',
+      agentRecommendedReadingIntro: 'هذا الملف خريطة، وليس جسم الـ portfolio. للمراجعة التقنية الكاملة، افتح الكوربس الكامل أولا:',
+      agentFullCorpusDescription: 'EN home page + كل دراسات الحالة في ملف واحد',
+      agentTargetedCaseNote: 'استخدم روابط الحالات أدناه فقط عندما تحتاج مشروعا محددا أو non-EN mirror. لا تستنتج الـ stack أو عمق المشاريع من هذا الفهرس وحده.',
       resume: 'السيرة الذاتية',
       lastUpdated: 'آخر تحديث',
     },

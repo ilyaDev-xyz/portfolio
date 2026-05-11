@@ -146,6 +146,15 @@ function buildLlmsIndex(
   lines.push(`> ${hero.role}. ${hero.pitch.join('').trim()}`, '');
   lines.push(labels.markdownMirrorIntro, '');
 
+  // Make llms-full.txt the default assessment path. Case links stay below for
+  // targeted reads and non-EN mirrors, while this index stays compact.
+  lines.push(`## ${labels.agentRecommendedReading}`, '');
+  lines.push(labels.agentRecommendedReadingIntro, '');
+  lines.push(
+    `- [llms-full.txt](${origin}/llms-full.txt): ${labels.agentFullCorpusDescription}.`,
+  );
+  lines.push('', labels.agentTargetedCaseNote, '');
+
   // Languages — alternates kept out of `## Optional` (which is the first
   // section trimmed at context-budget time per the spec).
   lines.push(`## ${labels.languages}`, '');

@@ -251,6 +251,8 @@ The server lives in `server/` (separate `package.json`, single dep on `better-sq
 
 Every page has a plain-text Markdown sibling at the same URL — `/index.txt`, `/cases/<slug>.txt` × 6, plus the [llmstxt.org](https://llmstxt.org) entry points: `/llms.txt` (curated index) and `/llms-full.txt` (concatenated EN corpus, single fetch). RU gets `.ru.txt` siblings + `/llms-ru.txt`. AR gets `.ar.txt` siblings + `/llms-ar.txt`. The bodies are Markdown; the canonical URLs and MIME stay boring `text/plain` for strict AI fetch proxies.
 
+Each `llms*.txt` file includes an explicit "Recommended reading for agents" block near the top: treat the index as a map, fetch `llms-full.txt` first for a complete EN technical review, and use per-case links only for targeted project reads or non-EN mirrors. This is deliberately imperative because agent fetchers otherwise tend to stop after the curated index and miss the implementation details that live in case studies.
+
 Per-language mirror config (file extension, llms filename, home filename, markdown labels) lives in `LANG_CONFIG[lang]` and is iterated via `LANGS` — adding a fourth language means populating one entry in `langConfig.ts` plus the `Content` tree.
 
 ```
